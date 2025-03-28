@@ -73,6 +73,35 @@ class FileIO_Test(unittest.TestCase):
         result = self.fileIO.deleteSubFolderAndCreate(tempFolderPath, subFolderList)
         self.assertTrue(result)
 
+    def test_shutil_move_file(self):
+        fileName = 'test.txt'
+
+        # source
+        srcFolder = os.path.join(ROOT, 'Util_Module/test/tempFolder2')
+        self.assertFalse(self.fileIO.isPathExist(srcFolder))
+
+        os.mkdir(srcFolder)
+        self.assertTrue(self.fileIO.isPathExist(srcFolder))
+
+        srcFilePath = os.path.join(srcFolder, fileName)
+        self.fileIO.writeFileData(srcFilePath, "Hello")
+        self.assertTrue(self.fileIO.isPathExist(srcFilePath))
+
+        # destination
+        desFolder = os.path.join(ROOT, 'Util_Module/test/tempFolder3')
+        self.assertFalse(self.fileIO.isPathExist(desFolder))
+
+        os.mkdir(desFolder)
+        self.assertTrue(self.fileIO.isPathExist(desFolder))
+
+        desFilePath = os.path.join(desFolder, fileName)
+        shutil.move(srcFilePath, desFilePath)
+        self.assertTrue(self.fileIO.isPathExist(desFilePath))
+
+        shutil.rmtree(srcFolder)
+        shutil.rmtree(desFolder)
+
+
 
 
 

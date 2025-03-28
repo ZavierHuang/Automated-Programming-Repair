@@ -58,6 +58,7 @@ class FileIO:
 
     def deleteSubFolderAndCreate(self, folderPath, subFolderList):
         for subFolder in subFolderList:
+            print(subFolder)
             shutil.rmtree(subFolder)
             os.mkdir(subFolder)
 

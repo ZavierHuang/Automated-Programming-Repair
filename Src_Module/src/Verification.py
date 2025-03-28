@@ -5,6 +5,10 @@ from Util_Module.src.FileIO import FileIO
 
 class Verification:
     def __init__(self):
+        self.junitEnvironment = None
+        self.junitEnvironment_Pass = None
+        self.junitEnvironment_Failure = None
+        self.remainCodePath = None
         self.googleJavaFormat = None
         self.fileIO = FileIO()
 
@@ -16,6 +20,8 @@ class Verification:
 
     def setJunitEnvironment(self, junit_environment):
         self.junitEnvironment = os.path.join(ROOT, junit_environment)
+        self.junitEnvironment_Pass = os.path.join(self.getJunitEnvironment(), 'JUnit_Environment_Pass')
+        self.junitEnvironment_Failure = os.path.join(self.getJunitEnvironment(), 'JUnit_Environment_Failure')
 
     def getGoogleJavaFormat(self):
         return self.googleJavaFormat
@@ -25,6 +31,12 @@ class Verification:
 
     def getJunitEnvironment(self):
         return self.junitEnvironment
+
+    def getJunitEnvironmentPass(self):
+        return self.junitEnvironment_Pass
+
+    def getJunitEnvironmentFailure(self):
+        return self.junitEnvironment_Failure
 
     def checkJavaFormat(self, methodCode, patchFileName, buggyId):
         pass
@@ -54,6 +66,6 @@ class Verification:
 
         return readData
 
-    def junitEnvironment_Initialize(self):
-        subFolderList = self.fileIO.getSubFolderList(self.junitEnvironment)
-        return self.fileIO.deleteSubFolderAndCreate(self.junitEnvironment, subFolderList)
+    def junitEnvironment_Initialize(self, folderPath):
+        subFolderList = self.fileIO.getSubFolderList(folderPath)
+        return self.fileIO.deleteSubFolderAndCreate(folderPath, subFolderList)
