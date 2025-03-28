@@ -10,14 +10,6 @@ class FileIO:
     def isPathExist(self, filePath):
         return os.path.exists(filePath)
 
-
-    def readJsonLineData(self, jsonLineFilePath):
-        if self.isPathExist(jsonLineFilePath):
-            with open(jsonLineFilePath, 'r', encoding='utf-8') as jsonFile:
-                data = [json.loads(line) for line in jsonFile if line.strip()]
-            return data
-        return None
-
     def writeFileData(self, writeFilePath, writeContent):
         try:
             with open(writeFilePath, 'w', encoding='utf-8') as writeFile:

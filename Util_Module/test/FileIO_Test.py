@@ -1,25 +1,20 @@
-import os
 import shutil
 import unittest
 
 from Util_Module.src.FileIO import FileIO
+from Util_Module.src.JsonFileIO import JsonFileIO
 from Config import *
 
 class FileIO_Test(unittest.TestCase):
     def setUp(self):
         self.fileIO = FileIO()
+        self.jsonFileIO = JsonFileIO()
 
     def test_file_exists(self):
         self.assertTrue(self.fileIO.isPathExist(JAVA_FORMAT_PATH))
 
     def test_folder_exists(self):
         self.assertTrue(self.fileIO.isPathExist(os.path.join(ROOT,'Data_Storage')))
-
-    def test_read_originalData(self):
-        HumanEval_CodeLlama_data = os.path.join(ROOT, 'Data_Storage/HumanEval/CodeLlama/Original_Data/HumanEval_CodeLlama_IR4OR2.jsonl')
-        data = self.fileIO.readJsonLineData(HumanEval_CodeLlama_data)
-        print(data)
-        self.assertEqual(len(data), 163)
 
     def test_write_data(self):
         writeFileName = 'test1.java'

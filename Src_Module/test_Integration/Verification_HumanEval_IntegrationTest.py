@@ -1,6 +1,5 @@
 import unittest
 
-from Src_Module.src.Verification import Verification
 from Src_Module.src.Verification_HumanEval import Verification_HumanEval
 from Util_Module.src.FileIO import FileIO
 
