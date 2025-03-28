@@ -5,3 +5,6 @@ ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # 資料路徑
 JAVA_FORMAT_PATH = os.path.join(ROOT, "Tool/google-java-format-1.18.1-all-deps.jar")
+
+# Cache
+CACHE_PATH = os.path.join(ROOT, "cache/class_file")

@@ -49,6 +49,14 @@ class Verification:
         )
         return result
 
+    def subprocess_run_JavaCompile(self, javaFiles):
+        result = subprocess.run(
+            ['javac', '-d', CACHE_PATH] + javaFiles,
+            capture_output=True,
+            text=True
+        )
+        return result
+
     def createJavaValidCode(self, patchFileName, methodCode, remainderCode, importContent):
         javaCode = f"""
         {importContent}

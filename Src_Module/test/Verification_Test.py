@@ -1,9 +1,10 @@
 import os
+import subprocess
 import unittest
 
 from Src_Module.src.Verification import Verification
 from Util_Module.src.FileIO import FileIO
-from Config import ROOT
+from Config import ROOT, CACHE_PATH
 
 
 class Verification_Test(unittest.TestCase):
@@ -62,6 +63,39 @@ class Verification_Test(unittest.TestCase):
             self.assertNotEqual(len(readData), 0)
         else:
             self.assertIsNone(readData)
+
+    def test_subprocess_run_JavaCompile_Pass(self):
+        filePath = os.path.join(ROOT, 'Util_Module/test/compileCheckTestFile/compilePass.java')
+        javaFiles = [filePath]
+        result = self.verification.subprocess_run_JavaCompile(javaFiles)
+
+        """
+        CompletedProcess(args=['javac', '-d', \
+        'F:\\GITHUB\\Automated-Programming-Repair\\cache/class_file', \
+        'F:\\GITHUB\\Automated-Programming-Repair\\Util_Module/test/compileCheckTestFile/compilePass.java'], \
+        returncode=0, stdout='', stderr='')
+        """
+
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(len(result.stderr), 0)
+
+    def test_subprocess_run_JavaCompile_Failure(self):
+        filePath = os.path.join(ROOT, 'Util_Module/test/compileCheckTestFile/compileFailure.java')
+        javaFiles = [filePath]
+        result = self.verification.subprocess_run_JavaCompile(javaFiles)
+
+        """
+        CompletedProcess(args=['javac', '-d', \
+        'F:\\GITHUB\\Automated-Programming-Repair\\cache/class_file', \
+        'F:\\GITHUB\\Automated-Programming-Repair\\Util_Module/test/compileCheckTestFile/compileFailure.java'], \
+        returncode=1, stdout='', \
+        stderr='F:\\GITHUB\\Automated-Programming-Repair\\Util_Module\\test\\compileCheckTestFile\\compileFailure.java:\
+        1: error: class errorName is public, should be declared in a file named errorName.java\npublic class errorName{\n       ^\n1 error\n')
+        """
+
+        self.assertEqual(result.returncode, 1)
+        self.assertNotEqual(len(result.stderr), 0)
+
 
 
 

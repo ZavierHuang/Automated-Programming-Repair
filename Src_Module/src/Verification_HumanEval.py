@@ -59,3 +59,4 @@ class Verification_HumanEval(Verification):
         if result.returncode == 0:
             target_pass = self.getJunitEnvironmentPass() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
             shutil.move(target, target_pass)
+
