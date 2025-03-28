@@ -12,14 +12,14 @@ class Verification_HumanEval(Verification):
 
 
 
-    # def checkJavaFormat(self, methodCode, patchFileName, buggyId):
-    #     # ADD --> ADD_TEST_1
-    #     methodCode = methodCode.replace(buggyId, patchFileName)
-    #
-    #     # Add.txt
-    #     remainderCode = super().readReaminderCode(self.remainCodePath + '/' + buggyId + '.txt')
-    #
-    #     javaCode = self.addClassOutSide(patchFileName, methodCode, remainderCode)
-    #
+    def checkJavaFormat(self, methodCode, patchFileName, buggyId):
+        # ADD --> ADD_TEST_1
+        methodCode = methodCode.replace(buggyId, patchFileName)
+
+        # Add.txt
+        remainderCode = super().readReaminderCode(self.remainCodePath + '/' + buggyId + '.txt')
+
+        javaCode = self.addClassOutSide(patchFileName, methodCode, remainderCode)
+
 
 

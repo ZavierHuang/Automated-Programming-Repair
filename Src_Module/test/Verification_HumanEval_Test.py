@@ -12,9 +12,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.verification_HumanEval = Verification_HumanEval()
         self.fileIO = FileIO()
 
-
-
-
     def normalize(self, text):
         # Replace all symbols other than numbers and letters with spaces
         return re.sub(r'[^A-Za-z0-9]', '', text)

@@ -17,7 +17,7 @@ class Verification:
         )
         return result
 
-    def addClassOutSide(self, patchFileName, methodCode, remainderCode):
+    def createJavaValidCode(self, patchFileName, methodCode, remainderCode):
         javaCode = f"""
         public class {patchFileName} {{
             {methodCode}
@@ -35,4 +35,7 @@ class Verification:
         return readData
 
     def checkJavaFormat(self, methodCode, patchFileName, buggyId):
+        pass
+
+    def setRemainderCodePath(self, remainCodePath):
         pass

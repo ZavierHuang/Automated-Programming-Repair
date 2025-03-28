@@ -38,6 +38,28 @@ class LLM_Model_Test(unittest.TestCase):
         self.assertEqual(self.normalize(result), self.normalize(fixedCode))
 
 
+    def test_patchCode_Replace_With_Qwen(self):
+        patchCode = '</s>  return x+y;  '
+        buggyCode = """
+        <|fim_prefix|>public static int add(int x, int y) {
+            <|fim_suffix|>
+        }
+        <|fim_middle|>
+        // buggy code
+        //return x | y;
+       """
+
+        fixedCode = """
+        public static int add(int x, int y) {
+            return x+y;
+        }
+        """
+        result = self.model_Qwen.patchReplaceByModel(buggyCode, patchCode)
+
+        self.assertEqual(self.normalize(result), self.normalize(fixedCode))
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

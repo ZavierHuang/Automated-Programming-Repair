@@ -6,14 +6,14 @@ class LLM_Qwen(LLM_Model):
         super().__init__()
 
     def patchReplaceByModel(self, buggyCode, patchCode):
-        PREFIX = '<｜fim▁begin｜>'
-        MIDDLE = '<｜fim▁hole｜>'
-        SUFFIX = '<｜fim▁end｜>'
+        PREFIX = '<|fim_prefix|>'
+        MIDDLE = '<|fim_middle|>'
+        SUFFIX = '<|fim_suffix|>'
 
         patchCode = patchCode.replace('</s>', '').strip()
-        patchCode = buggyCode.replace(MIDDLE, patchCode, 1)
+        patchCode = buggyCode.replace(SUFFIX, patchCode, 1)
         patchCode = patchCode.replace(PREFIX, '')
-        fixedCode = patchCode.replace(patchCode[patchCode.find(SUFFIX):], '')
+        fixedCode = patchCode.replace(patchCode[patchCode.find(MIDDLE):], '')
 
         return fixedCode
 
