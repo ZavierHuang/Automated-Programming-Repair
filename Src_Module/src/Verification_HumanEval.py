@@ -7,19 +7,23 @@ class Verification_HumanEval(Verification):
         super().__init__()
 
 
-    def setRemainderCodePath(self, remainCodePath):
-        self.remainCodePath = ROOT + remainCodePath
-
-
-
     def checkJavaFormat(self, methodCode, patchFileName, buggyId):
         # ADD --> ADD_TEST_1
         methodCode = methodCode.replace(buggyId, patchFileName)
 
         # Add.txt
-        remainderCode = super().readReaminderCode(self.remainCodePath + '/' + buggyId + '.txt')
+        remainderCode = super().readReaminderCode(self.getRemainderCodePath() + '/' + buggyId + '.txt')
 
-        javaCode = self.addClassOutSide(patchFileName, methodCode, remainderCode)
+        javaCode = super().createJavaValidCode(patchFileName, methodCode, remainderCode)
+
+        # JUnit_Environment/HumanEval/Module_ADD/ADD_TEST_1.java
+        target = super().getJunitEnvironment() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+
+        super().fileIO.writeFileData(target, javaCode)
+
+
+
+
 
 
 

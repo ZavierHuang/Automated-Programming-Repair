@@ -63,7 +63,5 @@ class Verification_Test(unittest.TestCase):
             self.assertIsNone(readData)
 
 
-
-
 if __name__ == '__main__':
     unittest.main()
