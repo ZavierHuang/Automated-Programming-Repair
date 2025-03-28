@@ -27,7 +27,7 @@ class Verification:
         return javaCode
 
     def readReaminderCode(self, remainderCodePath):
-        readData = None
+        readData = ''
 
         if self.fileIO.isFileExist(remainderCodePath):
             readData = self.fileIO.readFileData(remainderCodePath)
