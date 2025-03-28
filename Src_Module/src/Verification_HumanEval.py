@@ -6,7 +6,6 @@ class Verification_HumanEval(Verification):
     def __init__(self):
         super().__init__()
 
-
     def checkJavaFormat(self, methodCode, patchFileName, buggyId):
         # ADD --> ADD_TEST_1
         methodCode = methodCode.replace(buggyId, patchFileName)
@@ -20,6 +19,8 @@ class Verification_HumanEval(Verification):
         target = super().getJunitEnvironment() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
 
         super().fileIO.writeFileData(target, javaCode)
+
+
 
 
 

@@ -9,13 +9,13 @@ class Verification:
         self.fileIO = FileIO()
 
     def setGoogleJavaFormat(self, googleJavaFormat):
-        self.googleJavaFormat = ROOT + googleJavaFormat
+        self.googleJavaFormat = os.path.join(ROOT, googleJavaFormat)
 
     def setRemainderCodePath(self, remainCodePath):
-        self.remainCodePath = ROOT + remainCodePath
+        self.remainCodePath = os.path.join(ROOT, remainCodePath)
 
     def setJunitEnvironment(self, junit_environment):
-        self.junitEnvironment = ROOT + junit_environment
+        self.junitEnvironment = os.path.join(ROOT, junit_environment)
 
     def getGoogleJavaFormat(self):
         return self.googleJavaFormat
@@ -25,7 +25,6 @@ class Verification:
 
     def getJunitEnvironment(self):
         return self.junitEnvironment
-
 
     def checkJavaFormat(self, methodCode, patchFileName, buggyId):
         pass
@@ -50,7 +49,11 @@ class Verification:
     def readReaminderCode(self, remainderCodePath):
         readData = ''
 
-        if self.fileIO.isFileExist(remainderCodePath):
+        if self.fileIO.isPathExist(remainderCodePath):
             readData = self.fileIO.readFileData(remainderCodePath)
 
         return readData
+
+    def junitEnvironment_Initialize(self):
+        subFolderList = self.fileIO.getSubFolderList(self.junitEnvironment)
+        return self.fileIO.deleteSubFolderAndCreate(self.junitEnvironment, subFolderList)

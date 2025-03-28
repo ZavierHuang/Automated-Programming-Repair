@@ -16,7 +16,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
         # Replace all symbols other than numbers and letters with spaces
         return re.sub(r'[^A-Za-z0-9]', '', text)
 
-
     def test_create_Valid_Java_Code(self):
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
 
@@ -50,7 +49,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
         self.assertEqual(self.normalize(completedJavaCode), self.normalize(expectedResult))
 
-
     def test_write_data_in_junit_environment(self):
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/HumanEval')
         self.verification_HumanEval.setGoogleJavaFormat('Tool/google-java-format-1.18.1-all-deps.jar')
@@ -63,15 +61,19 @@ class Verification_HumanEval_Test(unittest.TestCase):
         }}
         """
 
+        self.verification_HumanEval.junitEnvironment_Initialize()
+        self.assertEqual(len(self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getJunitEnvironment())), 0)
+
         target = self.verification_HumanEval.getJunitEnvironment() + '/Module_{}/{}.java'.format('Add', 'Add_Test_1')
         self.fileIO.writeFileData(target, javaCode)
-        self.assertTrue(self.fileIO.isFileExist(target))
+        self.assertTrue(self.fileIO.isPathExist(target))
 
         readData = self.fileIO.readFileData(target)
         self.assertEqual(self.normalize(readData), self.normalize(javaCode))
 
         self.fileIO.deleteFileData(target)
-        self.assertFalse(self.fileIO.isFileExist(target))
+        self.assertFalse(self.fileIO.isPathExist(target))
+
 
 if __name__ == '__main__':
     unittest.main()

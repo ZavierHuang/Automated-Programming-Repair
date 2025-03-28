@@ -1,15 +1,18 @@
 import os
 import json
+import shutil
+
 
 class FileIO:
     def __init__(self):
         pass
 
-    def isFileExist(self, filePath):
+    def isPathExist(self, filePath):
         return os.path.exists(filePath)
 
+
     def readJsonLineData(self, jsonLineFilePath):
-        if self.isFileExist(jsonLineFilePath):
+        if self.isPathExist(jsonLineFilePath):
             with open(jsonLineFilePath, 'r', encoding='utf-8') as jsonFile:
                 data = [json.loads(line) for line in jsonFile if line.strip()]
             return data
@@ -33,7 +36,29 @@ class FileIO:
             raise Exception
 
     def deleteFileData(self, deleteFilePath):
-        if self.isFileExist(deleteFilePath):
+        if self.isPathExist(deleteFilePath):
             os.remove(deleteFilePath)
         else:
             raise Exception("File doesn't exist")
+
+    def getFileListUnderFolder(self, folderPath):
+        fileList = []
+        for root, dirs, files in os.walk(folderPath):
+            for file in files:
+                fileList.append(file)
+        return fileList
+
+    def getSubFolderList(self, folderPath):
+        subFolderList = []
+        for root , dirs, files in os.walk(folderPath):
+            for subFolder in dirs:
+                subFolderList.append(os.path.join(folderPath, subFolder))
+
+        return subFolderList
+
+    def deleteSubFolderAndCreate(self, folderPath, subFolderList):
+        for subFolder in subFolderList:
+            shutil.rmtree(subFolder)
+            os.mkdir(subFolder)
+
+        return len(self.getFileListUnderFolder(folderPath)) == 0
