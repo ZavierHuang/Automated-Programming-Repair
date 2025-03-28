@@ -1,3 +1,5 @@
+from overrides import overrides
+
 from Src_Module.src.LLM_Model import LLM_Model
 
 
@@ -5,6 +7,7 @@ class LLM_Qwen(LLM_Model):
     def __init__(self):
         super().__init__()
 
+    @overrides
     def patchReplaceByModel(self, buggyCode, patchCode):
         PREFIX = '<|fim_prefix|>'
         MIDDLE = '<|fim_middle|>'

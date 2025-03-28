@@ -86,3 +86,5 @@ class Verification:
     def getImportContent(self, buggyId):
         pass
 
+    def getCompileNeedJavaFiles(self, javaFile):
+        pass

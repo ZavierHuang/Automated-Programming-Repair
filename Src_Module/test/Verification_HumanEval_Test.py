@@ -64,7 +64,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
         self.assertEqual(self.normalize(completedJavaCode), self.normalize(expectedResult))
 
-    def test_junit_initialize(self):
+    def test_1_junit_initialize(self):
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/HumanEval')
         self.verification_HumanEval.junitEnvironment_Clear(self.verification_HumanEval.getJunitEnvironmentPass())
         self.assertEqual(len(self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getJunitEnvironmentPass())),0)
@@ -72,7 +72,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.verification_HumanEval.junitEnvironment_Clear(self.verification_HumanEval.getJunitEnvironmentFailure())
         self.assertEqual(len(self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getJunitEnvironmentFailure())), 0)
 
-    def test_write_data_in_junit_environment(self):
+    def test_2_write_data_in_junit_environment(self):
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/HumanEval')
 
         javaCode = f"""
@@ -96,7 +96,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         readData = self.fileIO.readFileData(target)
         self.assertEqual(self.normalize(readData), self.normalize(javaCode))
 
-    def test_check_java_format_Pass(self):
+    def test_3_check_java_format_Pass(self):
         buggyId = 'ADD'
         patchFileName = 'ADD_TEST_1'
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/HumanEval')

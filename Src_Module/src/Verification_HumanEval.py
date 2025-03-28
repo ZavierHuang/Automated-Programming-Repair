@@ -1,6 +1,8 @@
 import os
 import shutil
 
+from overrides import overrides
+
 from Config import ROOT
 from Src_Module.src.Verification import Verification
 
@@ -9,6 +11,7 @@ class Verification_HumanEval(Verification):
     def __init__(self):
         super().__init__()
 
+    @overrides
     def getImportContent(self, buggyId):
         importContent = 'import java.util.*;'
         importDict = {
@@ -39,6 +42,7 @@ class Verification_HumanEval(Verification):
 
         return importContent
 
+    @overrides
     def checkJavaFormat(self, methodCode, patchFileName, buggyId):
         # ADD --> ADD_TEST_1
         methodCode = methodCode.replace(buggyId, patchFileName)
@@ -60,3 +64,6 @@ class Verification_HumanEval(Verification):
             target_pass = self.getJunitEnvironmentPass() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
             shutil.move(target, target_pass)
 
+    @overrides
+    def getCompileNeedJavaFiles(self, javaFile):
+        return javaFile
