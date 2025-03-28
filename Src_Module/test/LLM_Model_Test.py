@@ -30,8 +30,6 @@ class LLM_Model_Test(unittest.TestCase):
         result = self.model_CodeLlama.patchReplaceByModel(buggyCode, patchCode)
         result = self.dataset_HumanEval.checkJavaFormat(result)
 
-
-        print(fixedCode.replace('\n', ''))
         self.assertEqual(result.replace('',''), fixedCode.replace('\n',''))
 
 

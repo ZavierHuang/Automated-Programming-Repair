@@ -2,8 +2,8 @@ import os
 import json
 
 class FileIO:
-    def __init__(self, Root):
-        self.Root = Root
+    def __init__(self):
+        pass
 
     def isFileExist(self, filePath):
         return os.path.exists(filePath)

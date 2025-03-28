@@ -2,24 +2,24 @@ import os
 import unittest
 
 from Util_Module.src.FileIO import FileIO
+from Config import *
 
 class FileIO_Test(unittest.TestCase):
     def setUp(self):
-        self.fileIO = FileIO('F:/GITHUB/Automated-Programming-Repair/')
+        self.fileIO = FileIO()
 
     def test_fileExists(self):
-        GOOGLE_JAVA_FORMAT = self.fileIO.Root + 'Tool/google-java-format-1.18.1-all-deps.jar'
-        self.assertTrue(self.fileIO.isFileExist(GOOGLE_JAVA_FORMAT))
+        self.assertTrue(self.fileIO.isFileExist(JAVA_FORMAT_PATH))
 
     def test_read_originalData(self):
-        HumanEval_CodeLlama_data = self.fileIO.Root + 'Data_Storage/Original_Data/HumanEval/HumanEval_CodeLlama_IR4OR2.jsonl'
+        HumanEval_CodeLlama_data = ROOT + 'Data_Storage/Original_Data/HumanEval/HumanEval_CodeLlama_IR4OR2.jsonl'
         data = self.fileIO.readJsonLineData(HumanEval_CodeLlama_data)
         self.assertEqual(len(data), 163)
 
     def test_write_data(self):
         writeFileName = 'test1.java'
 
-        writeFileFolder = self.fileIO.Root + 'Util_Module/test/tempFile/'
+        writeFileFolder = ROOT + 'Util_Module/test/tempFile/'
         self.assertTrue(os.path.isdir(writeFileFolder))
 
         writeFilePath = writeFileFolder + writeFileName

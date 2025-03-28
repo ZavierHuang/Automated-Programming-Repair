@@ -1,14 +1,14 @@
 import unittest
 
-from Src_Module.src.Verification import VerificationDataSet
+from Src_Module.src.Verification import Verification
+from Util_Module.src.FileIO import FileIO
+from Config import ROOT
 
 
-class VerificationDataSet_Test(unittest.TestCase):
+class Verification_Test(unittest.TestCase):
     def setUp(self):
-        self.verification = VerificationDataSet()
-
-
-
+        self.verification = Verification()
+        self.fileIO = FileIO()
 
 
 if __name__ == '__main__':
