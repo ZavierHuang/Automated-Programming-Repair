@@ -20,7 +20,8 @@ class FileIO:
             with open(writeFilePath, 'w', encoding='utf-8') as writeFile:
                 writeFile.write(writeContent)
         except Exception as e:
-            raise Exception(e)
+            print(f"[ERROR] Failed to write {writeFilePath}: {e}")
+            raise
 
     def readFileData(self, readFilePath):
         try:
@@ -28,7 +29,8 @@ class FileIO:
                 readFileContent = readFile.read()
                 return readFileContent
         except Exception as e:
-            raise Exception(e)
+            print(f"[ERROR] Failed to read {readFilePath}: {e}")
+            raise Exception
 
     def deleteFileData(self, deleteFilePath):
         if self.isFileExist(deleteFilePath):

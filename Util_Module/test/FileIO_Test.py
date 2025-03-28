@@ -12,7 +12,7 @@ class FileIO_Test(unittest.TestCase):
         self.assertTrue(self.fileIO.isFileExist(JAVA_FORMAT_PATH))
 
     def test_read_originalData(self):
-        HumanEval_CodeLlama_data = ROOT + 'Data_Storage/Original_Data/HumanEval/HumanEval_CodeLlama_IR4OR2.jsonl'
+        HumanEval_CodeLlama_data = ROOT + 'Data_Storage/HumanEval/CodeLlama/Original_Data/HumanEval_CodeLlama_IR4OR2.jsonl'
         data = self.fileIO.readJsonLineData(HumanEval_CodeLlama_data)
         self.assertEqual(len(data), 163)
 

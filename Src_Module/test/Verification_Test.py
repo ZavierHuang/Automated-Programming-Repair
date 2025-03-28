@@ -40,6 +40,29 @@ class Verification_Test(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertNotEqual(len(result.stderr), 0)
 
+    def test_read_remainder_Code_with_Existed(self):
+        buggyId = 'DECODE_SHIFT'
+        remainderCodePath = ROOT + 'Data_Storage/HumanEval/RemainderCode' + '/' + buggyId + '.txt'
+        readData = None
+
+        if self.fileIO.isFileExist(remainderCodePath):
+            readData = self.fileIO.readFileData(remainderCodePath)
+            self.assertNotEqual(len(readData), 0)
+        else:
+            self.assertIsNone(readData)
+
+    def test_read_remainder_Code_with_NonExisted(self):
+        buggyId = 'ADD'
+        remainderCodePath = ROOT + 'Data_Storage/HumanEval/RemainderCode' + '/' + buggyId + '.txt'
+        readData = None
+
+        if self.fileIO.isFileExist(remainderCodePath):
+            readData = self.fileIO.readFileData(remainderCodePath)
+            self.assertNotEqual(len(readData), 0)
+        else:
+            self.assertIsNone(readData)
+
+
 
 
 if __name__ == '__main__':
