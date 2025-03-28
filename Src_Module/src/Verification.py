@@ -49,8 +49,9 @@ class Verification:
         )
         return result
 
-    def createJavaValidCode(self, patchFileName, methodCode, remainderCode):
+    def createJavaValidCode(self, patchFileName, methodCode, remainderCode, importContent):
         javaCode = f"""
+        {importContent}
         public class {patchFileName} {{
             {methodCode}
             {remainderCode}
@@ -66,6 +67,14 @@ class Verification:
 
         return readData
 
-    def junitEnvironment_Initialize(self, folderPath):
+    def junitEnvironment_Clear(self, folderPath):
         subFolderList = self.fileIO.getSubFolderList(folderPath)
         return self.fileIO.deleteSubFolderAndCreate(folderPath, subFolderList)
+
+    def junitEnvironment_Initialize(self):
+        self.junitEnvironment_Clear(self.getJunitEnvironmentPass())
+        self.junitEnvironment_Clear(self.getJunitEnvironmentFailure())
+
+    def getImportContent(self, buggyId):
+        pass
+
