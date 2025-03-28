@@ -41,6 +41,9 @@ class Verification:
     def checkJavaFormat(self, methodCode, patchFileName, buggyId):
         pass
 
+    def checkJavaCompile(self, javaFile):
+        pass
+
     def subprocess_run_JavaFormat(self, filePath):
         result = subprocess.run(
             ["java", "-jar", JAVA_FORMAT_PATH , "--replace", filePath],
@@ -86,5 +89,5 @@ class Verification:
     def getImportContent(self, buggyId):
         pass
 
-    def getCompileNeedJavaFiles(self, javaFile):
+    def getNeedCompileJavaFiles(self, javaFile):
         pass

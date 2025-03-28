@@ -111,6 +111,25 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertFalse(self.fileIO.isPathExist(target))
         self.assertTrue(self.fileIO.isPathExist(target_pass))
 
+    def test_check_STRING_TO_MD5_Compile(self):
+        javaFile = os.path.join(ROOT, 'Util_Module/test/compileCheckTestFile/STRING_TO_MD5.java')
+        result = self.verification_HumanEval.checkJavaCompile(javaFile)
+
+        """
+        CompletedProcess(args=['javac', '-d', \
+        'F:\\GITHUB\\Automated-Programming-Repair\\cache/class_file', \
+        'F:\\GITHUB\\Automated-Programming-Repair\\Util_Module/test/compileCheckTestFile/STRING_TO_MD5.java'], \
+        returncode=1,
+        stdout='',
+        stderr='F:\\GITHUB\\Automated-Programming-Repair\\Util_Module\\test\\compileCheckTestFile\\STRING_TO_MD5.java:\
+        3: error: package javax.xml.bind does not exist\nimport javax.xml.bind.DatatypeConverter;\n                     ^\n
+        F:\\GITHUB\\Automated-Programming-Repair\\Util_Module\\test\\compileCheckTestFile\\STRING_TO_MD5.java:12: error: cannot find symbol\n
+        return DatatypeConverter.printHexBinary(digest).toLowerCase();\n               ^\n
+        symbol:   variable DatatypeConverter\n
+        location: class STRING_TO_MD5\n2 errors\n')
+        """
+
+        self.assertTrue(result)
 
 
 

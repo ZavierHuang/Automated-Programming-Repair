@@ -65,5 +65,21 @@ class Verification_HumanEval(Verification):
             shutil.move(target, target_pass)
 
     @overrides
-    def getCompileNeedJavaFiles(self, javaFile):
-        return javaFile
+    def getNeedCompileJavaFiles(self, javaFile):
+        return [javaFile]
+
+    @overrides
+    def checkJavaCompile(self, javaFile):
+        javaFiles = self.getNeedCompileJavaFiles(javaFile)
+        result = self.subprocess_run_JavaCompile(javaFiles)
+
+        if result.returncode != 0:
+            if ('STRING_TO_MD5' in result.stderr and
+                'error: cannot find symbol' in result.stderr and
+                'symbol:   variable DatatypeConverter' in result.stderr):
+                return True
+            return False
+
+        return True
+
+
