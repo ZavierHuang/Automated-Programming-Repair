@@ -38,12 +38,6 @@ class Verification:
     def getJunitEnvironmentFailure(self):
         return self.junitEnvironment_Failure
 
-    def checkJavaFormat(self, methodCode, patchFileName, buggyId):
-        pass
-
-    def checkJavaCompile(self, javaFile):
-        pass
-
     def subprocess_run_JavaFormat(self, filePath):
         result = subprocess.run(
             ["java", "-jar", JAVA_FORMAT_PATH , "--replace", filePath],
@@ -70,7 +64,7 @@ class Verification:
         """
         return javaCode
 
-    def readReaminderCode(self, remainderCodePath):
+    def readRemainderCode(self, remainderCodePath):
         readData = ''
 
         if self.fileIO.isPathExist(remainderCodePath):
@@ -90,4 +84,10 @@ class Verification:
         pass
 
     def getNeedCompileJavaFiles(self, javaFile):
+        pass
+
+    def checkJavaFormat(self, methodCode, patchFileName, buggyId):
+        pass
+
+    def checkJavaCompile(self, javaFile):
         pass

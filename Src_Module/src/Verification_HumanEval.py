@@ -48,7 +48,7 @@ class Verification_HumanEval(Verification):
         methodCode = methodCode.replace(buggyId, patchFileName)
 
         # Add.txt
-        remainderCode = self.readReaminderCode(os.path.join(self.getRemainderCodePath(), buggyId + '.txt'))
+        remainderCode = self.readRemainderCode(os.path.join(self.getRemainderCodePath(), buggyId + '.txt'))
 
         importContent = self.getImportContent(buggyId)
 

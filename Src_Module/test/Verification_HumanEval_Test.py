@@ -42,7 +42,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         }
         """
 
-        remainderCode = self.verification.readReaminderCode(remainderCodeFilePath)
+        remainderCode = self.verification.readRemainderCode(remainderCodeFilePath)
         importContent = self.verification_HumanEval.getImportContent(buggyId)
 
         completedJavaCode = f"""
