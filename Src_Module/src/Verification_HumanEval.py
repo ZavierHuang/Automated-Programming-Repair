@@ -56,7 +56,7 @@ class Verification_HumanEval(Verification):
 
         javaCode = self.createJavaValidCode(patchFileName, methodCode, remainderCode, importContent)
 
-        target = self.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+        target = self.getJunitEnvironment() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
 
         self.fileIO.writeFileData(target, javaCode)
 

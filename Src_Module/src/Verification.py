@@ -7,8 +7,6 @@ from Util_Module.src.FileIO import FileIO
 class Verification:
     def __init__(self):
         self.junitEnvironment = None
-        self.junitEnvironment_Pass = None
-        self.junitEnvironment_Failure = None
         self.remainCodePath = None
         self.googleJavaFormat = None
         self.junitModuleTestEnvironment = None
@@ -33,8 +31,6 @@ class Verification:
 
     def setJunitEnvironment(self, junit_environment):
         self.junitEnvironment = os.path.join(ROOT, junit_environment)
-        self.junitEnvironment_Pass = os.path.join(self.getJunitEnvironment(), 'JUnit_Environment_Pass')
-        self.junitEnvironment_Failure = os.path.join(self.getJunitEnvironment(), 'JUnit_Environment_Failure')
 
     def getScriptPath(self):
         return self.scriptPath
@@ -53,12 +49,6 @@ class Verification:
 
     def getJunitEnvironment(self):
         return self.junitEnvironment
-
-    def getJunitEnvironmentPass(self):
-        return self.junitEnvironment_Pass
-
-    def getJunitEnvironmentFailure(self):
-        return self.junitEnvironment_Failure
 
     def subprocess_run_JavaFormat(self, filePath):
         result = subprocess.run(
@@ -99,8 +89,7 @@ class Verification:
         return self.fileIO.deleteSubFolderAndCreate(folderPath, subFolderList)
 
     def junitEnvironment_Initialize(self):
-        self.junitEnvironment_Clear(self.getJunitEnvironmentPass())
-        self.junitEnvironment_Clear(self.getJunitEnvironmentFailure())
+        self.junitEnvironment_Clear(self.getJunitEnvironment())
 
     def junitEnvironment_Run_Initialize(self):
         self.junitEnvironment_Module_Test_Clear()
@@ -136,3 +125,6 @@ class Verification:
         finally:
             os.chdir(currentPath)
 
+    def getAllRunTestCaseFileList(self):
+        fileList = self.fileIO.getFileListUnderFolder(self.getJunitModuleTestEnvironment())
+        return [file for file in fileList if file.endswith('.java')]

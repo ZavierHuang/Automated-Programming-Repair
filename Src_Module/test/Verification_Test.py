@@ -1,11 +1,10 @@
 import os
 import shutil
-import subprocess
 import unittest
 
 from Src_Module.src.Verification import Verification
 from Util_Module.src.FileIO import FileIO
-from Config import ROOT, CACHE_PATH
+from Config import ROOT
 
 
 class Verification_Test(unittest.TestCase):

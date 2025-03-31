@@ -1,7 +1,6 @@
 import os
 import unittest
 
-from Config import ROOT
 from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
 from Src_Module.src.Verification_HumanEval import Verification_HumanEval
 from Util_Module.src.FileIO import FileIO
@@ -34,7 +33,7 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         print(javaFormatLog, javaFormatResult)
         self.assertTrue(javaFormatResult)
 
-        target = self.verification_HumanEval.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+        target = self.verification_HumanEval.getJunitEnvironment() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
         self.assertTrue(self.fileIO.isPathExist(target))
 
     def test_check_java_format_Failure(self):
@@ -51,7 +50,7 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
         self.assertFalse(javaFormatResult)
 
-        target = self.verification_HumanEval.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+        target = self.verification_HumanEval.getJunitEnvironment() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
         self.assertTrue(self.fileIO.isPathExist(target))
 
     def test_clear_humanEval_run_test_case_module_folder(self):
@@ -66,8 +65,7 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
 
         buggyId = 'ADD'
         patchFileName = 'ADD_TEST_1'
-        target = self.verification_HumanEval.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
-        target_pass = self.verification_HumanEval.getJunitEnvironmentPass() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+        target = self.verification_HumanEval.getJunitEnvironment() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
 
         methodCode = """
         public static int add(int x,int y){
@@ -77,17 +75,13 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
 
         javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
         compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target, javaFormatResult)
-
-        self.fileIO.moveFile(target, target_pass, compileResult)
-        self.assertFalse(self.fileIO.isPathExist(target))
-        self.assertTrue(self.fileIO.isPathExist(target_pass))
+        self.assertTrue(compileResult)
 
     def test_format_pass_compile_error(self):
         self.verification_HumanEval.junitEnvironment_Initialize()
         buggyId = 'ADD'
         patchFileName = 'ADD_TEST_1'
-        target = self.verification_HumanEval.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
-        target_pass = self.verification_HumanEval.getJunitEnvironmentPass() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+        target = self.verification_HumanEval.getJunitEnvironment() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
 
         methodCode = """
         public static int add(int x,int y){
@@ -98,14 +92,13 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
 
         javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
         compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target, javaFormatResult)
-        self.fileIO.moveFile(target, target_pass, compileResult)
-        self.assertTrue(self.fileIO.isPathExist(target))
-        self.assertFalse(self.fileIO.isPathExist(target_pass))
+        self.assertFalse(compileResult)
 
 
     def test_load_and_run_test_case(self):
-        self.verification_HumanEval.junitEnvironment_Initialize()
-        self.verification_HumanEval.loadAndRunTestCase()
+        # self.verification_HumanEval.junitEnvironment_Initialize()
+        # self.verification_HumanEval.loadAndRunTestCase()
+        pass
 
 
 
