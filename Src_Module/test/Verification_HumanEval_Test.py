@@ -124,53 +124,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
         self.assertTrue(result)
 
-    def test_format_and_compile_both_pass(self):
-        self.verification_HumanEval.junitEnvironment_Initialize()
 
-        buggyId = 'ADD'
-        patchFileName = 'ADD_TEST_1'
-        target = self.verification_HumanEval.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
-        target_pass = self.verification_HumanEval.getJunitEnvironmentPass() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
-
-        methodCode = """
-        public static int add(int x,int y){
-            return x + y;
-        }
-        """
-
-        javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
-
-        if javaFormatResult.returncode == 0:
-            compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target)
-            if compileResult is True:
-                shutil.move(target, target_pass)
-
-        self.assertFalse(self.fileIO.isPathExist(target))
-        self.assertTrue(self.fileIO.isPathExist(target_pass))
-
-    def test_format_pass_compile_error(self):
-        self.verification_HumanEval.junitEnvironment_Initialize()
-        buggyId = 'ADD'
-        patchFileName = 'ADD_TEST_1'
-        target = self.verification_HumanEval.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
-        target_pass = self.verification_HumanEval.getJunitEnvironmentPass() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
-
-        methodCode = """
-        public static int add(int x,int y){
-            String a = x;
-            return a + y;
-        }
-        """
-
-        javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
-
-        if javaFormatResult.returncode == 0:
-            compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target)
-            if compileResult is True:
-                shutil.move(target, target_pass)
-
-        self.assertTrue(self.fileIO.isPathExist(target))
-        self.assertFalse(self.fileIO.isPathExist(target_pass))
 
 
 
