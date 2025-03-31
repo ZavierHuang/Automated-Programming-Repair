@@ -49,7 +49,6 @@ class FileIO:
         return subFolderList
 
     def deleteSubFolderAndCreate(self, rootPath, subFolderList):
-        print(subFolderList)
         for subFolder in subFolderList:
             shutil.rmtree(subFolder)
             os.mkdir(subFolder)
@@ -59,3 +58,7 @@ class FileIO:
     def getRunTestCaseModuleFolderList(self, junitModuleTestEnvironment):
         subFolderList = self.getSubFolderList(junitModuleTestEnvironment)
         return [subFolder for subFolder in subFolderList if 'Module_' in subFolder]
+
+    def moveFile(self,source, destination, compileResult):
+        if compileResult:
+            shutil.move(source, destination)

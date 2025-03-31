@@ -1,8 +1,7 @@
 import os
-import shutil
 import unittest
 
-from Config import ROOT
+from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
 from Src_Module.src.Verification_HumanEval import Verification_HumanEval
 from Util_Module.src.FileIO import FileIO
 from Util_Module.src.JsonFileIO import JsonFileIO
@@ -14,8 +13,10 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/HumanEval')
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
+        self.verification_HumanEval.setTestDataResult('Data_Storage/HumanEval/CodeLlama/OriginalResult/Temperature_8/Lora04/HumanEval_CodeLlama_Lora04_E1_Patch10.jsonl')
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
+        self.model_CodeLlama = LLM_CodeLlama()
 
     def test_check_java_format_Pass(self):
         self.verification_HumanEval.junitEnvironment_Initialize()
@@ -28,7 +29,9 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         }
         """
 
-        self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+        javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+        print(javaFormatLog, javaFormatResult)
+        self.assertTrue(javaFormatResult)
 
         target = self.verification_HumanEval.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
         self.assertTrue(self.fileIO.isPathExist(target))
@@ -44,7 +47,8 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         }
         """
 
-        self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+        javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+        self.assertFalse(javaFormatResult)
 
         target = self.verification_HumanEval.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
         self.assertTrue(self.fileIO.isPathExist(target))
@@ -70,13 +74,10 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         }
         """
 
-        javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+        javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+        compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target, javaFormatResult)
 
-        if javaFormatResult.returncode == 0:
-            compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target)
-            if compileResult is True:
-                shutil.move(target, target_pass)
-
+        self.fileIO.moveFile(target, target_pass, compileResult)
         self.assertFalse(self.fileIO.isPathExist(target))
         self.assertTrue(self.fileIO.isPathExist(target_pass))
 
@@ -94,15 +95,39 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         }
         """
 
-        javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
-
-        if javaFormatResult.returncode == 0:
-            compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target)
-            if compileResult is True:
-                shutil.move(target, target_pass)
-
+        javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+        compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target, javaFormatResult)
+        self.fileIO.moveFile(target, target_pass, compileResult)
         self.assertTrue(self.fileIO.isPathExist(target))
         self.assertFalse(self.fileIO.isPathExist(target_pass))
+
+    def test_batchSize_load_junit_environment(self):
+        self.verification_HumanEval.junitEnvironment_Initialize()
+        self.verification_HumanEval.setTestDataResult(
+            'Data_Storage/HumanEval/CodeLlama/OriginalResult/Temperature_8/Lora04/HumanEval_CodeLlama_Lora04_E1_Patch10_TEST.jsonl')
+        data = self.jsonFileIO.readJsonLineData(self.verification_HumanEval.getTestData())
+
+        passNums = 0
+
+        for item in data:
+            buggyId = item['bug_id']
+            buggyCode = item['buggy_code']
+            output = item['output']
+            for i in range(len(output)):
+                patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
+                patchCode = output[str(i)]['output_patch']
+                target = os.path.join(self.verification_HumanEval.getJunitEnvironmentFailure(), 'Module_{}/{}.java'.format(buggyId, patchFileName))
+                targetPass = os.path.join(self.verification_HumanEval.getJunitEnvironmentPass(), 'Module_{}/{}.java'.format(buggyId, patchFileName))
+
+                methodCode = self.model_CodeLlama.patchReplaceByModel(buggyCode, patchCode)
+                javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+                compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target, javaFormatResult)
+                self.fileIO.moveFile(target, targetPass, compileResult)
+
+                if compileResult is True:
+                    passNums += 1
+
+            self.assertEqual(len(self.fileIO.getFileListUnderFolder(os.path.join(self.verification_HumanEval.getJunitEnvironmentPass(), 'Module_{}'.format(buggyId)))), passNums)
 
 if __name__ == '__main__':
     unittest.main()

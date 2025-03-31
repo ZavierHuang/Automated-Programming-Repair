@@ -113,6 +113,5 @@ class Verification_Test(unittest.TestCase):
         shutil.rmtree(junitModuleTestEnvironment)
 
 
-
 if __name__ == '__main__':
     unittest.main()

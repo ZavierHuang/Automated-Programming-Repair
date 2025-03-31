@@ -1,3 +1,4 @@
+import os.path
 import subprocess
 from Config import *
 from Util_Module.src.FileIO import FileIO
@@ -11,7 +12,11 @@ class Verification:
         self.remainCodePath = None
         self.googleJavaFormat = None
         self.junitModuleTestEnvironment = None
+        self.testDataResult = None
         self.fileIO = FileIO()
+
+    def setTestDataResult(self, testDataResult):
+        self.testDataResult = os.path.join(ROOT, testDataResult)
 
     def setJunitModuleTestEnvironment(self, junitModuleTestEnvironment):
         self.junitModuleTestEnvironment = os.path.join(ROOT, junitModuleTestEnvironment)
@@ -26,6 +31,9 @@ class Verification:
         self.junitEnvironment = os.path.join(ROOT, junit_environment)
         self.junitEnvironment_Pass = os.path.join(self.getJunitEnvironment(), 'JUnit_Environment_Pass')
         self.junitEnvironment_Failure = os.path.join(self.getJunitEnvironment(), 'JUnit_Environment_Failure')
+
+    def getTestData(self):
+        return self.testDataResult
 
     def getJunitModuleTestEnvironment(self):
         return self.junitModuleTestEnvironment
@@ -105,6 +113,6 @@ class Verification:
     def checkJavaFormat(self, methodCode, patchFileName, buggyId):
         pass
 
-    def checkJavaCompile(self, javaFile):
+    def checkJavaCompile(self, javaFile, javaFormatResult):
         pass
 

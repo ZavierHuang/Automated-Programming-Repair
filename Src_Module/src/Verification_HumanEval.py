@@ -60,14 +60,17 @@ class Verification_HumanEval(Verification):
 
         result = self.subprocess_run_JavaFormat(target)
 
-        return result
+        return result, result.returncode == 0
 
     @overrides
     def getNeedCompileJavaFiles(self, javaFile):
         return [javaFile]
 
     @overrides
-    def checkJavaCompile(self, javaFile):
+    def checkJavaCompile(self, javaFile, javaFormatResult):
+        if javaFormatResult is False:
+            return 'FormatError', False
+
         javaFiles = self.getNeedCompileJavaFiles(javaFile)
         result = self.subprocess_run_JavaCompile(javaFiles)
 
