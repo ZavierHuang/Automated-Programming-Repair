@@ -11,6 +11,7 @@ class FileIO:
 
     def writeFileData(self, writeFilePath, writeContent):
         try:
+            os.makedirs(os.path.dirname(writeFilePath), exist_ok=True)
             with open(writeFilePath, 'w', encoding='utf-8') as writeFile:
                 writeFile.write(writeContent)
         except Exception as e:
@@ -41,15 +42,20 @@ class FileIO:
 
     def getSubFolderList(self, folderPath):
         subFolderList = []
-        for root , dirs, files in os.walk(folderPath):
+        for root, dirs, files in os.walk(folderPath):
             for subFolder in dirs:
                 subFolderList.append(os.path.join(folderPath, subFolder))
 
         return subFolderList
 
-    def deleteSubFolderAndCreate(self, folderPath, subFolderList):
+    def deleteSubFolderAndCreate(self, rootPath, subFolderList):
+        print(subFolderList)
         for subFolder in subFolderList:
             shutil.rmtree(subFolder)
             os.mkdir(subFolder)
 
-        return len(self.getFileListUnderFolder(folderPath)) == 0
+        return len(self.getFileListUnderFolder(rootPath)) == 0
+
+    def getRunTestCaseModuleFolderList(self, junitModuleTestEnvironment):
+        subFolderList = self.getSubFolderList(junitModuleTestEnvironment)
+        return [subFolder for subFolder in subFolderList if 'Module_' in subFolder]

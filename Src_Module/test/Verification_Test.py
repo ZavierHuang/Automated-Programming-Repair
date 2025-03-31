@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import unittest
 
@@ -96,6 +97,20 @@ class Verification_Test(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertNotEqual(len(result.stderr), 0)
 
+    def test_clear_run_test_case_module_folder(self):
+        junitModuleTestEnvironment = os.path.join(ROOT, 'Util_Module/test/moduleTestFolder')
+        os.makedirs(junitModuleTestEnvironment, exist_ok=True)
+        self.fileIO.writeFileData(os.path.join(junitModuleTestEnvironment, 'Module_ADD/src/main/java/test1.java'), '')
+
+        subFolderList = self.fileIO.getSubFolderList(junitModuleTestEnvironment)
+        sub_Module_Folder_List = [subFolder for subFolder in subFolderList if 'Module_' in subFolder]
+
+        for subModuleFolderPath in sub_Module_Folder_List:
+            # F:\\GITHUB\\Automated-Programming-Repair\\Util_Module/test/moduleTestFolder\\Module_ADD
+            self.fileIO.deleteSubFolderAndCreate(subModuleFolderPath, [os.path.join(subModuleFolderPath, 'src/main/java')])
+            self.assertEqual(self.fileIO.getFileListUnderFolder(os.path.join(subModuleFolderPath, 'src/main/java')), [])
+
+        shutil.rmtree(junitModuleTestEnvironment)
 
 
 

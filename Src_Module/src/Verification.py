@@ -10,7 +10,11 @@ class Verification:
         self.junitEnvironment_Failure = None
         self.remainCodePath = None
         self.googleJavaFormat = None
+        self.junitModuleTestEnvironment = None
         self.fileIO = FileIO()
+
+    def setJunitModuleTestEnvironment(self, junitModuleTestEnvironment):
+        self.junitModuleTestEnvironment = os.path.join(ROOT, junitModuleTestEnvironment)
 
     def setGoogleJavaFormat(self, googleJavaFormat):
         self.googleJavaFormat = os.path.join(ROOT, googleJavaFormat)
@@ -22,6 +26,9 @@ class Verification:
         self.junitEnvironment = os.path.join(ROOT, junit_environment)
         self.junitEnvironment_Pass = os.path.join(self.getJunitEnvironment(), 'JUnit_Environment_Pass')
         self.junitEnvironment_Failure = os.path.join(self.getJunitEnvironment(), 'JUnit_Environment_Failure')
+
+    def getJunitModuleTestEnvironment(self):
+        return self.junitModuleTestEnvironment
 
     def getGoogleJavaFormat(self):
         return self.googleJavaFormat
@@ -80,6 +87,15 @@ class Verification:
         self.junitEnvironment_Clear(self.getJunitEnvironmentPass())
         self.junitEnvironment_Clear(self.getJunitEnvironmentFailure())
 
+    def junitEnvironment_Run_Initialize(self):
+        self.junitEnvironment_Module_Test_Clear()
+
+    def junitEnvironment_Module_Test_Clear(self):
+        sub_Module_Folder_List = self.fileIO.getRunTestCaseModuleFolderList(self.getJunitModuleTestEnvironment())
+        for subModuleFolderPath in sub_Module_Folder_List:
+            self.fileIO.deleteSubFolderAndCreate(subModuleFolderPath,
+                                                 [os.path.join(subModuleFolderPath, 'src/main/java')])
+
     def getImportContent(self, buggyId):
         pass
 
@@ -91,3 +107,4 @@ class Verification:
 
     def checkJavaCompile(self, javaFile):
         pass
+
