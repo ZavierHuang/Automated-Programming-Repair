@@ -14,6 +14,8 @@ class Verification_HumanEval_Test(unittest.TestCase):
     def setUp(self):
         self.verification = Verification()
         self.verification_HumanEval = Verification_HumanEval()
+        self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/HumanEval')
+        self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
         self.fileIO = FileIO()
 
     def normalize(self, text):
@@ -30,8 +32,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertEqual(self.verification_HumanEval.getImportContent(buggyId), expected)
 
     def test_create_Valid_Java_Code(self):
-        self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
-
         buggyId = 'ADD'
         patchFileName = 'ADD_TEST_1'
         remainderCodeFilePath = self.verification_HumanEval.remainCodePath + '/' + buggyId + '.txt'
@@ -65,7 +65,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertEqual(self.normalize(completedJavaCode), self.normalize(expectedResult))
 
     def test_1_junit_initialize(self):
-        self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/HumanEval')
         self.verification_HumanEval.junitEnvironment_Clear(self.verification_HumanEval.getJunitEnvironmentPass())
         self.assertEqual(len(self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getJunitEnvironmentPass())),0)
 
@@ -73,8 +72,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertEqual(len(self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getJunitEnvironmentFailure())), 0)
 
     def test_2_write_data_in_junit_environment(self):
-        self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/HumanEval')
-
         javaCode = f"""
         import java.util.*;
         public class ADD_TEST_1 {{
@@ -105,11 +102,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         result = self.verification_HumanEval.subprocess_run_JavaFormat(target)
 
         self.assertEqual(result.returncode, 0)
-        target_pass = self.verification_HumanEval.getJunitEnvironmentPass() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
-        shutil.move(target, target_pass)
 
-        self.assertFalse(self.fileIO.isPathExist(target))
-        self.assertTrue(self.fileIO.isPathExist(target_pass))
 
     def test_check_STRING_TO_MD5_Compile(self):
         javaFile = os.path.join(ROOT, 'Util_Module/test/compileCheckTestFile/STRING_TO_MD5.java')
@@ -130,6 +123,55 @@ class Verification_HumanEval_Test(unittest.TestCase):
         """
 
         self.assertTrue(result)
+
+    def test_format_and_compile_both_pass(self):
+        self.verification_HumanEval.junitEnvironment_Initialize()
+
+        buggyId = 'ADD'
+        patchFileName = 'ADD_TEST_1'
+        target = self.verification_HumanEval.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+        target_pass = self.verification_HumanEval.getJunitEnvironmentPass() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+
+        methodCode = """
+        public static int add(int x,int y){
+            return x + y;
+        }
+        """
+
+        javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+
+        if javaFormatResult.returncode == 0:
+            compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target)
+            if compileResult is True:
+                shutil.move(target, target_pass)
+
+        self.assertFalse(self.fileIO.isPathExist(target))
+        self.assertTrue(self.fileIO.isPathExist(target_pass))
+
+    def test_format_pass_compile_error(self):
+        self.verification_HumanEval.junitEnvironment_Initialize()
+        buggyId = 'ADD'
+        patchFileName = 'ADD_TEST_1'
+        target = self.verification_HumanEval.getJunitEnvironmentFailure() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+        target_pass = self.verification_HumanEval.getJunitEnvironmentPass() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+
+        methodCode = """
+        public static int add(int x,int y){
+            String a = x;
+            return a + y;
+        }
+        """
+
+        javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+
+        if javaFormatResult.returncode == 0:
+            compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target)
+            if compileResult is True:
+                shutil.move(target, target_pass)
+
+        self.assertTrue(self.fileIO.isPathExist(target))
+        self.assertFalse(self.fileIO.isPathExist(target_pass))
+
 
 
 if __name__ == '__main__':

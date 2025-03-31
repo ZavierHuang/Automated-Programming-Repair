@@ -60,9 +60,7 @@ class Verification_HumanEval(Verification):
 
         result = self.subprocess_run_JavaFormat(target)
 
-        if result.returncode == 0:
-            target_pass = self.getJunitEnvironmentPass() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
-            shutil.move(target, target_pass)
+        return result
 
     @overrides
     def getNeedCompileJavaFiles(self, javaFile):
@@ -77,9 +75,8 @@ class Verification_HumanEval(Verification):
             if ('STRING_TO_MD5' in result.stderr and
                 'error: cannot find symbol' in result.stderr and
                 'symbol:   variable DatatypeConverter' in result.stderr):
-                return True
-            return False
-
-        return True
+                return result, True
+            return result, False
+        return result, True
 
 
