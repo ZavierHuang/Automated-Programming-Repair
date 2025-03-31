@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 
 
@@ -62,3 +63,7 @@ class FileIO:
     def moveFile(self,source, destination, compileResult):
         if compileResult:
             shutil.move(source, destination)
+
+    def normalize(self, text):
+        # Replace all symbols other than numbers and letters with spaces
+        return re.sub(r'[^A-Za-z0-9]', '', text)

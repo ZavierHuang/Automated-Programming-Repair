@@ -2,12 +2,15 @@ import os
 import re
 import shutil
 import subprocess
+import time
 import unittest
 
-from Config import ROOT, CACHE_PATH
+from Config import ROOT, CACHE_PATH, GRADLE_PATH
+from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
 from Src_Module.src.Verification import Verification
 from Src_Module.src.Verification_HumanEval import Verification_HumanEval
 from Util_Module.src.FileIO import FileIO
+from Util_Module.src.JsonFileIO import JsonFileIO
 
 
 class Verification_HumanEval_Test(unittest.TestCase):
@@ -16,7 +19,11 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.verification_HumanEval = Verification_HumanEval()
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/HumanEval')
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
+        self.verification_HumanEval.setScriptPath('Tool/execute_python_humanEval.sh')
+        self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
         self.fileIO = FileIO()
+        self.jsonFileIO = JsonFileIO()
+        self.model_CodeLlama = LLM_CodeLlama()
 
     def normalize(self, text):
         # Replace all symbols other than numbers and letters with spaces
@@ -106,7 +113,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
     def test_check_STRING_TO_MD5_Compile(self):
         javaFile = os.path.join(ROOT, 'Util_Module/test/compileCheckTestFile/STRING_TO_MD5.java')
-        result = self.verification_HumanEval.checkJavaCompile(javaFile)
+        compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(javaFile)
 
         """
         CompletedProcess(args=['javac', '-d', \
@@ -122,10 +129,75 @@ class Verification_HumanEval_Test(unittest.TestCase):
         location: class STRING_TO_MD5\n2 errors\n')
         """
 
-        self.assertTrue(result)
+        self.assertTrue(compileResult)
+
+    def test_batchSize_load_junit_environment(self):
+        self.verification_HumanEval.junitEnvironment_Initialize()
+        self.verification_HumanEval.setTestDataResult(
+            'Data_Storage/HumanEval/CodeLlama/OriginalResult/Temperature_8/Lora04/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
+        data = self.jsonFileIO.readJsonLineData(self.verification_HumanEval.getTestData())
 
 
+        dictionary = []
 
+        for item in data:
+            passNums = 0
+
+            buggyId = item['bug_id']
+            buggyCode = item['buggy_code']
+            output = item['output']
+            solution = item['gold_patch']
+
+            subdictionary = {
+                'buggyId': buggyId,
+                'repairSuccess': False,
+                'buggy_code': buggyCode,
+                'exactlyMatch' : False,
+                'output':{}
+            }
+
+            for i in range(len(output)):
+
+                patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
+                patchCode = output[str(i)]['output_patch']
+                target = os.path.join(self.verification_HumanEval.getJunitEnvironmentFailure(), 'Module_{}/{}.java'.format(buggyId, patchFileName))
+                targetPass = os.path.join(self.verification_HumanEval.getJunitEnvironmentPass(), 'Module_{}/{}.java'.format(buggyId, patchFileName))
+
+                methodCode = self.model_CodeLlama.patchReplaceByModel(buggyCode, patchCode)
+                javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
+                compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target, javaFormatResult)
+                print(compileResult, compileLog)
+                self.fileIO.moveFile(target, targetPass, compileResult)
+
+                subdictionary['output'][i] = self.jsonFileIO.getJsonResultSubItem(patchCode, compileLog, compileResult, javaFormatLog, javaFormatResult, solution)
+
+                if compileResult is True:
+                    passNums += 1
+
+            self.assertEqual(len(self.fileIO.getFileListUnderFolder(os.path.join(self.verification_HumanEval.getJunitEnvironmentPass(), 'Module_{}'.format(buggyId)))), passNums)
+            dictionary.append(subdictionary)
+
+        print(dictionary)
+
+        self.jsonFileIO.writeJsonFile(dictionary, os.path.join(ROOT, 'Util_Module/test/json/test.json'))
+        self.assertTrue(os.path.exists(os.path.join(ROOT, 'Util_Module/test/json/test.json')))
+
+    def test_run_test_case_script(self):
+        testModuleName = 'Module_ADD'
+        programFileName = 'ADD_TEST'
+        gradlePath = GRADLE_PATH
+        logFolder = os.path.join(ROOT, 'Util_Module/test/Log')
+        os.makedirs(logFolder, exist_ok=True)
+
+        junitModuleEnvironment = self.verification_HumanEval.getJunitModuleTestEnvironment()
+
+        params = [testModuleName, programFileName, logFolder, gradlePath, junitModuleEnvironment]
+        self.verification_HumanEval.runBashScript(params)
+        target = os.path.join(ROOT, 'Util_Module/test/Log/{}.txt'.format(programFileName))
+        self.assertTrue(os.path.exists(target))
+
+        logContent = self.fileIO.readFileData(target)
+        self.assertTrue('BUILD FAILED' in logContent or 'BUILD SUCCESSFUL' in logContent)
 
 
 if __name__ == '__main__':

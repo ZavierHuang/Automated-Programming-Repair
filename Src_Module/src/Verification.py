@@ -13,7 +13,11 @@ class Verification:
         self.googleJavaFormat = None
         self.junitModuleTestEnvironment = None
         self.testDataResult = None
+        self.scriptPath = None
         self.fileIO = FileIO()
+
+    def setScriptPath(self, scriptPath):
+        self.scriptPath = os.path.join(ROOT, scriptPath)
 
     def setTestDataResult(self, testDataResult):
         self.testDataResult = os.path.join(ROOT, testDataResult)
@@ -31,6 +35,9 @@ class Verification:
         self.junitEnvironment = os.path.join(ROOT, junit_environment)
         self.junitEnvironment_Pass = os.path.join(self.getJunitEnvironment(), 'JUnit_Environment_Pass')
         self.junitEnvironment_Failure = os.path.join(self.getJunitEnvironment(), 'JUnit_Environment_Failure')
+
+    def getScriptPath(self):
+        return self.scriptPath
 
     def getTestData(self):
         return self.testDataResult
@@ -115,4 +122,17 @@ class Verification:
 
     def checkJavaCompile(self, javaFile, javaFormatResult):
         pass
+
+    def runBashScript(self, params):
+        currentPath = os.getcwd()
+        os.chdir(self.getJunitModuleTestEnvironment())
+        command = [BASH_PATH, self.getScriptPath()] + params
+        print(command)
+        try:
+            subprocess.run(command, check=True, text=True, capture_output=True)
+        except subprocess.CalledProcessError as e:
+            print("Error executing script:")
+            print(e.stderr)
+        finally:
+            os.chdir(currentPath)
 

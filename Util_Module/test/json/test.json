@@ -1,0 +1,221 @@
+[
+    {
+        "buggyId": "ADD",
+        "repairSuccess": false,
+        "buggy_code": "    public static int add(int x, int y) {\n// buggy code\n//         return x | y;\n        <FILL_ME>\n    }\n",
+        "exactlyMatch": false,
+        "output": {
+            "0": {
+                "patchCode": "       return x + y;\n",
+                "exactlyMatch": true,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "1": {
+                "patchCode": "       return x ^ y;\n",
+                "exactlyMatch": true,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "2": {
+                "patchCode": "       return x & y;\n",
+                "exactlyMatch": true,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "3": {
+                "patchCode": "       return x+y;\n",
+                "exactlyMatch": true,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "4": {
+                "patchCode": "",
+                "exactlyMatch": false,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": false,
+                    "compileLog": "F:\\GITHUB\\Automated-Programming-Repair\\JUnit_Environment\\HumanEval\\JUnit_Environment_Failure\\Module_ADD\\ADD_TEST_4.java:8: error: missing return statement\n  }\n  ^\n1 error\n"
+                },
+                "RunTestCase": false
+            }
+        }
+    },
+    {
+        "buggyId": "ADD_ELEMENTS",
+        "repairSuccess": false,
+        "buggy_code": "    public static int add_elements(ArrayList<Integer> arr, int k) {\n        int result = 0;\n        for(int i = 0; i < k; i++) {\n// buggy code\n//             if(Integer.toString(arr.get(i)).length() >= 2) {\n//                 result -= arr.get(i);\n            <FILL_ME>\n            }\n        }\n        return result;\n    }\n",
+        "exactlyMatch": false,
+        "output": {
+            "0": {
+                "patchCode": "           if(arr.get(i) >= 10) {\n                result -= arr.get(i);\n",
+                "exactlyMatch": false,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "1": {
+                "patchCode": "           if(arr.get(i) >= 2) {\n                result -= arr.get(i);\n",
+                "exactlyMatch": false,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "2": {
+                "patchCode": "           if(Integer.toString(arr.get(i)).length() > 1) {\n                result -= arr.get(i);\n",
+                "exactlyMatch": false,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "3": {
+                "patchCode": "           if(Integer.toString(arr.get(i)).length() == 2) {\n                result += arr.get(i);\n",
+                "exactlyMatch": true,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "4": {
+                "patchCode": "           if(arr.get(i) >= 10) {\n                result += arr.get(i);\n",
+                "exactlyMatch": false,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            }
+        }
+    },
+    {
+        "buggyId": "ADD_EVEN_AT_ODD",
+        "repairSuccess": false,
+        "buggy_code": "    public static int add_even_at_odd(int[] lst) {\n        int sum = 0;\n// buggy code\n//         for (int i = 0; i < lst.length; i += 1) {\n        <FILL_ME>\n            if (lst[i] % 2 == 0)\n                sum += lst[i];\n        }\n        return sum;\n    }\n",
+        "exactlyMatch": false,
+        "output": {
+            "0": {
+                "patchCode": "       for (int i = 0; i < lst.length; i += 1) {\n",
+                "exactlyMatch": false,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "1": {
+                "patchCode": "       for (int i = 0; i < lst.length; i += 2) {\n",
+                "exactlyMatch": false,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "2": {
+                "patchCode": "       for (int i = 0; i < lst.length; i++) {\n",
+                "exactlyMatch": false,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "3": {
+                "patchCode": "       for (int i = 1; i < lst.length; i += 2) {\n",
+                "exactlyMatch": true,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            },
+            "4": {
+                "patchCode": "       for (int i = 0; i < lst.length; ++i) {\n",
+                "exactlyMatch": false,
+                "formatCheck": {
+                    "formatResult": true,
+                    "javaFormatLog": ""
+                },
+                "compileCheck": {
+                    "compileResult": true,
+                    "compileLog": ""
+                },
+                "RunTestCase": false
+            }
+        }
+    }
+]

@@ -15,6 +15,37 @@ class JsonFileIO_Test(unittest.TestCase):
         data = self.jsonFileIO.readJsonLineData(HumanEval_CodeLlama_data)
         self.assertEqual(len(data), 163)
 
+    def test_create_patch_result_json(self):
+        dictionary = []
+
+        for i in range(5):
+            sub_dictionary = {
+                'ID': 'buggyId',
+                'Repair': True,
+                'Type': 'Single',
+                'Solution': 'return x+y;',
+                'ExactlyMatch': True,
+                'output': {}
+            }
+            for j in range(5):
+                sub_dictionary['output'][str(j)] = {
+                    'patch' : 'None',
+                    'formatCheck':{
+                        'formatResult':True,
+                        'formatLog': '............'
+                    },
+                    'compileCheck':{
+                        'compileResult':True,
+                        'compileLog': '............'
+                    },
+                    'ExactlyMatch':True
+                }
+            dictionary.append(sub_dictionary)
+
+        self.jsonFileIO.writeJsonFile(dictionary, os.path.join(ROOT, 'Util_Module/test/json/test.json'))
+        self.assertTrue(os.path.exists(os.path.join(ROOT, 'Util_Module/test/json/test.json')))
+        shutil.rmtree(os.path.join(ROOT, 'Util_Module/test/json/test.json'))
+
 
 if __name__ == '__main__':
     unittest.main()

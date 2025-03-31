@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from Config import ROOT
 from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
 from Src_Module.src.Verification_HumanEval import Verification_HumanEval
 from Util_Module.src.FileIO import FileIO
@@ -101,33 +102,12 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.assertTrue(self.fileIO.isPathExist(target))
         self.assertFalse(self.fileIO.isPathExist(target_pass))
 
-    def test_batchSize_load_junit_environment(self):
+
+    def test_load_and_run_test_case(self):
         self.verification_HumanEval.junitEnvironment_Initialize()
-        self.verification_HumanEval.setTestDataResult(
-            'Data_Storage/HumanEval/CodeLlama/OriginalResult/Temperature_8/Lora04/HumanEval_CodeLlama_Lora04_E1_Patch10_TEST.jsonl')
-        data = self.jsonFileIO.readJsonLineData(self.verification_HumanEval.getTestData())
+        self.verification_HumanEval.loadAndRunTestCase()
 
-        passNums = 0
 
-        for item in data:
-            buggyId = item['bug_id']
-            buggyCode = item['buggy_code']
-            output = item['output']
-            for i in range(len(output)):
-                patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
-                patchCode = output[str(i)]['output_patch']
-                target = os.path.join(self.verification_HumanEval.getJunitEnvironmentFailure(), 'Module_{}/{}.java'.format(buggyId, patchFileName))
-                targetPass = os.path.join(self.verification_HumanEval.getJunitEnvironmentPass(), 'Module_{}/{}.java'.format(buggyId, patchFileName))
-
-                methodCode = self.model_CodeLlama.patchReplaceByModel(buggyCode, patchCode)
-                javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
-                compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target, javaFormatResult)
-                self.fileIO.moveFile(target, targetPass, compileResult)
-
-                if compileResult is True:
-                    passNums += 1
-
-            self.assertEqual(len(self.fileIO.getFileListUnderFolder(os.path.join(self.verification_HumanEval.getJunitEnvironmentPass(), 'Module_{}'.format(buggyId)))), passNums)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,9 +1,11 @@
 import os
 import shutil
+import subprocess
 
+from openpyxl.packaging.manifest import Override
 from overrides import overrides
 
-from Config import ROOT
+from Config import ROOT, BASH_PATH
 from Src_Module.src.Verification import Verification
 
 
@@ -60,7 +62,7 @@ class Verification_HumanEval(Verification):
 
         result = self.subprocess_run_JavaFormat(target)
 
-        return result, result.returncode == 0
+        return result.stderr, result.returncode == 0
 
     @overrides
     def getNeedCompileJavaFiles(self, javaFile):
@@ -78,8 +80,9 @@ class Verification_HumanEval(Verification):
             if ('STRING_TO_MD5' in result.stderr and
                 'error: cannot find symbol' in result.stderr and
                 'symbol:   variable DatatypeConverter' in result.stderr):
-                return result, True
-            return result, False
-        return result, True
+                return '', True
+            return result.stderr, False
+        return result.stderr, True
+
 
 
