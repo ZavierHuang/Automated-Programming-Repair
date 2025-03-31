@@ -66,7 +66,7 @@
                 },
                 "compileCheck": {
                     "compileResult": false,
-                    "compileLog": "F:\\GITHUB\\Automated-Programming-Repair\\JUnit_Environment\\HumanEval\\JUnit_Environment_Failure\\Module_ADD\\ADD_TEST_4.java:8: error: missing return statement\n  }\n  ^\n1 error\n"
+                    "compileLog": "F:\\GITHUB\\Automated-Programming-Repair\\JUnit_Environment\\JUnit_HumanEval_Environment\\Module_ADD\\ADD_TEST_4.java:8: error: missing return statement\n  }\n  ^\n1 error\n"
                 },
                 "RunTestCase": false
             }
