@@ -196,7 +196,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         logContent = self.fileIO.readFileData(target)
         self.assertTrue('BUILD FAILED' in logContent or 'BUILD SUCCESSFUL' in logContent)
 
-    def test_run_test_case_script_batchSize(self):
+    def test_run_test_case_batchSize_get_dictionary(self):
         # self.test_batchSize_load_junit_environment_create_json_framework()
         """
         【Movement】 move file from junit_environment_pass folder to junit_module_environment and ready to run testcase
@@ -209,7 +209,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
         failureFileList = self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getJunitEnvironment())
         failure_file_module_dic = self.verification_HumanEval.getFileAndModuleDict(failureFileList)
 
-        print(set(pass_file_module_dic.values()) or set(failure_file_module_dic.value()))
         total_item = len(set(pass_file_module_dic.values()) or set(failure_file_module_dic.values()))
         total_program = len(pass_file_module_dic.keys()) + len(failure_file_module_dic.keys())
 
