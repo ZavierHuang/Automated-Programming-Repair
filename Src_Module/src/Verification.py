@@ -10,7 +10,6 @@ class Verification:
     def __init__(self):
         self.junitEnvironment = None
         self.remainCodePath = None
-        self.googleJavaFormat = None
         self.junitModuleTestEnvironment = None
         self.testDataResult = None
         self.scriptPath = None
@@ -22,11 +21,11 @@ class Verification:
 
     def setLogFolderPath(self, logFolderPath):
         self.logFolderPath = os.path.join(ROOT, logFolderPath)
-        os.makedirs(self.getLogFolderPath(), exist_ok=True)
+        os.makedirs(os.path.dirname(self.logFolderPath), exist_ok=True)
 
     def setJsonResultPath(self, jsonResultPath):
         self.jsonResultPath = os.path.join(ROOT, jsonResultPath)
-        os.makedirs(self.jsonResultPath, exist_ok=True)
+        os.makedirs(os.path.dirname(self.jsonResultPath), exist_ok=True)
 
     def setScriptPath(self, scriptPath):
         self.scriptPath = os.path.join(ROOT, scriptPath)
@@ -36,9 +35,6 @@ class Verification:
 
     def setJunitModuleTestEnvironment(self, junitModuleTestEnvironment):
         self.junitModuleTestEnvironment = os.path.join(ROOT, junitModuleTestEnvironment)
-
-    def setGoogleJavaFormat(self, googleJavaFormat):
-        self.googleJavaFormat = os.path.join(ROOT, googleJavaFormat)
 
     def setRemainderCodePath(self, remainCodePath):
         self.remainCodePath = os.path.join(ROOT, remainCodePath)
@@ -60,9 +56,6 @@ class Verification:
 
     def getJunitModuleTestEnvironment(self):
         return self.junitModuleTestEnvironment
-
-    def getGoogleJavaFormat(self):
-        return self.googleJavaFormat
 
     def getRemainderCodePath(self):
         return self.remainCodePath
@@ -168,6 +161,9 @@ class Verification:
     def createJsonFramework(self):
         pass
 
-    def runScript(self, patchFileName, moduleName):
+    def runScriptSingleFile(self, patchFileName, moduleName):
+        pass
+
+    def runScriptBatchFile(self, directory):
         pass
 

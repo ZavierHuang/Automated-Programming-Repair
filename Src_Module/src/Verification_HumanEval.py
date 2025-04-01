@@ -1,11 +1,7 @@
 import os
-import shutil
-import subprocess
-
-from openpyxl.packaging.manifest import Override
 from overrides import overrides
 
-from Config import ROOT, BASH_PATH, GRADLE_PATH
+from Config import GRADLE_PATH
 from Src_Module.src.Verification import Verification
 
 
@@ -107,6 +103,8 @@ class Verification_HumanEval(Verification):
 
                 javaFormatLog, javaFormatResult = self.checkJavaFormat(methodCode, patchFileName, buggyId)
                 compileLog, compileResult = self.checkJavaCompile(target, javaFormatResult)
+
+                print(compileResult, compileLog)
                 self.fileIO.moveFile(target, targetModule, compileResult)
 
                 subdictionary['output'][i] = (
@@ -119,11 +117,27 @@ class Verification_HumanEval(Verification):
         self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())
 
     @overrides
-    def runScript(self, patchFileName, moduleName):
+    def runScriptBatchFile(self, directory):
+        for item in directory.items():
+            newName = item[0] + '.'                     # ADD_TEST_9.
+            oldName = item[1] + '.'                     # ADD.
+            moduleName = 'Module_{}'.format(item[1])
+            testFilePath = os.path.join(
+                self.getJunitModuleTestEnvironment(),
+                "{}/src/test/java/{}_TEST.java".format(moduleName, item[1])
+            )
+            self.fileIO.replaceName(testFilePath, oldName, newName)
+            self.runScriptSingleFile(item[0], moduleName)
+            self.fileIO.replaceName(testFilePath, newName, oldName)
+
+    @overrides
+    def runScriptSingleFile(self, patchFileName, moduleName):
         # params = [testModuleName, programFileName, logFolder, gradlePath, junitModuleEnvironment]
 
         #patchFileName = ADD_ELEMENTS_TEST_4
         #moduleName = Module_ADD_ELEMENTS
+
+        print('run ', patchFileName)
 
         params = [
             moduleName,

@@ -102,13 +102,8 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.test_2_write_data_in_junit_environment()
         buggyId = 'ADD'
         patchFileName = 'ADD_TEST_1'
-        self.verification_HumanEval.setGoogleJavaFormat('Tool/google-java-format-1.18.1-all-deps.jar')
         target = self.verification_HumanEval.getJunitEnvironment() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
         result = self.verification_HumanEval.subprocess_run_JavaFormat(target)
-
-        print(self.fileIO.isPathExist(target))
-        print(result)
-
         self.assertEqual(result.returncode, 0)
 
     def test_check_STRING_TO_MD5_Compile(self):
@@ -232,7 +227,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
         """
 
         targetFile = os.path.join(self.verification_HumanEval.getJunitModuleTestEnvironment(), 'Module_ADD/src/main/java/ADD_TEST_9.java')
-        print(targetFile)
 
         self.fileIO.writeFileData(targetFile, pendingRunningFile)
         self.assertTrue(os.path.exists(targetFile))
@@ -251,7 +245,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
                 "{}/src/test/java/{}_TEST.java".format(moduleName, item[1])
             )
             self.fileIO.replaceName(testFilePath, oldName, newName)
-            self.verification_HumanEval.runScript(item[0], moduleName)
+            self.verification_HumanEval.runScriptSingleFile(item[0], moduleName)
 
 
         self.assertTrue(os.path.exists(os.path.join(self.verification_HumanEval.getLogFolderPath(), 'ADD_TEST_9.txt')))

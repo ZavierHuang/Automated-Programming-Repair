@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from Config import ROOT
 from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
 from Src_Module.src.Verification_HumanEval import Verification_HumanEval
 from Util_Module.src.FileIO import FileIO
@@ -13,6 +14,7 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
+        self.verification_HumanEval.setScriptPath('Tool/execute_python_humanEval.sh')
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
         self.model_CodeLlama = LLM_CodeLlama()
@@ -101,12 +103,14 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.verification_HumanEval.setTestDataResult(
             'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/patchResult/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
 
-        self.verification_HumanEval.setJsonResultPath('Util_Module/test/resultFramework/test.json')
+        self.verification_HumanEval.setLogFolderPath('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log/Test')
+        self.verification_HumanEval.setJsonResultPath('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Json_Result/test.json')
         self.verification_HumanEval.createJsonFramework()
         runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()
         dictionary = self.verification_HumanEval.getFileAndModuleDict(runFileList)
-        self.verification_HumanEval.runScript(dictionary)
+        self.verification_HumanEval.runScriptBatchFile(dictionary)
 
+        self.assertTrue(len(dictionary), len(self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getLogFolderPath())))
 
 
 
