@@ -105,9 +105,8 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.verification_HumanEval.createJsonFramework()
         runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()
         dictionary = self.verification_HumanEval.getFileAndModuleDict(runFileList)
-        # self.verification_HumanEval.runScript(dictionary)
+        self.verification_HumanEval.runScript(dictionary)
 
-        print(dictionary)
 
 
 

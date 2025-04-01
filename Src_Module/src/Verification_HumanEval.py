@@ -5,7 +5,7 @@ import subprocess
 from openpyxl.packaging.manifest import Override
 from overrides import overrides
 
-from Config import ROOT, BASH_PATH
+from Config import ROOT, BASH_PATH, GRADLE_PATH
 from Src_Module.src.Verification import Verification
 
 
@@ -117,3 +117,19 @@ class Verification_HumanEval(Verification):
             dictionary.append(subdictionary)
 
         self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())
+
+    @overrides
+    def runScript(self, patchFileName, moduleName):
+        # params = [testModuleName, programFileName, logFolder, gradlePath, junitModuleEnvironment]
+
+        #patchFileName = ADD_ELEMENTS_TEST_4
+        #moduleName = Module_ADD_ELEMENTS
+
+        params = [
+            moduleName,
+            patchFileName,
+            self.getLogFolderPath(),
+            GRADLE_PATH,
+            self.getJunitModuleTestEnvironment()
+        ]
+        self.runBashScript(params)

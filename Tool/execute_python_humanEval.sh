@@ -3,6 +3,7 @@
 runGradleTest() {
     local moduleTestName=$1
     local project_dir=$5
+#    gradle :Module_ADD:test
     local gradle_test_command="$GRADLE_PATH/gradle :$moduleTestName:test"
 
     echo ${gradle_test_command}

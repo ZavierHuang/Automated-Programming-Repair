@@ -180,24 +180,25 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(ROOT, self.verification_HumanEval.getJsonResultPath(),)))
 
     def test_run_test_case_script(self):
-        testModuleName = 'Module_ADD'
-        programFileName = 'ADD_TEST'
-        gradlePath = GRADLE_PATH
-        logFolder = os.path.join(ROOT, 'Util_Module/test/Log')
-        os.makedirs(logFolder, exist_ok=True)
+        self.verification_HumanEval.setLogFolderPath('Util_Module/test/Log')
 
+        LogFolder = self.verification_HumanEval.getLogFolderPath()
+
+        testModuleName = 'Module_ADD'
+        programFileName = 'ADD_TEST_1'
         junitModuleEnvironment = self.verification_HumanEval.getJunitModuleTestEnvironment()
 
-        params = [testModuleName, programFileName, logFolder, gradlePath, junitModuleEnvironment]
+        params = [testModuleName, programFileName, LogFolder, GRADLE_PATH, junitModuleEnvironment]
+
         self.verification_HumanEval.runBashScript(params)
-        target = os.path.join(ROOT, 'Util_Module/test/Log/{}.txt'.format(programFileName))
+        target = os.path.join(LogFolder,'{}.txt'.format(programFileName))
         self.assertTrue(os.path.exists(target))
 
         logContent = self.fileIO.readFileData(target)
         self.assertTrue('BUILD FAILED' in logContent or 'BUILD SUCCESSFUL' in logContent)
 
     def test_run_test_case_batchSize_get_dictionary(self):
-        # self.test_batchSize_load_junit_environment_create_json_framework()
+        self.test_batchSize_load_junit_environment_create_json_framework()
         """
         【Movement】 move file from junit_environment_pass folder to junit_module_environment and ready to run testcase
         【Replace】if file name is ADD_TEST_1, then all 'ADD' will be replaced with 'ADD_TEST_1' in the testcase file
@@ -214,6 +215,46 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
         self.assertEqual(total_item * 5, total_program)
 
+    def test_run_script_starter(self):
+        self.verification_HumanEval.junitEnvironment_Initialize()
+        self.verification_HumanEval.junitEnvironment_Run_Initialize()
+        self.verification_HumanEval.setTestDataResult(os.path.join(ROOT, 'Util_Module/test/Log'))
+        self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
+        self.verification_HumanEval.setLogFolderPath('Util_Module/test/Log')
+
+        pendingRunningFile = """
+        import java.util.*;
+        public class ADD_TEST_9{
+            public static int add(int x, int y){
+                return x + y;
+            }
+        }
+        """
+
+        targetFile = os.path.join(self.verification_HumanEval.getJunitModuleTestEnvironment(), 'Module_ADD/src/main/java/ADD_TEST_9.java')
+        print(targetFile)
+
+        self.fileIO.writeFileData(targetFile, pendingRunningFile)
+        self.assertTrue(os.path.exists(targetFile))
+
+        runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()
+
+        # {'ADD_TEST_9': 'ADD'}
+        pass_file_module_dic = self.verification_HumanEval.getFileAndModuleDict(runFileList)
+
+        for item in pass_file_module_dic.items():
+            newName = item[0] + '.'                     # ADD_TEST_9.
+            oldName = item[1] + '.'                     # ADD.
+            moduleName = 'Module_{}'.format(item[1])
+            testFilePath = os.path.join(
+                self.verification_HumanEval.getJunitModuleTestEnvironment(),
+                "{}/src/test/java/{}_TEST.java".format(moduleName, item[1])
+            )
+            self.fileIO.replaceName(testFilePath, oldName, newName)
+            self.verification_HumanEval.runScript(item[0], moduleName)
+
+
+        self.assertTrue(os.path.exists(os.path.join(self.verification_HumanEval.getLogFolderPath(), 'ADD_TEST_9.txt')))
 
 
 

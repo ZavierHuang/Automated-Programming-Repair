@@ -15,12 +15,18 @@ class Verification:
         self.testDataResult = None
         self.scriptPath = None
         self.jsonResultPath = None
+        self.logFolderPath = None
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
         self.model_CodeLlama = LLM_CodeLlama()
 
+    def setLogFolderPath(self, logFolderPath):
+        self.logFolderPath = os.path.join(ROOT, logFolderPath)
+        os.makedirs(self.getLogFolderPath(), exist_ok=True)
+
     def setJsonResultPath(self, jsonResultPath):
         self.jsonResultPath = os.path.join(ROOT, jsonResultPath)
+        os.makedirs(self.jsonResultPath, exist_ok=True)
 
     def setScriptPath(self, scriptPath):
         self.scriptPath = os.path.join(ROOT, scriptPath)
@@ -39,6 +45,9 @@ class Verification:
 
     def setJunitEnvironment(self, junit_environment):
         self.junitEnvironment = os.path.join(ROOT, junit_environment)
+
+    def getLogFolderPath(self):
+        return self.logFolderPath
 
     def getJsonResultPath(self):
         return self.jsonResultPath
@@ -137,7 +146,7 @@ class Verification:
 
     def getAllRunTestCaseFileList(self):
         fileList = self.fileIO.getFileListUnderFolder(self.getJunitModuleTestEnvironment())
-        return [file for file in fileList if file.endswith('.java') and '_TEST_' in file]
+        return [file[:file.find('.java')] for file in fileList if file.endswith('.java') and '_TEST_' in file]
 
     def getFileAndModuleDict(self, fileList):
         """
@@ -157,5 +166,8 @@ class Verification:
 
 
     def createJsonFramework(self):
+        pass
+
+    def runScript(self, patchFileName, moduleName):
         pass
 
