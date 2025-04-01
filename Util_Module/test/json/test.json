@@ -1,9 +1,5 @@
 [
     {
-        "buggyId": "ADD",
-        "repairSuccess": false,
-        "buggy_code": "    public static int add(int x, int y) {\n// buggy code\n//         return x | y;\n        <FILL_ME>\n    }\n",
-        "exactlyMatch": false,
         "output": {
             "0": {
                 "patchCode": "       return x + y;\n",
@@ -73,10 +69,6 @@
         }
     },
     {
-        "buggyId": "ADD_ELEMENTS",
-        "repairSuccess": false,
-        "buggy_code": "    public static int add_elements(ArrayList<Integer> arr, int k) {\n        int result = 0;\n        for(int i = 0; i < k; i++) {\n// buggy code\n//             if(Integer.toString(arr.get(i)).length() >= 2) {\n//                 result -= arr.get(i);\n            <FILL_ME>\n            }\n        }\n        return result;\n    }\n",
-        "exactlyMatch": false,
         "output": {
             "0": {
                 "patchCode": "           if(arr.get(i) >= 10) {\n                result -= arr.get(i);\n",
@@ -146,10 +138,6 @@
         }
     },
     {
-        "buggyId": "ADD_EVEN_AT_ODD",
-        "repairSuccess": false,
-        "buggy_code": "    public static int add_even_at_odd(int[] lst) {\n        int sum = 0;\n// buggy code\n//         for (int i = 0; i < lst.length; i += 1) {\n        <FILL_ME>\n            if (lst[i] % 2 == 0)\n                sum += lst[i];\n        }\n        return sum;\n    }\n",
-        "exactlyMatch": false,
         "output": {
             "0": {
                 "patchCode": "       for (int i = 0; i < lst.length; i += 1) {\n",

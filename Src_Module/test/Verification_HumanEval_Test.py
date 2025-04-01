@@ -75,7 +75,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.verification_HumanEval.junitEnvironment_Clear(self.verification_HumanEval.getJunitEnvironment())
         self.assertEqual(len(self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getJunitEnvironment())),0)
 
-
     def test_2_write_data_in_junit_environment(self):
         self.test_1_junit_initialize()
         javaCode = f"""
@@ -134,6 +133,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
     def test_batchSize_load_junit_environment_create_json_framework(self):
         self.verification_HumanEval.junitEnvironment_Initialize()
+        self.verification_HumanEval.junitEnvironment_Run_Initialize()
         self.verification_HumanEval.setTestDataResult(
             'Result_Output/HumanEval/CodeLlama/OriginalResult/Temperature_8/Lora04/patchResult/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
         data = self.jsonFileIO.readJsonLineData(self.verification_HumanEval.getTestData())
@@ -149,20 +149,15 @@ class Verification_HumanEval_Test(unittest.TestCase):
             output = item['output']
             solution = item['gold_patch']
 
-            subdictionary = {
-                'buggyId': buggyId,
-                'repairSuccess': False,
-                'buggy_code': buggyCode,
-                'exactlyMatch' : False,
-                'output':{}
-            }
+            subdictionary = {'output':{}}
 
             for i in range(len(output)):
 
                 patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
                 patchCode = output[str(i)]['output_patch']
-                target = os.path.join(self.verification_HumanEval.getJunitEnvironment(), 'Module_{}/{}.java'.format(buggyId, patchFileName))
-                targetModule = os.path.join(self.verification_HumanEval.getJunitModuleTestEnvironment(), 'Module_{}/{}.java'.format(buggyId, patchFileName))
+                target = os.path.join(self.verification_HumanEval.getJunitEnvironment(),
+                                      'Module_{}/{}.java'.format(buggyId, patchFileName))
+                targetModule = os.path.join(self.verification_HumanEval.getJunitModuleTestEnvironment(), 'Module_{}/src/main/java/{}.java'.format(buggyId, patchFileName))
 
                 methodCode = self.model_CodeLlama.patchReplaceByModel(buggyCode, patchCode)
                 javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
@@ -202,14 +197,14 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertTrue('BUILD FAILED' in logContent or 'BUILD SUCCESSFUL' in logContent)
 
     def test_run_test_case_script_batchSize(self):
-        self.test_batchSize_load_junit_environment_create_json_framework()
+        # self.test_batchSize_load_junit_environment_create_json_framework()
         """
         【Movement】 move file from junit_environment_pass folder to junit_module_environment and ready to run testcase
         【Replace】if file name is ADD_TEST_1, then all 'ADD' will be replaced with 'ADD_TEST_1' in the testcase file
         【Recovery】when all test case end, then all 'ADD_TEST_1' will be replaced with 'ADD' in the testcase file
         """
         runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()
-
+        
         for file in runFileList:
             print(file)
 
