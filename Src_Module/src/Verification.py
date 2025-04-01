@@ -1,7 +1,9 @@
 import os.path
 import subprocess
 from Config import *
+from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
 from Util_Module.src.FileIO import FileIO
+from Util_Module.src.JsonFileIO import JsonFileIO
 
 
 class Verification:
@@ -12,7 +14,13 @@ class Verification:
         self.junitModuleTestEnvironment = None
         self.testDataResult = None
         self.scriptPath = None
+        self.jsonResultPath = None
         self.fileIO = FileIO()
+        self.jsonFileIO = JsonFileIO()
+        self.model_CodeLlama = LLM_CodeLlama()
+
+    def setJsonResultPath(self, jsonResultPath):
+        self.jsonResultPath = os.path.join(ROOT, jsonResultPath)
 
     def setScriptPath(self, scriptPath):
         self.scriptPath = os.path.join(ROOT, scriptPath)
@@ -31,6 +39,9 @@ class Verification:
 
     def setJunitEnvironment(self, junit_environment):
         self.junitEnvironment = os.path.join(ROOT, junit_environment)
+
+    def getJsonResultPath(self):
+        return self.jsonResultPath
 
     def getScriptPath(self):
         return self.scriptPath
@@ -143,3 +154,8 @@ class Verification:
             dictionary[file] = file[:file.find('_TEST_')]
 
         return dictionary
+
+
+    def createJsonFramework(self):
+        pass
+

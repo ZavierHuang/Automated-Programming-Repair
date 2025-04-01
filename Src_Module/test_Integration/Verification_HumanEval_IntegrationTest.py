@@ -13,7 +13,7 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/HumanEval')
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
-        self.verification_HumanEval.setTestDataResult('Data_Storage/HumanEval/CodeLlama/OriginalResult/Temperature_8/Lora04/HumanEval_CodeLlama_Lora04_E1_Patch10.jsonl')
+        self.verification_HumanEval.setTestDataResult('Data_Storage/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/HumanEval_CodeLlama_Lora04_E1_Patch10.jsonl')
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
         self.model_CodeLlama = LLM_CodeLlama()
@@ -96,9 +96,17 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
 
 
     def test_load_and_run_test_case(self):
-        # self.verification_HumanEval.junitEnvironment_Initialize()
-        # self.verification_HumanEval.loadAndRunTestCase()
-        pass
+        self.verification_HumanEval.junitEnvironment_Initialize()
+        self.verification_HumanEval.junitEnvironment_Run_Initialize()
+
+        self.verification_HumanEval.setTestDataResult(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/patchResult/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
+
+        self.verification_HumanEval.createJsonFramework()
+        runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()
+        dictionary = self.verification_HumanEval.getFileAndModuleDict(runFileList)
+        self.verification_HumanEval.runScript(dictionary)
+
 
 
 

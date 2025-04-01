@@ -84,5 +84,36 @@ class Verification_HumanEval(Verification):
             return result.stderr, False
         return result.stderr, True
 
+    @overrides
+    def createJsonFramework(self):
+        data = self.jsonFileIO.readJsonLineData(self.getTestData())
+        dictionary = []
 
+        for item in data:
+            buggyId = item['bug_id']
+            buggyCode = item['buggy_code']
+            output = item['output']
+            solution = item['gold_patch']
+            subdictionary = {'output': {}}
+            for i in range(len(output)):
+                patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
+                patchCode = output[str(i)]['output_patch']
+                target = os.path.join(self.getJunitEnvironment(),
+                                      'Module_{}/{}.java'.format(buggyId, patchFileName))
+                targetModule = os.path.join(self.getJunitModuleTestEnvironment(),
+                                            'Module_{}/src/main/java/{}.java'.format(buggyId, patchFileName))
 
+                methodCode = self.model_CodeLlama.patchReplaceByModel(buggyCode, patchCode)
+
+                javaFormatLog, javaFormatResult = self.checkJavaFormat(methodCode, patchFileName, buggyId)
+                compileLog, compileResult = self.checkJavaCompile(target, javaFormatResult)
+                self.fileIO.moveFile(target, targetModule, compileResult)
+
+                subdictionary['output'][i] = (
+                    self.jsonFileIO.getJsonResultSubItem(
+                        patchCode, compileLog, compileResult,
+                        javaFormatLog, javaFormatResult, solution))
+
+            dictionary.append(subdictionary)
+
+        self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())

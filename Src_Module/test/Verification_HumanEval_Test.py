@@ -135,9 +135,8 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.verification_HumanEval.junitEnvironment_Initialize()
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
         self.verification_HumanEval.setTestDataResult(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/Temperature_8/Lora04/patchResult/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/patchResult/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
         data = self.jsonFileIO.readJsonLineData(self.verification_HumanEval.getTestData())
-        print(self.fileIO.isPathExist(self.verification_HumanEval.getTestData()))
         dictionary = []
 
         passNums = 0
@@ -174,10 +173,11 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
         print(dictionary)
 
-        self.assertEqual(passNums, len(self.verification_HumanEval.getAllRunTestCaseFileList())-163)
+        self.assertEqual(passNums, len(self.verification_HumanEval.getAllRunTestCaseFileList()))
 
-        self.jsonFileIO.writeJsonFile(dictionary, os.path.join(ROOT, 'Util_Module/test/json/test.json'))
-        self.assertTrue(os.path.exists(os.path.join(ROOT, 'Util_Module/test/json/test.json')))
+        self.verification_HumanEval.setJsonResultPath(os.path.join(ROOT, 'Util_Module/test/json/test.json'))
+        self.jsonFileIO.writeJsonFile(dictionary, self.verification_HumanEval.getJsonResultPath())
+        self.assertTrue(os.path.exists(os.path.join(ROOT, self.verification_HumanEval.getJsonResultPath(),)))
 
     def test_run_test_case_script(self):
         testModuleName = 'Module_ADD'
@@ -213,6 +213,8 @@ class Verification_HumanEval_Test(unittest.TestCase):
         total_program = len(pass_file_module_dic.keys()) + len(failure_file_module_dic.keys())
 
         self.assertEqual(total_item * 5, total_program)
+
+
 
 
 if __name__ == '__main__':
