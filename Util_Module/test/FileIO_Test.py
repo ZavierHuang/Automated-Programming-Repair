@@ -1,6 +1,8 @@
 import shutil
 import unittest
 
+from sympy.testing.runtests import oldname
+
 from Util_Module.src.FileIO import FileIO
 from Util_Module.src.JsonFileIO import JsonFileIO
 from Config import *
@@ -96,7 +98,33 @@ class FileIO_Test(unittest.TestCase):
         shutil.rmtree(srcFolder)
         shutil.rmtree(desFolder)
 
+    def test_replace_file_in_content(self):
+        target = os.path.join(ROOT, 'Util_Module/test/replaceFolderTest/replace.java')
+        content = """public class ADD_TEST {
+            @org.junit.Test(timeout = 3000)
+            public void test_0() throws java.lang.Exception {
+                int result = ADD.add(0, 1);
+                org.junit.Assert.assertEquals(
+                    result, 1
+                );
+            }
+            @org.junit.Test(timeout = 3000)
+            public void test_1() throws java.lang.Exception {
+                int result = ADD.add(0, 1);
+                org.junit.Assert.assertEquals(
+                    result, 1
+                );
+            }
+        """
+        self.fileIO.writeFileData(target, content)
+        self.assertTrue(self.fileIO.isPathExist(target))
 
+        data = self.fileIO.readFileData(target)
+        data = data.replace('ADD.', 'ADD_TEST_1.')
+        self.fileIO.writeFileData(target, data)
+
+        data = self.fileIO.readFileData(target)
+        self.assertTrue(oldname not in data)
 
 
 

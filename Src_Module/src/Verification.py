@@ -116,7 +116,6 @@ class Verification:
         currentPath = os.getcwd()
         os.chdir(self.getJunitModuleTestEnvironment())
         command = [BASH_PATH, self.getScriptPath()] + params
-        print(command)
         try:
             subprocess.run(command, check=True, text=True, capture_output=True)
         except subprocess.CalledProcessError as e:
