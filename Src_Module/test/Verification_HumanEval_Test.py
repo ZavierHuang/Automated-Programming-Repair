@@ -204,10 +204,16 @@ class Verification_HumanEval_Test(unittest.TestCase):
         【Recovery】when all test case end, then all 'ADD_TEST_1' will be replaced with 'ADD' in the testcase file
         """
         runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()
-        
-        for file in runFileList:
-            print(file)
+        pass_file_module_dic = self.verification_HumanEval.getFileAndModuleDict(runFileList)
 
+        failureFileList = self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getJunitEnvironment())
+        failure_file_module_dic = self.verification_HumanEval.getFileAndModuleDict(failureFileList)
+
+        print(set(pass_file_module_dic.values()) or set(failure_file_module_dic.value()))
+        total_item = len(set(pass_file_module_dic.values()) or set(failure_file_module_dic.values()))
+        total_program = len(pass_file_module_dic.keys()) + len(failure_file_module_dic.keys())
+
+        self.assertEqual(total_item * 5, total_program)
 
 
 if __name__ == '__main__':

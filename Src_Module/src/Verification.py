@@ -126,4 +126,20 @@ class Verification:
 
     def getAllRunTestCaseFileList(self):
         fileList = self.fileIO.getFileListUnderFolder(self.getJunitModuleTestEnvironment())
-        return [file for file in fileList if file.endswith('.java')]
+        return [file for file in fileList if file.endswith('.java') and '_TEST_' in file]
+
+    def getFileAndModuleDict(self, fileList):
+        """
+        (key, value) = (patchFileName, moduleName)
+        dictionary = {
+            "ADD_TEST_1" : "ADD",
+            "ADD_TEST_2" : "ADD",
+            "GCD_TEST_1" : "GCD",
+        }
+        """
+
+        dictionary = {}
+        for file in fileList:
+            dictionary[file] = file[:file.find('_TEST_')]
+
+        return dictionary
