@@ -70,3 +70,6 @@ class FileIO:
         return re.sub(r'[^A-Za-z0-9]', '', text)
 
     def replaceName(self, filepath, oldName, newName):
+        data = self.readFileData(filepath)
+        data = data.replace(oldName, newName)
+        self.writeFileData(filepath, data)
