@@ -103,8 +103,8 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.verification_HumanEval.setTestDataResult(
             'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/patchResult/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
 
-        self.verification_HumanEval.setLogFolderPath('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log/Test')
-        self.verification_HumanEval.setJsonResultPath('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Json_Result/test.json')
+        self.verification_HumanEval.setLogFolderPath(os.path.join('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log','Test'))
+        self.verification_HumanEval.setJsonResultPath(os.path.join('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Json_Result','test.json'))
         self.verification_HumanEval.createJsonFramework()
         runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()
         dictionary = self.verification_HumanEval.getFileAndModuleDict(runFileList)

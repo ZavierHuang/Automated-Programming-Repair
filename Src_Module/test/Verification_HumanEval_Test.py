@@ -250,7 +250,15 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
         self.assertTrue(os.path.exists(os.path.join(self.verification_HumanEval.getLogFolderPath(), 'ADD_TEST_9.txt')))
 
-
+    def test_check_buggy_method_buggy_Line(self):
+        buggyMethod = """
+        public static int add(int x, int y){
+            // buggy code
+            // return x*y
+            return x + y;
+        }
+        """
+        self.assertEqual(self.verification_HumanEval.checkBuggyMethodLine(buggyMethod), 'Single')
 
 if __name__ == '__main__':
     unittest.main()

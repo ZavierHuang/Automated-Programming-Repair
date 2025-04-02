@@ -167,3 +167,8 @@ class Verification:
     def runScriptBatchFile(self, directory):
         pass
 
+    def checkBuggyMethodLine(self, buggyMethod):
+        commentLineNums = buggyMethod.count('//') - 1
+        if commentLineNums == 1:
+            return 'Single'
+        return 'Multiple'

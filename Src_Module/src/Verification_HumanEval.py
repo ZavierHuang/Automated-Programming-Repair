@@ -90,7 +90,13 @@ class Verification_HumanEval(Verification):
             buggyCode = item['buggy_code']
             output = item['output']
             solution = item['gold_patch']
-            subdictionary = {'output': {}}
+            subdictionary = {
+                'buggyId': buggyId,
+                'repair' : False,
+                'solution' : solution,
+                'type' : self.checkBuggyMethodLine(buggyCode),
+                'output': {}
+            }
             for i in range(len(output)):
                 patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
                 patchCode = output[str(i)]['output_patch']
@@ -147,3 +153,5 @@ class Verification_HumanEval(Verification):
             self.getJunitModuleTestEnvironment()
         ]
         self.runBashScript(params)
+
+    # Log 紀錄分析，更新 test.json 內容

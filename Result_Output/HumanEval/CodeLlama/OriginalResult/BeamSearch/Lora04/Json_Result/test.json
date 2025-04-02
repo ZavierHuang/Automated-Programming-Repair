@@ -1,5 +1,9 @@
 [
     {
+        "buggyId": "ADD",
+        "repair": false,
+        "solution": "        return x + y;\n",
+        "type": "Single",
         "output": {
             "0": {
                 "patchCode": "       return x + y;\n",
@@ -69,6 +73,10 @@
         }
     },
     {
+        "buggyId": "ADD_ELEMENTS",
+        "repair": false,
+        "solution": "            if(Integer.toString(arr.get(i)).length() <= 2) {\n                result += arr.get(i);\n",
+        "type": "Multiple",
         "output": {
             "0": {
                 "patchCode": "           if(arr.get(i) >= 10) {\n                result -= arr.get(i);\n",
@@ -138,6 +146,10 @@
         }
     },
     {
+        "buggyId": "ADD_EVEN_AT_ODD",
+        "repair": false,
+        "solution": "        for (int i = 1; i < lst.length; i += 2) {\n",
+        "type": "Single",
         "output": {
             "0": {
                 "patchCode": "       for (int i = 0; i < lst.length; i += 1) {\n",
