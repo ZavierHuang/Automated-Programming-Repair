@@ -22,7 +22,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
 
-        self.verification_HumanEval.setTestDataResult('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/patch/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
+        self.verification_HumanEval.setTestDataResult('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/patch/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
 
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
@@ -30,16 +30,18 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
     def setUp2(self):
         self.verification_HumanEval.setJsonResultPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Json/test.json')
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Json/test.json')
         self.verification_HumanEval.setLogFolderPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log')
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log')
         self.verification_HumanEval.setRepairProgramPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/repairProgram')
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/repairProgram')
+        self.verification_HumanEval.setPromptRepairProgramPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/promptRepairProgram')
         self.verification_HumanEval.setLogFolderPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log')
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log')
 
     def normalize(self, text):
-        # Replace all symbols other than numbers and letters with spaces
+        # Replace all symbols other than numbers and letters with empty
         return re.sub(r'[^A-Za-z0-9]', '', text)
 
     def test_get_Import_Content(self):
@@ -189,7 +191,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
     def test_copy_promptRepairProgram_from_Junit_Environment(self):
         self.verification_HumanEval.setPromptRepairProgramPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/promptRepairProgram')
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/promptRepairProgram')
 
         source = self.verification_HumanEval.getJunitEnvironment()
         destination = self.verification_HumanEval.getPromptRepairProgramPath()
@@ -201,7 +203,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
     def test_run_single_test_case_script(self):
         self.verification_HumanEval.setLogFolderPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log')
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log')
 
         LogFolder = self.verification_HumanEval.getLogFolderPath()
 
@@ -245,7 +247,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
 
         self.verification_HumanEval.setLogFolderPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log')
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log')
 
         pendingRunningFile = """
         import java.util.*;
@@ -276,6 +278,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
             )
             self.fileIO.replaceName(testFilePath, oldName, newName)
             self.verification_HumanEval.runScriptSingleFile(item[0], moduleName)
+            self.fileIO.replaceName(testFilePath, newName, oldName)
 
 
         self.assertTrue(os.path.exists(os.path.join(self.verification_HumanEval.getLogFolderPath(), 'ADD_TEST_9.txt')))
@@ -294,24 +297,45 @@ class Verification_HumanEval_Test(unittest.TestCase):
         """
         self.assertEqual(self.verification_HumanEval.checkBuggyMethodLine(buggyMethod), 'Single')
 
+    def test_update_result_framework_by_log_info(self):
+        LogFolderPath = os.path.join(ROOT, 'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log')
+        JsonFilePath = os.path.join(ROOT, 'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Json/test.json')
+
+        fileList = self.fileIO.getFileListUnderFolder(LogFolderPath)
+
+        data = self.jsonFileIO.readJsonData(JsonFilePath)
+
+        for file in fileList:
+            buggyId = file[:file.find('_TEST')]        # ADD_TEST_0.txt --> ADD
+            sequence = file[file.find('_TEST_') + len('_TEST_'):-4]     # ADD_TEST_0.txt --> 0
+            logContent = self.fileIO.readFileData(os.path.join(LogFolderPath, file))
+            print(buggyId,sequence, 'BUILD SUCCESSFUL' in logContent)
+            if 'BUILD SUCCESSFUL' in logContent:
+                for item in data:
+                    if item['buggyId'] == buggyId:
+                        item['repair'] = True
+                        item['output'][str(sequence)]['PassTestCase'] = True
+                        break
+
+        self.jsonFileIO.writeJsonFile(data, JsonFilePath)
+
+        data = self.jsonFileIO.readJsonData(JsonFilePath)
+
+        repair = 0
+        runTestCasePass = 0
+        for item in data:
+            if item['repair']:
+                repair += 1
+                output = item['output']
+                for i in range(len(output)):
+                    if output[str(i)]['PassTestCase']:
+                        runTestCasePass += 1
+
+        self.assertEqual(repair, 2)
+        self.assertEqual(runTestCasePass, 2)
 
 
 if __name__ == '__main__':
     unittest.main()
 
 
-{'ADD_TEST_0': 'ADD',
- 'ADD_TEST_1': 'ADD',
- 'ADD_TEST_2': 'ADD',
- 'ADD_TEST_3': 'ADD',
- 'ADD_TEST_9': 'ADD',
- 'ADD_ELEMENTS_TEST_0': 'ADD_ELEMENTS',
- 'ADD_ELEMENTS_TEST_1': 'ADD_ELEMENTS',
- 'ADD_ELEMENTS_TEST_2': 'ADD_ELEMENTS',
- 'ADD_ELEMENTS_TEST_3': 'ADD_ELEMENTS',
- 'ADD_ELEMENTS_TEST_4': 'ADD_ELEMENTS',
- 'ADD_EVEN_AT_ODD_TEST_0': 'ADD_EVEN_AT_ODD',
- 'ADD_EVEN_AT_ODD_TEST_1': 'ADD_EVEN_AT_ODD',
- 'ADD_EVEN_AT_ODD_TEST_2': 'ADD_EVEN_AT_ODD',
- 'ADD_EVEN_AT_ODD_TEST_3': 'ADD_EVEN_AT_ODD',
- 'ADD_EVEN_AT_ODD_TEST_4': 'ADD_EVEN_AT_ODD'}

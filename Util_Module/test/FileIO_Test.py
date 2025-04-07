@@ -1,5 +1,4 @@
 import shutil
-import time
 import unittest
 
 from sympy.testing.runtests import oldname
@@ -139,6 +138,12 @@ class FileIO_Test(unittest.TestCase):
         self.assertEqual(len(self.fileIO.getSubFolderList(sourceFolder)), 2)
 
         shutil.rmtree(destinationFolder)
+
+    def test_normalize(self):
+        s1 = "       return x & y;\n"
+        s2 = "return x + y;"
+
+        print(self.fileIO.compareEqual(s1, s2))
 
 if __name__ == '__main__':
     unittest.main()

@@ -65,7 +65,7 @@ class FileIO:
             shutil.move(source, destination)
 
     def normalize(self, text):
-        # Replace all symbols other than numbers and letters with spaces
+        # Replace all symbols other than numbers and letters with empty
         return re.sub(r'[^A-Za-z0-9]', '', text)
 
     def replaceName(self, filepath, oldName, newName):
@@ -76,3 +76,8 @@ class FileIO:
     def copyFile(self, source, destination, compileResult):
         if compileResult:
             shutil.copy(source, destination)
+
+    def compareEqual(self, s1, s2):
+        s1 = re.sub(r'\s+', '', s1)
+        s2 = re.sub(r'\s+', '', s2)
+        return s1 == s2

@@ -155,4 +155,21 @@ class Verification_HumanEval(Verification):
         ]
         self.runBashScript(params)
 
-    # Log 紀錄分析，更新 test.json 內容
+    @overrides
+    def updateJsonResult(self):
+        fileList = self.fileIO.getFileListUnderFolder(self.getLogFolderPath())
+        data = self.jsonFileIO.readJsonData(self.getJsonResultPath())
+
+        for file in fileList:
+            buggyId = file[:file.find('_TEST')]                                     # ADD_TEST_0.txt --> ADD
+            sequence = file[file.find('_TEST_') + len('_TEST_'):-4]                 # ADD_TEST_0.txt --> 0
+            logContent = self.fileIO.readFileData(os.path.join(self.getLogFolderPath(), file))
+            print(buggyId, sequence, 'BUILD SUCCESSFUL' in logContent)
+            if 'BUILD SUCCESSFUL' in logContent:
+                for item in data:
+                    if item['buggyId'] == buggyId:
+                        item['repair'] = True
+                        item['output'][str(sequence)]['PassTestCase'] = True
+                        break
+
+        self.jsonFileIO.writeJsonFile(data, self.getJsonResultPath())

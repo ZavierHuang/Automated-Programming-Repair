@@ -1,7 +1,7 @@
 [
     {
         "buggyId": "ADD",
-        "repair": false,
+        "repair": true,
         "solution": "        return x + y;\n",
         "type": "Single",
         "output": {
@@ -16,11 +16,11 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": true
             },
             "1": {
                 "patchCode": "       return x ^ y;\n",
-                "exactlyMatch": true,
+                "exactlyMatch": false,
                 "formatCheck": {
                     "formatResult": true,
                     "javaFormatLog": ""
@@ -29,11 +29,11 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             },
             "2": {
                 "patchCode": "       return x & y;\n",
-                "exactlyMatch": true,
+                "exactlyMatch": false,
                 "formatCheck": {
                     "formatResult": true,
                     "javaFormatLog": ""
@@ -42,7 +42,7 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             },
             "3": {
                 "patchCode": "       return x+y;\n",
@@ -55,7 +55,7 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": true
             },
             "4": {
                 "patchCode": "",
@@ -68,7 +68,7 @@
                     "compileResult": false,
                     "compileLog": "F:\\GITHUB\\Automated-Programming-Repair\\JUnit_Environment\\JUnit_HumanEval_Environment\\Module_ADD\\ADD_TEST_4.java:8: error: missing return statement\n  }\n  ^\n1 error\n"
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             }
         }
     },
@@ -89,7 +89,7 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             },
             "1": {
                 "patchCode": "           if(arr.get(i) >= 2) {\n                result -= arr.get(i);\n",
@@ -102,7 +102,7 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             },
             "2": {
                 "patchCode": "           if(Integer.toString(arr.get(i)).length() > 1) {\n                result -= arr.get(i);\n",
@@ -115,11 +115,11 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             },
             "3": {
                 "patchCode": "           if(Integer.toString(arr.get(i)).length() == 2) {\n                result += arr.get(i);\n",
-                "exactlyMatch": true,
+                "exactlyMatch": false,
                 "formatCheck": {
                     "formatResult": true,
                     "javaFormatLog": ""
@@ -128,7 +128,7 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             },
             "4": {
                 "patchCode": "           if(arr.get(i) >= 10) {\n                result += arr.get(i);\n",
@@ -141,13 +141,13 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             }
         }
     },
     {
         "buggyId": "ADD_EVEN_AT_ODD",
-        "repair": false,
+        "repair": true,
         "solution": "        for (int i = 1; i < lst.length; i += 2) {\n",
         "type": "Single",
         "output": {
@@ -162,7 +162,7 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             },
             "1": {
                 "patchCode": "       for (int i = 0; i < lst.length; i += 2) {\n",
@@ -175,7 +175,7 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             },
             "2": {
                 "patchCode": "       for (int i = 0; i < lst.length; i++) {\n",
@@ -188,7 +188,7 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             },
             "3": {
                 "patchCode": "       for (int i = 1; i < lst.length; i += 2) {\n",
@@ -201,7 +201,7 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": true
             },
             "4": {
                 "patchCode": "       for (int i = 0; i < lst.length; ++i) {\n",
@@ -214,7 +214,7 @@
                     "compileResult": true,
                     "compileLog": ""
                 },
-                "RunTestCase": false
+                "PassTestCase": false
             }
         }
     }

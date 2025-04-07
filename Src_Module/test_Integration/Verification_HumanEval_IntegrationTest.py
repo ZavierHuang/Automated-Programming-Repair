@@ -12,9 +12,24 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
     def setUp(self):
         self.verification_HumanEval = Verification_HumanEval()
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
+        self.verification_HumanEval.setScriptPath('Tool/execute_python_humanEval.sh')
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
-        self.verification_HumanEval.setScriptPath('Tool/execute_python_humanEval.sh')
+        self.verification_HumanEval.setTestDataResult(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/patch/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
+
+
+        self.verification_HumanEval.setJsonResultPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Json/test.json')
+        self.verification_HumanEval.setLogFolderPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log')
+        self.verification_HumanEval.setRepairProgramPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/repairProgram')
+        self.verification_HumanEval.setPromptRepairProgramPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/promptRepairProgram')
+        self.verification_HumanEval.setLogFolderPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log')
+
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
         self.model_CodeLlama = LLM_CodeLlama()
@@ -95,26 +110,45 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target, javaFormatResult)
         self.assertFalse(compileResult)
 
-
     def test_load_and_run_test_case(self):
         self.verification_HumanEval.junitEnvironment_Initialize()
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
-
-        self.verification_HumanEval.setTestDataResult(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/patch/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
-
-        self.verification_HumanEval.setLogFolderPath(os.path.join('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log','Test'))
-        self.verification_HumanEval.setJsonResultPath(os.path.join('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Json','test.json'))
         self.verification_HumanEval.createJsonFramework()
         self.verification_HumanEval.createPromptRepairProgramSet()
         runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()
         dictionary = self.verification_HumanEval.getFileAndModuleDict(runFileList)
         self.verification_HumanEval.runScriptBatchFile(dictionary)
+        self.verification_HumanEval.updateJsonResult()
 
         self.assertTrue(len(dictionary), len(self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getLogFolderPath())))
 
 
+        data = self.jsonFileIO.readJsonData(self.verification_HumanEval.getJsonResultPath())
+        repair = 0
+        runTestCasePass = 0
+        for item in data:
+            if item['repair']:
+                repair += 1
+                output = item['output']
+                for i in range(len(output)):
+                    if output[str(i)]['PassTestCase']:
+                        runTestCasePass += 1
+        self.assertEqual(repair, 2)
+        self.assertEqual(runTestCasePass, 3)
 
+    def test_result_analysis(self):
+        jsonFilePath = os.path.join(ROOT, 'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Json/test.json')
+        data = self.jsonFileIO.readJsonData(jsonFilePath)
+
+        for item in data:
+            if item['repair']:
+                print(item['buggyId'])
+            output = item['output']
+            for i in range(len(output)):
+                if output[str(i)]['exactlyMatch']:
+                    print(item['buggyId'], i, 'exactly match:', output[str(i)]['exactlyMatch'])
+                if output[str(i)]['PassTestCase']:
+                    print(item['buggyId'], i, 'pass test case:', output[str(i)]['PassTestCase'])
 
 if __name__ == '__main__':
     unittest.main()

@@ -200,3 +200,6 @@ class Verification:
 
     def createPromptRepairProgramSet(self):
         shutil.copytree(self.getJunitEnvironment(), self.getPromptRepairProgramPath(), dirs_exist_ok=True)
+
+    def updateJsonResult(self):
+        pass

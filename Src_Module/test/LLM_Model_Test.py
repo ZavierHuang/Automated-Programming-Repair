@@ -13,7 +13,7 @@ class LLM_Model_Test(unittest.TestCase):
         self.dataset_HumanEval = Verification_HumanEval()
 
     def normalize(self, text):
-        # Replace all symbols other than numbers and letters with spaces
+        # Replace all symbols other than numbers and letters with empty
         return re.sub(r'[^A-Za-z0-9]', '', text)
 
 
