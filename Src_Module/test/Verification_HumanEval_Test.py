@@ -260,7 +260,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         """
         self.assertEqual(self.verification_HumanEval.checkBuggyMethodLine(buggyMethod), 'Single')
 
-    def test_copy_repairProgram_from_Junit_Module(self):
+    def test_copy_promptRepairProgram_from_Junit_Environment(self):
         self.verification_HumanEval.setPromptRepairProgramPath(os.path.join('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04','promptRepairProgram'))
 
         source = self.verification_HumanEval.getJunitEnvironment()
