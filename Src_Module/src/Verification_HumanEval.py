@@ -111,7 +111,8 @@ class Verification_HumanEval(Verification):
                 compileLog, compileResult = self.checkJavaCompile(target, javaFormatResult)
 
                 print(compileResult, compileLog)
-                self.fileIO.moveFile(target, targetModule, compileResult)
+                self.fileIO.copyFile(target, targetModule, compileResult)
+                self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)
 
                 subdictionary['output'][i] = (
                     self.jsonFileIO.getJsonResultSubItem(

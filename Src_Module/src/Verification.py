@@ -1,4 +1,5 @@
 import os.path
+import shutil
 import subprocess
 from Config import *
 from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
@@ -25,15 +26,18 @@ class Verification:
 
     def setRepairProgramPath(self, repairProgramPath):
         self.repairProgramPath = os.path.join(ROOT, repairProgramPath)
-        os.makedirs(os.path.dirname(self.repairProgramPath), exist_ok=True)
+        shutil.rmtree(self.repairProgramPath) if self.fileIO.isPathExist(self.repairProgramPath) else None
+        os.mkdir(self.repairProgramPath)
 
     def setPromptRepairProgramPath(self, promptRepairProgramPath):
         self.promptRepairProgramPath = os.path.join(ROOT, promptRepairProgramPath)
-        os.makedirs(os.path.dirname(self.promptRepairProgramPath), exist_ok=True)
+        shutil.rmtree(self.promptRepairProgramPath) if self.fileIO.isPathExist(self.promptRepairProgramPath) else None
+        os.mkdir(self.promptRepairProgramPath)
 
     def setLogFolderPath(self, logFolderPath):
         self.logFolderPath = os.path.join(ROOT, logFolderPath)
-        os.makedirs(os.path.dirname(self.logFolderPath), exist_ok=True)
+        shutil.rmtree(self.logFolderPath) if self.fileIO.isPathExist(self.logFolderPath) else None
+        os.mkdir(self.logFolderPath)
 
     def setJsonResultPath(self, jsonResultPath):
         self.jsonResultPath = os.path.join(ROOT, jsonResultPath)
@@ -147,6 +151,8 @@ class Verification:
         currentPath = os.getcwd()
         os.chdir(self.getJunitModuleTestEnvironment())
         command = [BASH_PATH, self.getScriptPath()] + params
+
+        print(command)
         try:
             subprocess.run(command, check=True, text=True, capture_output=True)
         except subprocess.CalledProcessError as e:
@@ -186,7 +192,11 @@ class Verification:
         pass
 
     def checkBuggyMethodLine(self, buggyMethod):
-        commentLineNums = buggyMethod.count('//') - 1
+        buggyMethod = buggyMethod[buggyMethod.find('buggy code'):]
+        commentLineNums = buggyMethod.count('//')
         if commentLineNums == 1:
             return 'Single'
         return 'Multiple'
+
+    def createPromptRepairProgramSet(self):
+        shutil.copytree(self.getJunitEnvironment(), self.getPromptRepairProgramPath(), dirs_exist_ok=True)

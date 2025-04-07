@@ -72,3 +72,7 @@ class FileIO:
         data = self.readFileData(filepath)
         data = data.replace(oldName, newName)
         self.writeFileData(filepath, data)
+
+    def copyFile(self, source, destination, compileResult):
+        if compileResult:
+            shutil.copy(source, destination)

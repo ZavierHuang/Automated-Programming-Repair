@@ -17,13 +17,26 @@ class Verification_HumanEval_Test(unittest.TestCase):
     def setUp(self):
         self.verification = Verification()
         self.verification_HumanEval = Verification_HumanEval()
-        self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
         self.verification_HumanEval.setScriptPath('Tool/execute_python_humanEval.sh')
+        self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
+
+        self.verification_HumanEval.setTestDataResult('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/patch/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
+
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
         self.model_CodeLlama = LLM_CodeLlama()
+
+    def setUp2(self):
+        self.verification_HumanEval.setJsonResultPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Json/test.json')
+        self.verification_HumanEval.setLogFolderPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log')
+        self.verification_HumanEval.setRepairProgramPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/repairProgram')
+        self.verification_HumanEval.setLogFolderPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log')
 
     def normalize(self, text):
         # Replace all symbols other than numbers and letters with spaces
@@ -76,7 +89,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertEqual(len(self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getJunitEnvironment())),0)
 
     def test_2_write_data_in_junit_environment(self):
-        self.test_1_junit_initialize()
+        self.verification_HumanEval.junitEnvironment_Initialize()
         javaCode = f"""
         import java.util.*;
         public class ADD_TEST_1 {{
@@ -127,10 +140,11 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertTrue(compileResult)
 
     def test_batchSize_load_junit_environment_create_json_framework(self):
+        self.setUp2()
+
+
         self.verification_HumanEval.junitEnvironment_Initialize()
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
-        self.verification_HumanEval.setTestDataResult(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/patch/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
         data = self.jsonFileIO.readJsonLineData(self.verification_HumanEval.getTestData())
         dictionary = []
 
@@ -157,7 +171,8 @@ class Verification_HumanEval_Test(unittest.TestCase):
                 javaFormatLog, javaFormatResult = self.verification_HumanEval.checkJavaFormat(methodCode, patchFileName, buggyId)
                 compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target, javaFormatResult)
                 print(compileResult, compileLog)
-                self.fileIO.moveFile(target, targetModule, compileResult)
+                self.fileIO.copyFile(target, targetModule, compileResult)
+                self.fileIO.moveFile(target, self.verification_HumanEval.getRepairProgramPath(), compileResult)
 
                 subdictionary['output'][i] = self.jsonFileIO.getJsonResultSubItem(patchCode, compileLog, compileResult, javaFormatLog, javaFormatResult, solution)
 
@@ -169,13 +184,24 @@ class Verification_HumanEval_Test(unittest.TestCase):
         print(dictionary)
 
         self.assertEqual(passNums, len(self.verification_HumanEval.getAllRunTestCaseFileList()))
-
-        self.verification_HumanEval.setJsonResultPath(os.path.join(ROOT, 'Util_Module/test/json/test.json'))
         self.jsonFileIO.writeJsonFile(dictionary, self.verification_HumanEval.getJsonResultPath())
         self.assertTrue(os.path.exists(os.path.join(ROOT, self.verification_HumanEval.getJsonResultPath(),)))
 
-    def test_run_test_case_script(self):
-        self.verification_HumanEval.setLogFolderPath('Util_Module/test/Log')
+    def test_copy_promptRepairProgram_from_Junit_Environment(self):
+        self.verification_HumanEval.setPromptRepairProgramPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/promptRepairProgram')
+
+        source = self.verification_HumanEval.getJunitEnvironment()
+        destination = self.verification_HumanEval.getPromptRepairProgramPath()
+
+        shutil.copytree(source, destination, dirs_exist_ok=True)
+
+        self.assertTrue(os.path.exists(destination))
+        self.assertEqual(len(self.fileIO.getFileListUnderFolder(source)), len(self.fileIO.getFileListUnderFolder(destination)))
+
+    def test_run_single_test_case_script(self):
+        self.verification_HumanEval.setLogFolderPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log')
 
         LogFolder = self.verification_HumanEval.getLogFolderPath()
 
@@ -193,7 +219,8 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertTrue('BUILD FAILED' in logContent or 'BUILD SUCCESSFUL' in logContent)
 
     def test_run_test_case_batchSize_get_dictionary(self):
-        self.test_batchSize_load_junit_environment_create_json_framework()
+        self.setUp2()
+        self.verification_HumanEval.createJsonFramework()
         """
         【Movement】 move file from junit_environment_pass folder to junit_module_environment and ready to run testcase
         【Replace】if file name is ADD_TEST_1, then all 'ADD' will be replaced with 'ADD_TEST_1' in the testcase file
@@ -205,6 +232,9 @@ class Verification_HumanEval_Test(unittest.TestCase):
         failureFileList = self.fileIO.getFileListUnderFolder(self.verification_HumanEval.getJunitEnvironment())
         failure_file_module_dic = self.verification_HumanEval.getFileAndModuleDict(failureFileList)
 
+        print(pass_file_module_dic)
+        print(failure_file_module_dic)
+
         total_item = len(set(pass_file_module_dic.values()) or set(failure_file_module_dic.values()))
         total_program = len(pass_file_module_dic.keys()) + len(failure_file_module_dic.keys())
 
@@ -213,9 +243,9 @@ class Verification_HumanEval_Test(unittest.TestCase):
     def test_run_script_starter(self):
         self.verification_HumanEval.junitEnvironment_Initialize()
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
-        self.verification_HumanEval.setTestDataResult(os.path.join(ROOT, 'Util_Module/test/Log'))
-        self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
-        self.verification_HumanEval.setLogFolderPath('Util_Module/test/Log')
+
+        self.verification_HumanEval.setLogFolderPath(
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/Log')
 
         pendingRunningFile = """
         import java.util.*;
@@ -249,6 +279,10 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
 
         self.assertTrue(os.path.exists(os.path.join(self.verification_HumanEval.getLogFolderPath(), 'ADD_TEST_9.txt')))
+        self.fileIO.deleteFileData(os.path.join(self.verification_HumanEval.getLogFolderPath(), 'ADD_TEST_9.txt'))
+        self.fileIO.deleteFileData(targetFile)
+        self.assertFalse(os.path.exists(os.path.join(self.verification_HumanEval.getLogFolderPath(), 'ADD_TEST_9.txt')))
+        self.assertFalse(os.path.exists(targetFile))
 
     def test_check_buggy_method_buggy_Line(self):
         buggyMethod = """
@@ -260,16 +294,24 @@ class Verification_HumanEval_Test(unittest.TestCase):
         """
         self.assertEqual(self.verification_HumanEval.checkBuggyMethodLine(buggyMethod), 'Single')
 
-    def test_copy_promptRepairProgram_from_Junit_Environment(self):
-        self.verification_HumanEval.setPromptRepairProgramPath(os.path.join('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04','promptRepairProgram'))
 
-        source = self.verification_HumanEval.getJunitEnvironment()
-        destination = self.verification_HumanEval.getPromptRepairProgramPath()
-
-        shutil.copytree(source, destination)
-
-        self.assertTrue(os.path.exists(destination))
-        self.assertEqual(len(self.fileIO.getFileListUnderFolder(source)), len(self.fileIO.getFileListUnderFolder(destination)))
 
 if __name__ == '__main__':
     unittest.main()
+
+
+{'ADD_TEST_0': 'ADD',
+ 'ADD_TEST_1': 'ADD',
+ 'ADD_TEST_2': 'ADD',
+ 'ADD_TEST_3': 'ADD',
+ 'ADD_TEST_9': 'ADD',
+ 'ADD_ELEMENTS_TEST_0': 'ADD_ELEMENTS',
+ 'ADD_ELEMENTS_TEST_1': 'ADD_ELEMENTS',
+ 'ADD_ELEMENTS_TEST_2': 'ADD_ELEMENTS',
+ 'ADD_ELEMENTS_TEST_3': 'ADD_ELEMENTS',
+ 'ADD_ELEMENTS_TEST_4': 'ADD_ELEMENTS',
+ 'ADD_EVEN_AT_ODD_TEST_0': 'ADD_EVEN_AT_ODD',
+ 'ADD_EVEN_AT_ODD_TEST_1': 'ADD_EVEN_AT_ODD',
+ 'ADD_EVEN_AT_ODD_TEST_2': 'ADD_EVEN_AT_ODD',
+ 'ADD_EVEN_AT_ODD_TEST_3': 'ADD_EVEN_AT_ODD',
+ 'ADD_EVEN_AT_ODD_TEST_4': 'ADD_EVEN_AT_ODD'}
