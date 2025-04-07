@@ -13,11 +13,23 @@ class Verification:
         self.junitModuleTestEnvironment = None
         self.testDataResult = None
         self.scriptPath = None
+
         self.jsonResultPath = None
         self.logFolderPath = None
+        self.repairProgramPath = None
+        self.promptRepairProgramPath = None
+
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
         self.model_CodeLlama = LLM_CodeLlama()
+
+    def setRepairProgramPath(self, repairProgramPath):
+        self.repairProgramPath = os.path.join(ROOT, repairProgramPath)
+        os.makedirs(os.path.dirname(self.repairProgramPath), exist_ok=True)
+
+    def setPromptRepairProgramPath(self, promptRepairProgramPath):
+        self.promptRepairProgramPath = os.path.join(ROOT, promptRepairProgramPath)
+        os.makedirs(os.path.dirname(self.promptRepairProgramPath), exist_ok=True)
 
     def setLogFolderPath(self, logFolderPath):
         self.logFolderPath = os.path.join(ROOT, logFolderPath)
@@ -62,6 +74,12 @@ class Verification:
 
     def getJunitEnvironment(self):
         return self.junitEnvironment
+
+    def getRepairProgramPath(self):
+        return self.repairProgramPath
+
+    def getPromptRepairProgramPath(self):
+        return self.promptRepairProgramPath
 
     def subprocess_run_JavaFormat(self, filePath):
         result = subprocess.run(
