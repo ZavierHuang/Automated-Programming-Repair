@@ -151,4 +151,5 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
                     print(item['buggyId'], i, 'pass test case:', output[str(i)]['PassTestCase'])
 
 if __name__ == '__main__':
+    # integration test
     unittest.main()
