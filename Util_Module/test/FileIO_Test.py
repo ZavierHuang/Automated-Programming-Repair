@@ -1,4 +1,5 @@
 import shutil
+import time
 import unittest
 
 from sympy.testing.runtests import oldname
@@ -126,11 +127,18 @@ class FileIO_Test(unittest.TestCase):
         data = self.fileIO.readFileData(target)
         self.assertTrue(oldname not in data)
 
+    def test_copy_folder(self):
+        sourceFolderName = 'Folder1'
+        destinationFolderName = 'Folder2'
+        sourceFolder = os.path.join(ROOT, 'Util_Module/test/CopyFolderTest/{}'.format(sourceFolderName))
+        destinationFolder = os.path.join(ROOT, 'Util_Module/test/CopyFolderTest/{}'.format(destinationFolderName))
 
+        shutil.copytree(sourceFolder, destinationFolder)
 
+        self.assertEqual(len(self.fileIO.getFileListUnderFolder(destinationFolder)), 4)
+        self.assertEqual(len(self.fileIO.getSubFolderList(sourceFolder)), 2)
 
-
-
+        shutil.rmtree(destinationFolder)
 
 if __name__ == '__main__':
     unittest.main()

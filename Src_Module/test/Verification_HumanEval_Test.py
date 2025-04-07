@@ -130,7 +130,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.verification_HumanEval.junitEnvironment_Initialize()
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
         self.verification_HumanEval.setTestDataResult(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/patchResult/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04/patch/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
         data = self.jsonFileIO.readJsonLineData(self.verification_HumanEval.getTestData())
         dictionary = []
 
