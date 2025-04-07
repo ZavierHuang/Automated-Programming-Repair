@@ -260,5 +260,16 @@ class Verification_HumanEval_Test(unittest.TestCase):
         """
         self.assertEqual(self.verification_HumanEval.checkBuggyMethodLine(buggyMethod), 'Single')
 
+    def test_copy_repairProgram_from_Junit_Module(self):
+        self.verification_HumanEval.setPromptRepairProgramPath(os.path.join('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Lora04','promptRepairProgram'))
+
+        source = self.verification_HumanEval.getJunitEnvironment()
+        destination = self.verification_HumanEval.getPromptRepairProgramPath()
+
+        shutil.copytree(source, destination)
+
+        self.assertTrue(os.path.exists(destination))
+        self.assertEqual(len(self.fileIO.getFileListUnderFolder(source)), len(self.fileIO.getFileListUnderFolder(destination)))
+
 if __name__ == '__main__':
     unittest.main()
