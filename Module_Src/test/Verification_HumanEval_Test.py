@@ -18,7 +18,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.verification = Verification()
         self.verification_HumanEval = Verification_HumanEval()
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
-        self.verification_HumanEval.setScriptPath('Tool/execute_python_humanEval.sh')
+        self.verification_HumanEval.setScriptPath('Tool/execute_python.sh')
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
 
@@ -100,8 +100,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
         }}
         }}
         """
-
-        self.verification_HumanEval.junitEnvironment_Initialize()
 
         target = self.verification_HumanEval.getJunitEnvironment() + '/Module_{}/{}.java'.format('Add', 'ADD_TEST_1')
         if self.fileIO.isPathExist(target):

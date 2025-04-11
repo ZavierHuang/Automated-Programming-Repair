@@ -15,7 +15,7 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
 
         self.verification_HumanEval = Verification_HumanEval()
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
-        self.verification_HumanEval.setScriptPath('Tool/execute_python_humanEval.sh')
+        self.verification_HumanEval.setScriptPath('Tool/execute_python.sh')
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
 
@@ -37,7 +37,7 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
     def demoUsedSetUp(self):
         self.verification_HumanEval = Verification_HumanEval()
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
-        self.verification_HumanEval.setScriptPath('Tool/execute_python_humanEval.sh')
+        self.verification_HumanEval.setScriptPath('Tool/execute_python.sh')
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
         self.verification_HumanEval.setTestDataResult(

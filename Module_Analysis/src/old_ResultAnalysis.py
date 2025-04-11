@@ -72,7 +72,7 @@ class OldResultAnalysis:
 
                 if output[str(i)]['CompileCheck'] == 'Success':
                     self.report['Total']['Run Test Case'] += 1
-                    if output[str(i)]['RunTestCase'] == "PASS":
+                    if output[str(i)]['RunTestCase_QuixBugs'] == "PASS":
                         self.report['Total']['Pass Test Case'] += 1
                     else:
                         self.report['Total']['Fail Test Case'] += 1

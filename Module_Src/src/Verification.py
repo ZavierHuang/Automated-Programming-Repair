@@ -52,7 +52,7 @@ class Verification:
         self.junitModuleTestEnvironment = os.path.join(ROOT, junitModuleTestEnvironment)
 
     def setRemainderCodePath(self, remainCodePath):
-        self.remainCodePath = os.path.join(ROOT, remainCodePath)
+        self.remainCodePath = os.path.join(ROOT, remainCodePath) if remainCodePath is not None else None
 
     def setJunitEnvironment(self, junit_environment):
         self.junitEnvironment = os.path.join(ROOT, junit_environment)
@@ -113,7 +113,7 @@ class Verification:
     def readRemainderCode(self, remainderCodePath):
         readData = ''
 
-        if self.fileIO.isPathExist(remainderCodePath):
+        if remainderCodePath is not None and self.fileIO.isPathExist(remainderCodePath):
             readData = self.fileIO.readFileData(remainderCodePath)
 
         return readData

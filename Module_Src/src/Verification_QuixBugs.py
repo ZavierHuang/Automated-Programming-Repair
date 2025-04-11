@@ -1,0 +1,178 @@
+import os
+from overrides import overrides
+
+from Config import GRADLE_PATH, ROOT
+from Module_Src.src.Verification import Verification
+
+
+class Verification_QuixBugs(Verification):
+    def __init__(self):
+        super().__init__()
+
+    @overrides
+    def getImportContent(self, buggyId):
+        importContent = 'import java.util.*;'
+        importDict = {
+            'BREADTH_FIRST_SEARCH': [
+                'import java.util.ArrayDeque;'
+            ],
+            'KNAPSACK': [
+                'import java.lang.*;',
+            ],
+            'NEXT_PALINDROME': [
+                'import java.lang.Math.*;',
+            ],
+            'RPN_EVAL': [
+                'import java.util.function.BinaryOperator;',
+            ],
+            'SHORTEST_PATHS': [
+                'import java.lang.Math.*;',
+            ],
+            'SHORTEST_PATH_LENGTHS': [
+                'import java.lang.Math.*;',
+            ]
+        }
+
+        if buggyId in importDict.keys():
+            importContent = importContent + '\n' +  ('\n'.join(importDict[buggyId]))
+
+        return importContent
+
+    @overrides
+    def checkJavaFormat(self, methodCode, patchFileName, buggyId):
+        # ADD --> ADD_TEST_1
+        methodCode = methodCode.replace(buggyId, patchFileName)
+
+        # Add.txt
+        remainderCode = self.readRemainderCode(os.path.join(self.getRemainderCodePath(), buggyId + '.txt'))
+
+        importContent = self.getImportContent(buggyId)
+
+        javaCode = self.createJavaValidCode(patchFileName, methodCode, remainderCode, importContent)
+
+        target = self.getJunitEnvironment() + '/Module_{}/{}.java'.format(buggyId, patchFileName)
+
+        self.fileIO.writeFileData(target, javaCode)
+
+        result = self.subprocess_run_JavaFormat(target)
+
+        return result.stderr, result.returncode == 0
+
+    @overrides
+    def getNeedCompileJavaFiles(self, javaFile):
+        data = self.fileIO.readFileData(javaFile)
+        compileJavaFiles = [javaFile]
+
+        for item in ['Node', 'QuixFixOracleHelper', 'WeightedEdge']:
+            if item in data:
+                compileJavaFiles.append(
+                    os.path.join(ROOT, 'Data_Storage/QuixBugs/dataStructures/{}.java'.format(item)))
+
+        return compileJavaFiles
+
+    @overrides
+    def checkJavaCompile(self, javaFile, javaFormatResult):
+        if javaFormatResult is False:
+            return 'FormatError', False
+
+        javaFiles = self.getNeedCompileJavaFiles(javaFile)
+        print('javaFiles:', javaFiles)
+        result = self.subprocess_run_JavaCompile(javaFiles)
+
+        if result.returncode != 0:
+            return result.stderr, False
+        return result.stderr, True
+
+    @overrides
+    def createJsonFramework(self):
+        data = self.jsonFileIO.readJsonLineData(self.getTestData())
+        dictionary = []
+
+        for item in data:
+            buggyId = item['bug_id']
+            buggyCode = item['buggy_code']
+            output = item['output']
+            solution = item['gold_patch']
+            subdictionary = {
+                'buggyId': buggyId,
+                'repair' : False,
+                'solution' : solution,
+                'type' : self.checkBuggyMethodLine(buggyCode),
+                'output': {}
+            }
+            for i in range(len(output)):
+                patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
+                patchCode = output[str(i)]['output_patch']
+                target = os.path.join(self.getJunitEnvironment(),
+                                      'Module_{}/{}.java'.format(buggyId, patchFileName))
+                targetModule = os.path.join(self.getJunitModuleTestEnvironment(),
+                                            'Module_{}/src/main/java/{}.java'.format(buggyId, patchFileName))
+
+                methodCode = self.model_CodeLlama.patchReplaceByModel(buggyCode, patchCode)
+
+                javaFormatLog, javaFormatResult = self.checkJavaFormat(methodCode, patchFileName, buggyId)
+                compileLog, compileResult = self.checkJavaCompile(target, javaFormatResult)
+
+                print(patchFileName, compileResult, compileLog)
+                self.fileIO.copyFile(target, targetModule, compileResult)
+                self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)
+
+                subdictionary['output'][i] = (
+                    self.jsonFileIO.getJsonResultSubItem(
+                        patchCode, compileLog, compileResult,
+                        javaFormatLog, javaFormatResult, solution))
+
+            dictionary.append(subdictionary)
+
+        self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())
+
+    @overrides
+    def runScriptBatchFile(self, directory):
+        for item in directory.items():
+            newName = item[0] + '.'                     # ADD_TEST_9.
+            oldName = item[1] + '.'                     # ADD.
+            moduleName = 'Module_{}'.format(item[1])
+            testFilePath = os.path.join(
+                self.getJunitModuleTestEnvironment(),
+                "{}/src/test/java/{}_TEST.java".format(moduleName, item[1])
+            )
+            self.fileIO.replaceName(testFilePath, oldName, newName)
+            self.runScriptSingleFile(item[0], moduleName)
+            self.fileIO.replaceName(testFilePath, newName, oldName)
+
+    @overrides
+    def runScriptSingleFile(self, patchFileName, moduleName):
+        # params = [testModuleName, programFileName, logFolder, gradlePath, junitModuleEnvironment]
+
+        #patchFileName = ADD_ELEMENTS_TEST_4
+        #moduleName = Module_ADD_ELEMENTS
+
+        print('run ', patchFileName)
+
+        params = [
+            moduleName,
+            patchFileName,
+            self.getLogFolderPath(),
+            GRADLE_PATH,
+            self.getJunitModuleTestEnvironment()
+        ]
+        self.runBashScript(params)
+
+    @overrides
+    def updateJsonResult(self):
+        fileList = self.fileIO.getFileListUnderFolder(self.getLogFolderPath())
+        data = self.jsonFileIO.readJsonData(self.getJsonResultPath())
+
+        for file in fileList:
+            buggyId = file[:file.find('_TEST')]                                     # ADD_TEST_0.txt --> ADD
+            sequence = file[file.find('_TEST_') + len('_TEST_'):-4]                 # ADD_TEST_0.txt --> 0
+            logContent = self.fileIO.readFileData(os.path.join(self.getLogFolderPath(), file))
+            print(buggyId, sequence, 'BUILD SUCCESSFUL' in logContent)
+            if 'BUILD SUCCESSFUL' in logContent:
+                for item in data:
+                    if item['buggyId'] == buggyId:
+                        item['repair'] = True
+                        item['output'][str(sequence)]['PassTestCase'] = True
+                        break
+
+        self.jsonFileIO.writeJsonFile(data, self.getJsonResultPath())

@@ -144,6 +144,5 @@ class FileIO_Test(unittest.TestCase):
         s2 = "return x + y;"
 
         print(self.fileIO.compareEqual(s1, s2))
-
 if __name__ == '__main__':
     unittest.main()
