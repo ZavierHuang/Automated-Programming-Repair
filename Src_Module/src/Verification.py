@@ -1,6 +1,8 @@
 import os.path
 import shutil
 import subprocess
+from os.path import exists
+
 from Config import *
 from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
 from Util_Module.src.FileIO import FileIO
@@ -26,18 +28,15 @@ class Verification:
 
     def setRepairProgramPath(self, repairProgramPath):
         self.repairProgramPath = os.path.join(ROOT, repairProgramPath)
-        shutil.rmtree(self.repairProgramPath) if self.fileIO.isPathExist(self.repairProgramPath) else None
-        os.mkdir(self.repairProgramPath)
+        os.makedirs(self.repairProgramPath, exist_ok=True)
 
     def setPromptRepairProgramPath(self, promptRepairProgramPath):
         self.promptRepairProgramPath = os.path.join(ROOT, promptRepairProgramPath)
-        shutil.rmtree(self.promptRepairProgramPath) if self.fileIO.isPathExist(self.promptRepairProgramPath) else None
-        os.mkdir(self.promptRepairProgramPath)
+        os.makedirs(self.promptRepairProgramPath, exist_ok=True)
 
     def setLogFolderPath(self, logFolderPath):
         self.logFolderPath = os.path.join(ROOT, logFolderPath)
-        shutil.rmtree(self.logFolderPath) if self.fileIO.isPathExist(self.logFolderPath) else None
-        os.mkdir(self.logFolderPath)
+        os.makedirs(self.logFolderPath, exist_ok=True)
 
     def setJsonResultPath(self, jsonResultPath):
         self.jsonResultPath = os.path.join(ROOT, jsonResultPath)

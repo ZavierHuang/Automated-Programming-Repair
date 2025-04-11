@@ -1,6 +1,4 @@
 JUnit_Environment/
 JUnit_ModuleTest/
 cache/
-Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log/
-Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/promptRepairProgram/
-Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/repairProgram/
+Result_Output/

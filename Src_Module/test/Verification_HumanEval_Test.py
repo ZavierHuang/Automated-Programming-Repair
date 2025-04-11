@@ -22,7 +22,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
 
-        self.verification_HumanEval.setTestDataResult('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/patch/HumanEval_CodeLlama_Lora04_E1_Patch05_TEST.jsonl')
+        self.verification_HumanEval.setTestDataResult('Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/patch/HumanEval_CodeLlama_Lora_Demo_Patch05_TEST.jsonl')
 
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()

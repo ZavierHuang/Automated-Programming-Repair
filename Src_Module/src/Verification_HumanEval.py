@@ -110,7 +110,7 @@ class Verification_HumanEval(Verification):
                 javaFormatLog, javaFormatResult = self.checkJavaFormat(methodCode, patchFileName, buggyId)
                 compileLog, compileResult = self.checkJavaCompile(target, javaFormatResult)
 
-                print(compileResult, compileLog)
+                print(patchFileName, compileResult, compileLog)
                 self.fileIO.copyFile(target, targetModule, compileResult)
                 self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)
 
