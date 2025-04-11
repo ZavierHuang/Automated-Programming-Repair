@@ -1,7 +1,7 @@
 import json
 import os
 
-from Util_Module.src.FileIO import FileIO
+from Module_Util.src.FileIO import FileIO
 
 
 class JsonFileIO(FileIO):

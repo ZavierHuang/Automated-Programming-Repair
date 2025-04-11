@@ -3,8 +3,8 @@ import unittest
 
 from sympy.testing.runtests import oldname
 
-from Util_Module.src.FileIO import FileIO
-from Util_Module.src.JsonFileIO import JsonFileIO
+from Module_Util.src.FileIO import FileIO
+from Module_Util.src.JsonFileIO import JsonFileIO
 from Config import *
 
 class FileIO_Test(unittest.TestCase):
@@ -21,7 +21,7 @@ class FileIO_Test(unittest.TestCase):
     def test_write_data(self):
         writeFileName = 'test1.java'
 
-        writeFileFolder = os.path.join(ROOT,  'Util_Module/test/javaFormatTestFile/')
+        writeFileFolder = os.path.join(ROOT,  'Module_Util/test/javaFormatTestFile/')
         self.assertTrue(os.path.isdir(writeFileFolder))
 
         writeFilePath = writeFileFolder + writeFileName
@@ -36,7 +36,7 @@ class FileIO_Test(unittest.TestCase):
         self.assertFalse(self.fileIO.isPathExist(writeFilePath))
 
     def test_get_all_subfolder(self):
-        tempFolderPath = os.path.join(ROOT, 'Util_Module/test/tempFolder')
+        tempFolderPath = os.path.join(ROOT, 'Module_Util/test/tempFolder')
 
         if self.fileIO.isPathExist(tempFolderPath):
             shutil.rmtree(tempFolderPath)
@@ -65,7 +65,7 @@ class FileIO_Test(unittest.TestCase):
         self.assertEqual(len(allFileList), 5)
 
     def test_clear_all_file_under_subfolder(self):
-        tempFolderPath = os.path.join(ROOT,  'Util_Module/test/tempFolder')
+        tempFolderPath = os.path.join(ROOT,  'Module_Util/test/tempFolder')
         subFolderList = self.fileIO.getSubFolderList(tempFolderPath)
         result = self.fileIO.deleteSubFolderAndCreate(tempFolderPath, subFolderList)
         self.assertTrue(result)
@@ -74,7 +74,7 @@ class FileIO_Test(unittest.TestCase):
         fileName = 'test.txt'
 
         # source
-        srcFolder = os.path.join(ROOT, 'Util_Module/test/tempFolder2')
+        srcFolder = os.path.join(ROOT, 'Module_Util/test/tempFolder2')
         self.assertFalse(self.fileIO.isPathExist(srcFolder))
 
         os.mkdir(srcFolder)
@@ -85,7 +85,7 @@ class FileIO_Test(unittest.TestCase):
         self.assertTrue(self.fileIO.isPathExist(srcFilePath))
 
         # destination
-        desFolder = os.path.join(ROOT, 'Util_Module/test/tempFolder3')
+        desFolder = os.path.join(ROOT, 'Module_Util/test/tempFolder3')
         self.assertFalse(self.fileIO.isPathExist(desFolder))
 
         os.mkdir(desFolder)
@@ -99,7 +99,7 @@ class FileIO_Test(unittest.TestCase):
         shutil.rmtree(desFolder)
 
     def test_replace_file_in_content(self):
-        target = os.path.join(ROOT, 'Util_Module/test/replaceFolderTest/replace.java')
+        target = os.path.join(ROOT, 'Module_Util/test/replaceFolderTest/replace.java')
         content = """public class ADD_TEST {
             @org.junit.Test(timeout = 3000)
             public void test_0() throws java.lang.Exception {
@@ -129,8 +129,8 @@ class FileIO_Test(unittest.TestCase):
     def test_copy_folder(self):
         sourceFolderName = 'Folder1'
         destinationFolderName = 'Folder2'
-        sourceFolder = os.path.join(ROOT, 'Util_Module/test/CopyFolderTest/{}'.format(sourceFolderName))
-        destinationFolder = os.path.join(ROOT, 'Util_Module/test/CopyFolderTest/{}'.format(destinationFolderName))
+        sourceFolder = os.path.join(ROOT, 'Module_Util/test/CopyFolderTest/{}'.format(sourceFolderName))
+        destinationFolder = os.path.join(ROOT, 'Module_Util/test/CopyFolderTest/{}'.format(destinationFolderName))
 
         shutil.copytree(sourceFolder, destinationFolder)
 

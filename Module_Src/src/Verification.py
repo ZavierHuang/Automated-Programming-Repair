@@ -4,9 +4,9 @@ import subprocess
 from os.path import exists
 
 from Config import *
-from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
-from Util_Module.src.FileIO import FileIO
-from Util_Module.src.JsonFileIO import JsonFileIO
+from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
+from Module_Util.src.FileIO import FileIO
+from Module_Util.src.JsonFileIO import JsonFileIO
 
 
 class Verification:

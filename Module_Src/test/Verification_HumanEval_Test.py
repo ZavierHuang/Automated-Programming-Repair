@@ -6,11 +6,11 @@ import time
 import unittest
 
 from Config import ROOT, CACHE_PATH, GRADLE_PATH
-from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
-from Src_Module.src.Verification import Verification
-from Src_Module.src.Verification_HumanEval import Verification_HumanEval
-from Util_Module.src.FileIO import FileIO
-from Util_Module.src.JsonFileIO import JsonFileIO
+from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
+from Module_Src.src.Verification import Verification
+from Module_Src.src.Verification_HumanEval import Verification_HumanEval
+from Module_Util.src.FileIO import FileIO
+from Module_Util.src.JsonFileIO import JsonFileIO
 
 
 class Verification_HumanEval_Test(unittest.TestCase):
@@ -122,18 +122,18 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
 
     def test_check_STRING_TO_MD5_Compile(self):
-        javaFile = os.path.join(ROOT, 'Util_Module/test/compileCheckTestFile/STRING_TO_MD5.java')
+        javaFile = os.path.join(ROOT, 'Module_Util/test/compileCheckTestFile/STRING_TO_MD5.java')
         compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(javaFile, True)
 
         """
         CompletedProcess(args=['javac', '-d', \
         'F:\\GITHUB\\Automated-Programming-Repair\\cache/class_file', \
-        'F:\\GITHUB\\Automated-Programming-Repair\\Util_Module/test/compileCheckTestFile/STRING_TO_MD5.java'], \
+        'F:\\GITHUB\\Automated-Programming-Repair\\Module_Util/test/compileCheckTestFile/STRING_TO_MD5.java'], \
         returncode=1,
         stdout='',
-        stderr='F:\\GITHUB\\Automated-Programming-Repair\\Util_Module\\test\\compileCheckTestFile\\STRING_TO_MD5.java:\
+        stderr='F:\\GITHUB\\Automated-Programming-Repair\\Module_Util\\test\\compileCheckTestFile\\STRING_TO_MD5.java:\
         3: error: package javax.xml.bind does not exist\nimport javax.xml.bind.DatatypeConverter;\n                     ^\n
-        F:\\GITHUB\\Automated-Programming-Repair\\Util_Module\\test\\compileCheckTestFile\\STRING_TO_MD5.java:12: error: cannot find symbol\n
+        F:\\GITHUB\\Automated-Programming-Repair\\Module_Util\\test\\compileCheckTestFile\\STRING_TO_MD5.java:12: error: cannot find symbol\n
         return DatatypeConverter.printHexBinary(digest).toLowerCase();\n               ^\n
         symbol:   variable DatatypeConverter\n
         location: class STRING_TO_MD5\n2 errors\n')

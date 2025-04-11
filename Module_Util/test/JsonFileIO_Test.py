@@ -1,8 +1,8 @@
 import shutil
 import unittest
 
-from Util_Module.src.FileIO import FileIO
-from Util_Module.src.JsonFileIO import JsonFileIO
+from Module_Util.src.FileIO import FileIO
+from Module_Util.src.JsonFileIO import JsonFileIO
 from Config import *
 
 class JsonFileIO_Test(unittest.TestCase):
@@ -42,9 +42,9 @@ class JsonFileIO_Test(unittest.TestCase):
                 }
             dictionary.append(sub_dictionary)
 
-        self.jsonFileIO.writeJsonFile(dictionary, os.path.join(ROOT, 'Util_Module/test/json/test.json'))
-        self.assertTrue(os.path.exists(os.path.join(ROOT, 'Util_Module/test/json/test.json')))
-        shutil.rmtree(os.path.join(ROOT, 'Util_Module/test/json/test.json'))
+        self.jsonFileIO.writeJsonFile(dictionary, os.path.join(ROOT, 'Module_Util/test/json/test.json'))
+        self.assertTrue(os.path.exists(os.path.join(ROOT, 'Module_Util/test/json/test.json')))
+        shutil.rmtree(os.path.join(ROOT, 'Module_Util/test/json/test.json'))
 
 
 if __name__ == '__main__':

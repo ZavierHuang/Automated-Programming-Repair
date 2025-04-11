@@ -1,9 +1,9 @@
 import re
 import unittest
 
-from Src_Module.src.LLM_CodeLlama import LLM_CodeLlama
-from Src_Module.src.LLM_Qwen import LLM_Qwen
-from Src_Module.src.Verification_HumanEval import Verification_HumanEval
+from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
+from Module_Src.src.LLM_Qwen import LLM_Qwen
+from Module_Src.src.Verification_HumanEval import Verification_HumanEval
 
 
 class LLM_Model_Test(unittest.TestCase):

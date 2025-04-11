@@ -1,6 +1,6 @@
 from overrides import overrides
 
-from Src_Module.src.LLM_Model import LLM_Model
+from Module_Src.src.LLM_Model import LLM_Model
 
 
 class LLM_CodeLlama(LLM_Model):
