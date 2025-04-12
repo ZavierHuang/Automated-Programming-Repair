@@ -1,4 +1,6 @@
 import os
+
+from openpyxl.packaging.manifest import Override
 from overrides import overrides
 
 from Config import GRADLE_PATH
@@ -8,6 +10,10 @@ from Module_Src.src.Verification import Verification
 class Verification_HumanEval(Verification):
     def __init__(self):
         super().__init__()
+
+    @overrides
+    def junitEnvironment_Run_Initialize(self):
+        super().junitEnvironment_Run_Initialize()
 
     @overrides
     def getImportContent(self, buggyId):
@@ -79,63 +85,6 @@ class Verification_HumanEval(Verification):
                 return '', True
             return result.stderr, False
         return result.stderr, True
-
-    @overrides
-    def createJsonFramework(self):
-        data = self.jsonFileIO.readJsonLineData(self.getTestData())
-        dictionary = []
-
-        for item in data:
-            buggyId = item['bug_id']
-            buggyCode = item['buggy_code']
-            output = item['output']
-            solution = item['gold_patch']
-            subdictionary = {
-                'buggyId': buggyId,
-                'repair' : False,
-                'solution' : solution,
-                'type' : self.checkBuggyMethodLine(buggyCode),
-                'output': {}
-            }
-            for i in range(len(output)):
-                patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
-                patchCode = output[str(i)]['output_patch']
-                target = os.path.join(self.getJunitEnvironment(),
-                                      'Module_{}/{}.java'.format(buggyId, patchFileName))
-                targetModule = os.path.join(self.getJunitModuleTestEnvironment(),
-                                            'Module_{}/src/main/java/{}.java'.format(buggyId, patchFileName))
-
-                methodCode = self.model_CodeLlama.patchReplaceByModel(buggyCode, patchCode)
-
-                javaFormatLog, javaFormatResult = self.checkJavaFormat(methodCode, patchFileName, buggyId)
-                compileLog, compileResult = self.checkJavaCompile(target, javaFormatResult)
-
-                print(patchFileName, compileResult, compileLog)
-                self.fileIO.copyFile(target, targetModule, compileResult)
-                self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)
-
-                subdictionary['output'][i] = (
-                    self.jsonFileIO.getJsonResultSubItem(
-                        patchCode, compileLog, compileResult,
-                        javaFormatLog, javaFormatResult, solution))
-
-            dictionary.append(subdictionary)
-
-        self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())
-
-    @overrides
-    def runScriptBatchFile(self, directory):
-        for item in directory.items():
-            newName = item[0] + '.'                     # ADD_TEST_9.
-            oldName = item[1] + '.'                     # ADD.
-            moduleName = 'Module_{}'.format(item[1])
-            testFilePath = os.path.join(
-                self.getJunitModuleTestEnvironment(),
-                "{}/src/test/java/{}_TEST.java".format(moduleName, item[1])
-            )
-            self.fileIO.replaceName(testFilePath, oldName, newName)
-            self.runScriptSingleFile(item[0], moduleName)
-            self.fileIO.replaceName(testFilePath, newName, oldName)
 
     @overrides
     def runScriptSingleFile(self, patchFileName, moduleName):

@@ -1,4 +1,6 @@
 import os
+import shutil
+
 from overrides import overrides
 
 from Config import GRADLE_PATH, ROOT
@@ -8,6 +10,17 @@ from Module_Src.src.Verification import Verification
 class Verification_QuixBugs(Verification):
     def __init__(self):
         super().__init__()
+
+    @overrides
+    def junitEnvironment_Run_Initialize(self):
+        super().junitEnvironment_Run_Initialize()
+        # Node.java , Weighted, QuixFixOracleHelper have "package datastructures;"
+        dataStructurePath = os.path.join(self.getJunitModuleTestEnvironment(), 'dataStructures')
+        sub_Module_Folder_List = self.fileIO.getRunTestCaseModuleFolderList(self.getJunitModuleTestEnvironment())
+
+        for subModuleFolderPath in sub_Module_Folder_List:
+            print('copy Successfully')
+            shutil.copytree(dataStructurePath, os.path.join(subModuleFolderPath, 'src/main/java/dataStructures'), dirs_exist_ok=True)
 
     @overrides
     def getImportContent(self, buggyId):
@@ -43,8 +56,7 @@ class Verification_QuixBugs(Verification):
         # ADD --> ADD_TEST_1
         methodCode = methodCode.replace(buggyId, patchFileName)
 
-        # Add.txt
-        remainderCode = self.readRemainderCode(os.path.join(self.getRemainderCodePath(), buggyId + '.txt'))
+        remainderCode = ''
 
         importContent = self.getImportContent(buggyId)
 
@@ -66,6 +78,7 @@ class Verification_QuixBugs(Verification):
         for item in ['Node', 'QuixFixOracleHelper', 'WeightedEdge']:
             if item in data:
                 compileJavaFiles.append(
+                    # Node.java , Weighted, QuixFixOracleHelper doesn't have "package datastructures;"
                     os.path.join(ROOT, 'Data_Storage/QuixBugs/dataStructures/{}.java'.format(item)))
 
         return compileJavaFiles
@@ -83,69 +96,19 @@ class Verification_QuixBugs(Verification):
             return result.stderr, False
         return result.stderr, True
 
-    @overrides
-    def createJsonFramework(self):
-        data = self.jsonFileIO.readJsonLineData(self.getTestData())
-        dictionary = []
-
-        for item in data:
-            buggyId = item['bug_id']
-            buggyCode = item['buggy_code']
-            output = item['output']
-            solution = item['gold_patch']
-            subdictionary = {
-                'buggyId': buggyId,
-                'repair' : False,
-                'solution' : solution,
-                'type' : self.checkBuggyMethodLine(buggyCode),
-                'output': {}
-            }
-            for i in range(len(output)):
-                patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
-                patchCode = output[str(i)]['output_patch']
-                target = os.path.join(self.getJunitEnvironment(),
-                                      'Module_{}/{}.java'.format(buggyId, patchFileName))
-                targetModule = os.path.join(self.getJunitModuleTestEnvironment(),
-                                            'Module_{}/src/main/java/{}.java'.format(buggyId, patchFileName))
-
-                methodCode = self.model_CodeLlama.patchReplaceByModel(buggyCode, patchCode)
-
-                javaFormatLog, javaFormatResult = self.checkJavaFormat(methodCode, patchFileName, buggyId)
-                compileLog, compileResult = self.checkJavaCompile(target, javaFormatResult)
-
-                print(patchFileName, compileResult, compileLog)
-                self.fileIO.copyFile(target, targetModule, compileResult)
-                self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)
-
-                subdictionary['output'][i] = (
-                    self.jsonFileIO.getJsonResultSubItem(
-                        patchCode, compileLog, compileResult,
-                        javaFormatLog, javaFormatResult, solution))
-
-            dictionary.append(subdictionary)
-
-        self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())
-
-    @overrides
-    def runScriptBatchFile(self, directory):
-        for item in directory.items():
-            newName = item[0] + '.'                     # ADD_TEST_9.
-            oldName = item[1] + '.'                     # ADD.
-            moduleName = 'Module_{}'.format(item[1])
-            testFilePath = os.path.join(
-                self.getJunitModuleTestEnvironment(),
-                "{}/src/test/java/{}_TEST.java".format(moduleName, item[1])
-            )
-            self.fileIO.replaceName(testFilePath, oldName, newName)
-            self.runScriptSingleFile(item[0], moduleName)
-            self.fileIO.replaceName(testFilePath, newName, oldName)
 
     @overrides
     def runScriptSingleFile(self, patchFileName, moduleName):
+        patchFilePath = os.path.join(self.getJunitModuleTestEnvironment(),'{}/src/main/java/{}.java'.format(moduleName,patchFileName))
+
+        data = self.fileIO.readFileData(patchFilePath)
+        data = 'import dataStructures.*;\n' + data
+        self.fileIO.writeFileData(patchFilePath, data)
+
         # params = [testModuleName, programFileName, logFolder, gradlePath, junitModuleEnvironment]
 
-        #patchFileName = ADD_ELEMENTS_TEST_4
-        #moduleName = Module_ADD_ELEMENTS
+        #patchFileName = BITCOUNT_TEST_4
+        #moduleName = Module_BITCOUNT
 
         print('run ', patchFileName)
 

@@ -1,10 +1,12 @@
 import os.path
+import re
 import shutil
 import subprocess
-from os.path import exists
+import sys
+
+from numpy.f2py.auxfuncs import throw_error
 
 from Config import *
-from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
 from Module_Util.src.FileIO import FileIO
 from Module_Util.src.JsonFileIO import JsonFileIO
 
@@ -24,7 +26,10 @@ class Verification:
 
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
-        self.model_CodeLlama = LLM_CodeLlama()
+        self.LLM = None
+
+    def setLLMModel(self, LLModel):
+        self.LLM = LLModel
 
     def setRepairProgramPath(self, repairProgramPath):
         self.repairProgramPath = os.path.join(ROOT, repairProgramPath)
@@ -56,6 +61,9 @@ class Verification:
 
     def setJunitEnvironment(self, junit_environment):
         self.junitEnvironment = os.path.join(ROOT, junit_environment)
+
+    def getLLMModel(self):
+        return self.LLM
 
     def getLogFolderPath(self):
         return self.logFolderPath
@@ -126,13 +134,27 @@ class Verification:
         self.junitEnvironment_Clear(self.getJunitEnvironment())
 
     def junitEnvironment_Run_Initialize(self):
-        self.junitEnvironment_Module_Test_Clear()
-
-    def junitEnvironment_Module_Test_Clear(self):
         sub_Module_Folder_List = self.fileIO.getRunTestCaseModuleFolderList(self.getJunitModuleTestEnvironment())
         for subModuleFolderPath in sub_Module_Folder_List:
             self.fileIO.deleteSubFolderAndCreate(subModuleFolderPath,
                                                  [os.path.join(subModuleFolderPath, 'src/main/java')])
+
+    def juniEnvironment_TEST_File_Initialize(self):
+        sub_Module_Folder_List = self.fileIO.getRunTestCaseModuleFolderList(self.getJunitModuleTestEnvironment())
+        for subModuleFolderPath in sub_Module_Folder_List:
+            test_targetPath = os.path.join(subModuleFolderPath, 'src/test/java')
+            fileList = self.fileIO.getFileListUnderFolder(test_targetPath)
+            for file in fileList:
+                filePath = os.path.join(test_targetPath, file)
+                data = self.fileIO.readFileData(filePath)
+                result = re.sub(r'_TEST_\d+', '', data)
+                self.fileIO.writeFileData(filePath, result)
+
+                print(file)
+                data = self.fileIO.readFileData(filePath)
+                if '_TEST_' in data:
+                    print(file,'Test File Initialize Terminated')
+                    sys.exit(1)
 
     def getImportContent(self, buggyId):
         pass
@@ -180,15 +202,64 @@ class Verification:
 
         return dictionary
 
-
     def createJsonFramework(self):
-        pass
+        data = self.jsonFileIO.readJsonLineData(self.getTestData())
+        dictionary = []
+
+        for item in data:
+            buggyId = item['bug_id']
+            buggyCode = item['buggy_code']
+            output = item['output']
+            solution = item['gold_patch']
+            subdictionary = {
+                'buggyId': buggyId,
+                'repair': False,
+                'solution': solution,
+                'type': self.checkBuggyMethodLine(buggyCode),
+                'output': {}
+            }
+            for i in range(len(output)):
+                patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
+                patchCode = output[str(i)]['output_patch']
+                target = os.path.join(self.getJunitEnvironment(),
+                                      'Module_{}/{}.java'.format(buggyId, patchFileName))
+                targetModule = os.path.join(self.getJunitModuleTestEnvironment(),
+                                            'Module_{}/src/main/java/{}.java'.format(buggyId, patchFileName))
+
+                methodCode = self.getLLMModel().patchReplaceByModel(buggyCode, patchCode)
+
+                javaFormatLog, javaFormatResult = self.checkJavaFormat(methodCode, patchFileName, buggyId)
+                compileLog, compileResult = self.checkJavaCompile(target, javaFormatResult)
+
+                print(patchFileName, compileResult, compileLog)
+
+                self.fileIO.copyFile(target, targetModule, compileResult)
+                self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)
+
+                subdictionary['output'][i] = (
+                    self.jsonFileIO.getJsonResultSubItem(
+                        patchCode, compileLog, compileResult,
+                        javaFormatLog, javaFormatResult, solution))
+
+            dictionary.append(subdictionary)
+
+        self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())
 
     def runScriptSingleFile(self, patchFileName, moduleName):
         pass
 
     def runScriptBatchFile(self, directory):
-        pass
+        for item in directory.items():
+            newName = item[0] + '.'  # ADD_TEST_9.
+            oldName = item[1] + '.'  # ADD.
+            moduleName = 'Module_{}'.format(item[1])
+            testFilePath = os.path.join(
+                self.getJunitModuleTestEnvironment(),
+                "{}/src/test/java/{}_TEST.java".format(moduleName, item[1])
+            )
+            self.fileIO.replaceName(testFilePath, oldName, newName)
+            self.runScriptSingleFile(item[0], moduleName)
+            self.fileIO.replaceName(testFilePath, newName, oldName)
 
     def checkBuggyMethodLine(self, buggyMethod):
         buggyMethod = buggyMethod[buggyMethod.find('buggy code'):]

@@ -9,6 +9,10 @@ from Module_Util.src.JsonFileIO import JsonFileIO
 
 
 class Verification_HumanEval_IntegrationTest(unittest.TestCase):
+    def __init__(self, methodName: str = "runTest"):
+        super().__init__(methodName)
+        self.verification = None
+
     def setUp(self):
         diverseBeamSearch = 'DiverseBeamSearch40'
         current = 'Lora04_DBS_40'
@@ -57,11 +61,12 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
 
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
-        self.model_CodeLlama = LLM_CodeLlama()
+        self.verification_HumanEval.setLLMModel(LLM_CodeLlama())
 
     def test_load_and_run_test_case(self):
         self.verification_HumanEval.junitEnvironment_Initialize()
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
+        self.verification.HumanEval.juniEnvironment_TEST_File_Initialize()
         self.verification_HumanEval.createJsonFramework()
         self.verification_HumanEval.createPromptRepairProgramSet()
         runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()

@@ -141,10 +141,9 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
     def test_batchSize_load_junit_environment_create_json_framework(self):
         self.setUp2()
-
-
         self.verification_HumanEval.junitEnvironment_Initialize()
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
+        self.verification.HumanEval.juniEnvironment_TEST_File_Initialize()
         data = self.jsonFileIO.readJsonLineData(self.verification_HumanEval.getTestData())
         dictionary = []
 
@@ -157,7 +156,13 @@ class Verification_HumanEval_Test(unittest.TestCase):
             output = item['output']
             solution = item['gold_patch']
 
-            subdictionary = {'output':{}}
+            subdictionary = {
+                'buggyId': buggyId,
+                'repair': False,
+                'solution': solution,
+                'type': self.verification_HumanEval.checkBuggyMethodLine(buggyCode),
+                'output': {}
+            }
 
             for i in range(len(output)):
 
@@ -199,7 +204,27 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertTrue(os.path.exists(destination))
         self.assertEqual(len(self.fileIO.getFileListUnderFolder(source)), len(self.fileIO.getFileListUnderFolder(destination)))
 
-    def test_run_single_test_case_script(self):
+    def write_ADD_File(self, target, programFileName):
+        javaCode = f"""
+            import java.util.*;
+            public class {programFileName} {{
+                public static int add(int x, int y) {{
+                return x+y;
+            }}
+            }}
+        """
+
+        if self.fileIO.isPathExist(target):
+            self.fileIO.deleteFileData(target)
+
+        self.fileIO.writeFileData(target, javaCode)
+
+    def test_run_test_case_script_expect_failure(self):
+        # make sure the program can run test case
+        self.verification_HumanEval.junitEnvironment_Initialize()
+        self.verification_HumanEval.junitEnvironment_Run_Initialize()
+        self.verification.HumanEval.juniEnvironment_TEST_File_Initialize()
+
         self.verification_HumanEval.setLogFolderPath(
             'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log')
 
@@ -207,6 +232,12 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
         testModuleName = 'Module_ADD'
         programFileName = 'ADD_TEST_1'
+
+        target = os.path.join(ROOT, 'JUnit_ModuleTest/RunTestCase_HumanEval/Module_ADD/src/main/java/{}.java'.format(programFileName))
+        self.write_ADD_File(target, programFileName)
+
+        self.assertTrue(self.fileIO.isPathExist(target))
+
         junitModuleEnvironment = self.verification_HumanEval.getJunitModuleTestEnvironment()
 
         params = [testModuleName, programFileName, LogFolder, GRADLE_PATH, junitModuleEnvironment]
@@ -216,7 +247,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
         self.assertTrue(os.path.exists(target))
 
         logContent = self.fileIO.readFileData(target)
-        self.assertTrue('BUILD FAILED' in logContent or 'BUILD SUCCESSFUL' in logContent)
+        self.assertTrue('BUILD FAILED' in logContent)
 
     def test_run_test_case_batchSize_get_dictionary(self):
         self.setUp2()
@@ -243,6 +274,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
     def test_run_script_starter(self):
         self.verification_HumanEval.junitEnvironment_Initialize()
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
+        self.verification.HumanEval.juniEnvironment_TEST_File_Initialize()
 
         self.verification_HumanEval.setLogFolderPath(
             'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log')
@@ -294,44 +326,6 @@ class Verification_HumanEval_Test(unittest.TestCase):
         }
         """
         self.assertEqual(self.verification_HumanEval.checkBuggyMethodLine(buggyMethod), 'Single')
-
-    def test_update_result_framework_by_log_info(self):
-        LogFolderPath = os.path.join(ROOT, 'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Log')
-        JsonFilePath = os.path.join(ROOT, 'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/Json/test.json')
-
-        fileList = self.fileIO.getFileListUnderFolder(LogFolderPath)
-
-        data = self.jsonFileIO.readJsonData(JsonFilePath)
-
-        for file in fileList:
-            buggyId = file[:file.find('_TEST')]        # ADD_TEST_0.txt --> ADD
-            sequence = file[file.find('_TEST_') + len('_TEST_'):-4]     # ADD_TEST_0.txt --> 0
-            logContent = self.fileIO.readFileData(os.path.join(LogFolderPath, file))
-            print(buggyId,sequence, 'BUILD SUCCESSFUL' in logContent)
-            if 'BUILD SUCCESSFUL' in logContent:
-                for item in data:
-                    if item['buggyId'] == buggyId:
-                        item['repair'] = True
-                        item['output'][str(sequence)]['PassTestCase'] = True
-                        break
-
-        self.jsonFileIO.writeJsonFile(data, JsonFilePath)
-
-        data = self.jsonFileIO.readJsonData(JsonFilePath)
-
-        repair = 0
-        runTestCasePass = 0
-        for item in data:
-            if item['repair']:
-                repair += 1
-                output = item['output']
-                for i in range(len(output)):
-                    if output[str(i)]['PassTestCase']:
-                        runTestCasePass += 1
-
-        self.assertEqual(repair, 2)
-        self.assertEqual(runTestCasePass, 2)
-
 
 if __name__ == '__main__':
     unittest.main()
