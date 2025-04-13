@@ -114,8 +114,8 @@ class Verification_HumanEval(Verification):
 
         if result.returncode != 0:
             if ('STRING_TO_MD5' in result.stderr and
-                'error: cannot find symbol' in result.stderr and
-                'symbol:   variable DatatypeConverter' in result.stderr):
+                result.stderr.count('error: cannot find symbol') == 1  and
+                'symbol:   variable DatatypeConverter' in result.stderr) and '2 errors' in result.stderr:
                 return '', True
             return result.stderr, False
         return result.stderr, True
