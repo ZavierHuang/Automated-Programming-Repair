@@ -290,10 +290,16 @@ class Verification:
                 self.getJunitModuleTestEnvironment(),
                 "{}/src/test/java/{}_TEST.java".format(moduleName, item[1])
             )
+            if item[1] == 'GET_ROW':
+                self.fileIO.replaceName(testFilePath, item[1] + '()', item[0] + '()')   # GET_ROW() --> GET_ROW_TEST_1()
+
             self.fileIO.replaceName(testFilePath, oldName, newName)
-            print("New Name:",newName)
             self.runScriptSingleFile(item[0], moduleName)
             self.fileIO.replaceName(testFilePath, newName, oldName)
+
+            if item[1] == 'GET_ROW':
+                self.fileIO.replaceName(testFilePath, item[0] + '()', item[1] + '()')   # GET_ROW_TEST_1() --> GET_ROW()
+
 
     def checkBuggyMethodLine(self, buggyMethod):
         buggyMethod = buggyMethod[buggyMethod.find('buggy code'):]

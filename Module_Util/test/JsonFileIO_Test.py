@@ -46,6 +46,17 @@ class JsonFileIO_Test(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(ROOT, 'Module_Util/test/json/test.json')))
         shutil.rmtree(os.path.join(ROOT, 'Module_Util/test/json/test.json'))
 
+    def test_read_jsonLine_data(self):
+        jsonFile = os.path.join(ROOT, 'Result_Output/HumanEval/CodeLlama/OriginalResult/BeamSearch/Demo/patch/HumanEval_CodeLlama_Lora_Demo_Patch05_TEST.jsonl')
+
+        data = self.jsonFileIO.readJsonLineData(jsonFile)
+
+        for item in data:
+            print(item['buggy_code'])
+            # output = item['output']
+            # for i in range(len(output)):
+            #     print(output[str(i)]['output_patch'])
+            print("=====================")
 
 if __name__ == '__main__':
     unittest.main()

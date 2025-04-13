@@ -65,6 +65,7 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.verification_HumanEval.setLLMModel(LLM_CodeLlama())
 
     def test_load_and_run_test_case(self):
+        self.demoUsedSetUp()
         self.verification_HumanEval.junitEnvironment_Initialize()
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
         self.verification_HumanEval.juniEnvironment_TEST_File_Initialize()

@@ -47,6 +47,37 @@ class Verification_HumanEval(Verification):
         return importContent
 
     @overrides
+    def createJavaValidCode(self,patchFileName, methodCode, remainderCode, importContent):
+        if 'DECODE_CYCLIC' in patchFileName:
+            javaCode = f"""
+                {importContent}
+                public class {patchFileName} {{
+                    public static String decode_cyclic(String str) {{
+                        class Cyclic{{
+                            {methodCode}
+                        }}
+                        {remainderCode}
+                    }}
+                }}
+                """
+            return javaCode
+
+        if 'SORT_ARRAY_BINARY' in patchFileName:
+            javaCode = f"""
+                {importContent}
+                public class {patchFileName} {{
+                    Collections.sort(arr, new Comparator<Integer>() {{
+                        @Override
+                        {methodCode}
+                    }}
+                    {remainderCode}
+                }}
+                """
+            return javaCode
+
+        return super().createJavaValidCode(patchFileName, methodCode, remainderCode, importContent)
+
+    @overrides
     def checkJavaFormat(self, methodCode, patchFileName, buggyId):
         # ADD --> ADD_TEST_1
         methodCode = methodCode.replace(buggyId, patchFileName)

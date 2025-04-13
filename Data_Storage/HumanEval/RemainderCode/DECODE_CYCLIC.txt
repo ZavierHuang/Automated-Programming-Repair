@@ -1,0 +1,2 @@
+final Cyclic cyclic = new Cyclic();
+return cyclic.encode_cyclic(cyclic.encode_cyclic(str));
