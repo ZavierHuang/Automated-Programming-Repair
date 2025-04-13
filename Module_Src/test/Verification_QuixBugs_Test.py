@@ -56,13 +56,17 @@ class Verification_QuixBugs_Test(unittest.TestCase):
             @org.junit.Test(timeout = 3000)
             public void test_0() throws java.lang.Exception {
                 int result = BITCOUNT_TEST_1.bitcount((int)127);
+                int result = BITCOUNT_TEST.bitcount((int)127);
                 org.junit.Assert.assertEquals( (int) 7, result);
             }
         }
         """
         result = re.sub(r'_TEST_\d+', '', data)
+        result = re.sub(r'_TEST\.', '', result)
         print(result)
         self.assertTrue('_TEST_' not in result)
+        print(result.count('_TEST'))
+        self.assertTrue(result.count('_TEST') == 1)
 
     def test_check_no_file_contains_TEST_Number(self):
         sub_Module_Folder_List = self.fileIO.getRunTestCaseModuleFolderList(self.verification_QuixBugs.getJunitModuleTestEnvironment())

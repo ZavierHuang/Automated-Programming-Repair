@@ -154,6 +154,7 @@ class Verification:
                 filePath = os.path.join(test_targetPath, file)
                 data = self.fileIO.readFileData(filePath)
                 result = re.sub(r'_TEST_\d+', '', data)
+                result = re.sub(r'_TEST\.', '', result)
                 self.fileIO.writeFileData(filePath, result)
 
                 print(file)
@@ -290,6 +291,7 @@ class Verification:
                 "{}/src/test/java/{}_TEST.java".format(moduleName, item[1])
             )
             self.fileIO.replaceName(testFilePath, oldName, newName)
+            print("New Name:",newName)
             self.runScriptSingleFile(item[0], moduleName)
             self.fileIO.replaceName(testFilePath, newName, oldName)
 
