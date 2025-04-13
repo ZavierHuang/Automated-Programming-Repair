@@ -17,11 +17,11 @@ class Verification_QuixBugs_Test(unittest.TestCase):
     def setUp(self):
         self.verification = Verification()
         self.verification_QuixBugs = Verification_QuixBugs()
+        self.verification_QuixBugs.setDataSetName('QuixBugs')
         self.verification_QuixBugs.setRemainderCodePath(None)
         self.verification_QuixBugs.setScriptPath('Tool/execute_python.sh')
         self.verification_QuixBugs.setJunitEnvironment('JUnit_Environment/JUnit_QuixBugs_Environment')
         self.verification_QuixBugs.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_QuixBugs')
-
         self.verification_QuixBugs.setTestDataResult('Result_Output/QuixBugs/Qwen/BeamSearch/Demo/patch/QuixBugs_Qwen_Lora_Demo_Patch05_TEST.jsonl')
 
         self.fileIO = FileIO()
@@ -282,7 +282,6 @@ class Verification_QuixBugs_Test(unittest.TestCase):
 
     def write_MINIMUM_SPANNING_TREE_File(self, target, programFileName):
         javaCode = f"""
-        import dataStructures.*;
         import java.util.*;
         
         public class {programFileName} {{
@@ -354,7 +353,7 @@ class Verification_QuixBugs_Test(unittest.TestCase):
 
     def test_run_test_case_batchSize_get_dictionary(self):
         self.setUp2()
-        self.verification_QuixBugs.createJsonFramework()
+        self.verification_QuixBugs.createJsonFramework(['BREADTH_FIRST_SEARCH','FLATTEN','LONGEST_COMMON_SUBSEQUENCE'])
         """
         【Movement】 move file from junit_environment_pass folder to junit_module_environment and ready to run testcase
         【Replace】if file name is ADD_TEST_1, then all 'ADD' will be replaced with 'ADD_TEST_1' in the testcase file
@@ -420,12 +419,12 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         """
         self.assertEqual(self.verification_QuixBugs.checkBuggyMethodLine(buggyMethod), 'Single')
 
-    def test_and_update_jsonFile(self):
+    def test_and_run(self):
         self.setUp2()
         self.verification_QuixBugs.junitEnvironment_Initialize()
         self.verification_QuixBugs.junitEnvironment_Run_Initialize()
         self.verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
-        self.verification_QuixBugs.createJsonFramework()
+        self.verification_QuixBugs.createJsonFramework(['BREADTH_FIRST_SEARCH','FLATTEN','LONGEST_COMMON_SUBSEQUENCE'])
         self.verification_QuixBugs.createPromptRepairProgramSet()
         runFileList = self.verification_QuixBugs.getAllRunTestCaseFileList()
         dictionary = self.verification_QuixBugs.getFileAndModuleDict(runFileList)

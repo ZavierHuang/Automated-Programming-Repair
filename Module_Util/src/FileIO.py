@@ -81,3 +81,9 @@ class FileIO:
         s1 = re.sub(r'\s+', '', s1)
         s2 = re.sub(r'\s+', '', s2)
         return s1 == s2
+
+    def deleteJavaFileUnderFolder(self, folderPath):
+        for file in os.listdir(folderPath):
+            filePath = os.path.join(folderPath, file)
+            if os.path.isfile(filePath) and file.endswith('.java'):
+                os.remove(filePath)

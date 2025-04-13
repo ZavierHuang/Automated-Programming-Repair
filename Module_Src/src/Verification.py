@@ -13,6 +13,7 @@ from Module_Util.src.JsonFileIO import JsonFileIO
 
 class Verification:
     def __init__(self):
+        self.DataSetName = None
         self.junitEnvironment = None
         self.remainCodePath = None
         self.junitModuleTestEnvironment = None
@@ -27,6 +28,9 @@ class Verification:
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
         self.LLM = None
+
+    def setDataSetName(self, DataSetName):
+        self.DataSetName = DataSetName
 
     def setLLMModel(self, LLModel):
         self.LLM = LLModel
@@ -61,6 +65,9 @@ class Verification:
 
     def setJunitEnvironment(self, junit_environment):
         self.junitEnvironment = os.path.join(ROOT, junit_environment)
+
+    def getDataSetName(self):
+        return self.DataSetName
 
     def getLLMModel(self):
         return self.LLM
@@ -136,8 +143,7 @@ class Verification:
     def junitEnvironment_Run_Initialize(self):
         sub_Module_Folder_List = self.fileIO.getRunTestCaseModuleFolderList(self.getJunitModuleTestEnvironment())
         for subModuleFolderPath in sub_Module_Folder_List:
-            self.fileIO.deleteSubFolderAndCreate(subModuleFolderPath,
-                                                 [os.path.join(subModuleFolderPath, 'src/main/java')])
+            self.fileIO.deleteJavaFileUnderFolder(os.path.join(subModuleFolderPath, 'src/main/java'))
 
     def juniEnvironment_TEST_File_Initialize(self):
         sub_Module_Folder_List = self.fileIO.getRunTestCaseModuleFolderList(self.getJunitModuleTestEnvironment())
@@ -202,12 +208,16 @@ class Verification:
 
         return dictionary
 
-    def createJsonFramework(self):
+    def createJsonFramework(self, exceptList):
         data = self.jsonFileIO.readJsonLineData(self.getTestData())
+        print(data, self.getTestData(),self.fileIO.isPathExist(self.getTestData()))
         dictionary = []
 
         for item in data:
             buggyId = item['bug_id']
+            if buggyId in exceptList:
+                continue
+
             buggyCode = item['buggy_code']
             output = item['output']
             solution = item['gold_patch']
@@ -231,6 +241,14 @@ class Verification:
                 javaFormatLog, javaFormatResult = self.checkJavaFormat(methodCode, patchFileName, buggyId)
                 compileLog, compileResult = self.checkJavaCompile(target, javaFormatResult)
 
+                if self.DataSetName == 'QuixBugs':
+                    data = self.fileIO.readFileData(target)
+                    for item in ['Node', 'WeightedEdge', 'QuixFixOracleHelper']:
+                        if item in data:
+                            data = 'import dataStructures.*;\n' + data
+                            self.fileIO.writeFileData(target, data)
+                            break
+
                 print(patchFileName, compileResult, compileLog)
 
                 self.fileIO.copyFile(target, targetModule, compileResult)
@@ -246,7 +264,21 @@ class Verification:
         self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())
 
     def runScriptSingleFile(self, patchFileName, moduleName):
-        pass
+        # params = [testModuleName, programFileName, logFolder, gradlePath, junitModuleEnvironment]
+
+        # patchFileName = ADD_ELEMENTS_TEST_4
+        # moduleName = Module_ADD_ELEMENTS
+
+        print('run ', patchFileName)
+
+        params = [
+            moduleName,
+            patchFileName,
+            self.getLogFolderPath(),
+            GRADLE_PATH,
+            self.getJunitModuleTestEnvironment()
+        ]
+        self.runBashScript(params)
 
     def runScriptBatchFile(self, directory):
         for item in directory.items():

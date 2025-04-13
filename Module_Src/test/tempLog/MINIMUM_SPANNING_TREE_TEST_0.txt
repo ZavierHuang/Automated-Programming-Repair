@@ -1,0 +1,76 @@
+> Task :Module_MINIMUM_SPANNING_TREE:compileJava
+> Task :Module_MINIMUM_SPANNING_TREE:processResources NO-SOURCE
+> Task :Module_MINIMUM_SPANNING_TREE:classes
+
+> Task :Module_MINIMUM_SPANNING_TREE:compileTestJava FAILED
+F:\GITHUB\Automated-Programming-Repair\JUnit_ModuleTest\RunTestCase_QuixBugs\Module_MINIMUM_SPANNING_TREE\src\test\java\MINIMUM_SPANNING_TREE_TEST.java:36: error: cannot find symbol
+        Set<WeightedEdge> minspantree = MINIMUM_SPANNING_TREE.minimum_spanning_tree(graph);
+                                        ^
+  symbol:   variable MINIMUM_SPANNING_TREE
+  location: class MINIMUM_SPANNING_TREE_TEST
+F:\GITHUB\Automated-Programming-Repair\JUnit_ModuleTest\RunTestCase_QuixBugs\Module_MINIMUM_SPANNING_TREE\src\test\java\MINIMUM_SPANNING_TREE_TEST.java:70: error: cannot find symbol
+        Set<WeightedEdge> minspantree = MINIMUM_SPANNING_TREE.minimum_spanning_tree(graph);
+                                        ^
+  symbol:   variable MINIMUM_SPANNING_TREE
+  location: class MINIMUM_SPANNING_TREE_TEST
+F:\GITHUB\Automated-Programming-Repair\JUnit_ModuleTest\RunTestCase_QuixBugs\Module_MINIMUM_SPANNING_TREE\src\test\java\MINIMUM_SPANNING_TREE_TEST.java:98: error: cannot find symbol
+        Set<WeightedEdge> minspantree = MINIMUM_SPANNING_TREE.minimum_spanning_tree(graph);
+                                        ^
+  symbol:   variable MINIMUM_SPANNING_TREE
+  location: class MINIMUM_SPANNING_TREE_TEST
+3 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':Module_MINIMUM_SPANNING_TREE:compileTestJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 1s
+2 actionable tasks: 2 executed
+Successfully
+Module_MINIMUM_SPANNING_TREE
+
+Task Complete!
+> Task :Module_MINIMUM_SPANNING_TREE:compileJava
+> Task :Module_MINIMUM_SPANNING_TREE:processResources NO-SOURCE
+> Task :Module_MINIMUM_SPANNING_TREE:classes
+> Task :Module_MINIMUM_SPANNING_TREE:compileTestJava
+> Task :Module_MINIMUM_SPANNING_TREE:processTestResources NO-SOURCE
+> Task :Module_MINIMUM_SPANNING_TREE:testClasses
+
+> Task :Module_MINIMUM_SPANNING_TREE:test FAILED
+
+MINIMUM_SPANNING_TREE_TEST > test1 FAILED
+    java.lang.AssertionError at MINIMUM_SPANNING_TREE_TEST.java:43
+
+MINIMUM_SPANNING_TREE_TEST > test2 FAILED
+    java.lang.AssertionError at MINIMUM_SPANNING_TREE_TEST.java:80
+
+3 tests completed, 2 failed
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':Module_MINIMUM_SPANNING_TREE:test'.
+> There were failing tests. See the report at: file:///F:/GITHUB/Automated-Programming-Repair/JUnit_ModuleTest/RunTestCase_QuixBugs/Module_MINIMUM_SPANNING_TREE/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.9/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 2s
+3 actionable tasks: 3 executed
+Successfully
+Module_MINIMUM_SPANNING_TREE
+
+Task Complete!

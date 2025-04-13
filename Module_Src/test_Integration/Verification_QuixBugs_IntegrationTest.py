@@ -1,4 +1,5 @@
 import os
+import time
 import unittest
 
 from Config import ROOT
@@ -13,18 +14,14 @@ class verification_QuixBugs_IntegrationTest(unittest.TestCase):
         super().__init__(methodName)
 
     def setUp(self):
-        pass
-
-    def demoUsedSetUp(self):
         self.verification_QuixBugs = Verification_QuixBugs()
+        self.verification_QuixBugs.setDataSetName('QuixBugs')
         self.verification_QuixBugs.setRemainderCodePath(None)
         self.verification_QuixBugs.setScriptPath('Tool/execute_python.sh')
         self.verification_QuixBugs.setJunitEnvironment('JUnit_Environment/JUnit_QuixBugs_Environment')
         self.verification_QuixBugs.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_QuixBugs')
-
         self.verification_QuixBugs.setTestDataResult(
             'Result_Output/QuixBugs/Qwen/BeamSearch/Demo/patch/QuixBugs_Qwen_Lora_Demo_Patch05_TEST.jsonl')
-
         self.verification_QuixBugs.setJsonResultPath(
             'Result_Output/QuixBugs/Qwen/BeamSearch/Demo/Json/test.json')
         self.verification_QuixBugs.setRepairProgramPath(
@@ -40,22 +37,20 @@ class verification_QuixBugs_IntegrationTest(unittest.TestCase):
 
 
     def test_load_and_run_test_case(self):
-        self.demoUsedSetUp()
         self.verification_QuixBugs.junitEnvironment_Initialize()
         self.verification_QuixBugs.junitEnvironment_Run_Initialize()
         self.verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
-        self.verification_QuixBugs.createJsonFramework()
+        self.verification_QuixBugs.createJsonFramework(['BREADTH_FIRST_SEARCH','FLATTEN','LONGEST_COMMON_SUBSEQUENCE'])
         self.verification_QuixBugs.createPromptRepairProgramSet()
         runFileList = self.verification_QuixBugs.getAllRunTestCaseFileList()
         dictionary = self.verification_QuixBugs.getFileAndModuleDict(runFileList)
         self.verification_QuixBugs.runScriptBatchFile(dictionary)
-
         self.verification_QuixBugs.updateJsonResult()
         self.assertTrue(len(dictionary), len(self.fileIO.getFileListUnderFolder(self.verification_QuixBugs.getLogFolderPath())))
+        self.test_result_analysis()
 
     def test_result_analysis(self):
-        jsonFilePath = os.path.join(ROOT, 'Result_Output/QuixBugs/Qwen/BeamSearch/Demo/Json/test.json')
-        data = self.jsonFileIO.readJsonData(jsonFilePath)
+        data = self.jsonFileIO.readJsonData(self.verification_QuixBugs.getJsonResultPath())
 
         for item in data:
             if item['repair']:
@@ -67,6 +62,7 @@ class verification_QuixBugs_IntegrationTest(unittest.TestCase):
                 if output[str(i)]['PassTestCase']:
                     print(item['buggyId'], i, 'pass test case:', output[str(i)]['PassTestCase'])
 
+        self.assertEqual(len(data), 37)
 
 if __name__ == '__main__':
     # integration test

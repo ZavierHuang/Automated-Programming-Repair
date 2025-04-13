@@ -1,9 +1,10 @@
 import os
 import shutil
+import time
 
 from overrides import overrides
 
-from Config import GRADLE_PATH, ROOT
+from Config import ROOT
 from Module_Src.src.Verification import Verification
 
 
@@ -14,13 +15,6 @@ class Verification_QuixBugs(Verification):
     @overrides
     def junitEnvironment_Run_Initialize(self):
         super().junitEnvironment_Run_Initialize()
-        # Node.java , Weighted, QuixFixOracleHelper have "package datastructures;"
-        dataStructurePath = os.path.join(self.getJunitModuleTestEnvironment(), 'dataStructures')
-        sub_Module_Folder_List = self.fileIO.getRunTestCaseModuleFolderList(self.getJunitModuleTestEnvironment())
-
-        for subModuleFolderPath in sub_Module_Folder_List:
-            print('copy Successfully')
-            shutil.copytree(dataStructurePath, os.path.join(subModuleFolderPath, 'src/main/java/dataStructures'), dirs_exist_ok=True)
 
     @overrides
     def getImportContent(self, buggyId):
@@ -95,31 +89,6 @@ class Verification_QuixBugs(Verification):
         if result.returncode != 0:
             return result.stderr, False
         return result.stderr, True
-
-
-    @overrides
-    def runScriptSingleFile(self, patchFileName, moduleName):
-        patchFilePath = os.path.join(self.getJunitModuleTestEnvironment(),'{}/src/main/java/{}.java'.format(moduleName,patchFileName))
-
-        data = self.fileIO.readFileData(patchFilePath)
-        data = 'import dataStructures.*;\n' + data
-        self.fileIO.writeFileData(patchFilePath, data)
-
-        # params = [testModuleName, programFileName, logFolder, gradlePath, junitModuleEnvironment]
-
-        #patchFileName = BITCOUNT_TEST_4
-        #moduleName = Module_BITCOUNT
-
-        print('run ', patchFileName)
-
-        params = [
-            moduleName,
-            patchFileName,
-            self.getLogFolderPath(),
-            GRADLE_PATH,
-            self.getJunitModuleTestEnvironment()
-        ]
-        self.runBashScript(params)
 
     @overrides
     def updateJsonResult(self):

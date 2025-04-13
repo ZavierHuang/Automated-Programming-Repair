@@ -87,24 +87,6 @@ class Verification_HumanEval(Verification):
         return result.stderr, True
 
     @overrides
-    def runScriptSingleFile(self, patchFileName, moduleName):
-        # params = [testModuleName, programFileName, logFolder, gradlePath, junitModuleEnvironment]
-
-        #patchFileName = ADD_ELEMENTS_TEST_4
-        #moduleName = Module_ADD_ELEMENTS
-
-        print('run ', patchFileName)
-
-        params = [
-            moduleName,
-            patchFileName,
-            self.getLogFolderPath(),
-            GRADLE_PATH,
-            self.getJunitModuleTestEnvironment()
-        ]
-        self.runBashScript(params)
-
-    @overrides
     def updateJsonResult(self):
         fileList = self.fileIO.getFileListUnderFolder(self.getLogFolderPath())
         data = self.jsonFileIO.readJsonData(self.getJsonResultPath())

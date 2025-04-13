@@ -17,6 +17,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
     def setUp(self):
         self.verification = Verification()
         self.verification_HumanEval = Verification_HumanEval()
+        self.verification_HumanEval.setDataSetName('HumanEval')
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
         self.verification_HumanEval.setScriptPath('Tool/execute_python.sh')
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
@@ -251,7 +252,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
 
     def test_run_test_case_batchSize_get_dictionary(self):
         self.setUp2()
-        self.verification_HumanEval.createJsonFramework()
+        self.verification_HumanEval.createJsonFramework([])
         """
         【Movement】 move file from junit_environment_pass folder to junit_module_environment and ready to run testcase
         【Replace】if file name is ADD_TEST_1, then all 'ADD' will be replaced with 'ADD_TEST_1' in the testcase file

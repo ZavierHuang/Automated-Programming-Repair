@@ -18,6 +18,8 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         current = 'Lora04_DBS_40'
 
         self.verification_HumanEval = Verification_HumanEval()
+        self.verification_HumanEval.setDataSetName('HumanEval')
+
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
         self.verification_HumanEval.setScriptPath('Tool/execute_python.sh')
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
@@ -36,10 +38,9 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
 
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
-        self.model_CodeLlama = LLM_CodeLlama()
+        self.verification_HumanEval.setLLMModel(LLM_CodeLlama())
 
     def demoUsedSetUp(self):
-        self.verification_HumanEval = Verification_HumanEval()
         self.verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
         self.verification_HumanEval.setScriptPath('Tool/execute_python.sh')
         self.verification_HumanEval.setJunitEnvironment('JUnit_Environment/JUnit_HumanEval_Environment')
@@ -67,7 +68,7 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.verification_HumanEval.junitEnvironment_Initialize()
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
         self.verification.HumanEval.juniEnvironment_TEST_File_Initialize()
-        self.verification_HumanEval.createJsonFramework()
+        self.verification_HumanEval.createJsonFramework([])
         self.verification_HumanEval.createPromptRepairProgramSet()
         runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()
         dictionary = self.verification_HumanEval.getFileAndModuleDict(runFileList)

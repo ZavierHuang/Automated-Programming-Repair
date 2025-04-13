@@ -144,5 +144,17 @@ class FileIO_Test(unittest.TestCase):
         s2 = "return x + y;"
 
         print(self.fileIO.compareEqual(s1, s2))
+
+    def test_deleteJavaFileUnderFolder(self):
+        folderPath = os.path.join(ROOT, 'Module_Util/test/deleteOneLayerJavaFile')
+        self.fileIO.writeFileData(os.path.join(folderPath,'test-1.java'), "Hello")
+        self.fileIO.writeFileData(os.path.join(folderPath,'test-2.java'), "Hello")
+        self.assertTrue(self.fileIO.isPathExist(os.path.join(folderPath,'test-1.java')))
+        self.assertTrue(self.fileIO.isPathExist(os.path.join(folderPath,'test-2.java')))
+
+        self.fileIO.deleteJavaFileUnderFolder(folderPath)
+        self.assertFalse(self.fileIO.isPathExist(os.path.join(folderPath,'test-1.java')))
+        self.assertFalse(self.fileIO.isPathExist(os.path.join(folderPath,'test-2.java')))
+
 if __name__ == '__main__':
     unittest.main()
