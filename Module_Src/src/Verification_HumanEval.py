@@ -66,9 +66,12 @@ class Verification_HumanEval(Verification):
             javaCode = f"""
                 {importContent}
                 public class {patchFileName} {{
-                    Collections.sort(arr, new Comparator<Integer>() {{
-                        @Override
-                        {methodCode}
+                    public static ArrayList<Integer> sort_array_binary(ArrayList<Integer> arr) {{
+                        Collections.sort(arr, new Comparator<Integer>() {{
+                            @Override
+                            {methodCode}
+                        }});
+                        return arr;
                     }}
                     {remainderCode}
                 }}
