@@ -14,3 +14,5 @@ BASH_PATH = "C:/Program Files/Git/bin/bash.exe"
 
 # Gradle
 GRADLE_PATH = 'D:/Tool/gradle-8.9-all/gradle-8.9/bin'
+
+LLM_MODEL_PATH = os.path.join(ROOT, 'FineTuningModel')

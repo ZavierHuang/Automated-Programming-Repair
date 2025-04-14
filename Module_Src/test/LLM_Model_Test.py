@@ -1,6 +1,8 @@
+import os
 import re
 import unittest
 
+from Config import LLM_MODEL_PATH
 from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
 from Module_Src.src.LLM_Qwen import LLM_Qwen
 from Module_Src.src.Verification_HumanEval import Verification_HumanEval
@@ -37,7 +39,6 @@ class LLM_Model_Test(unittest.TestCase):
 
         self.assertEqual(self.normalize(result), self.normalize(fixedCode))
 
-
     def test_patchCode_Replace_With_Qwen(self):
         patchCode = '</s>  return x+y;  '
         buggyCode = """
@@ -58,6 +59,17 @@ class LLM_Model_Test(unittest.TestCase):
 
         self.assertEqual(self.normalize(result), self.normalize(fixedCode))
 
+    def test_create_patch_code(self):
+        model_Qwen = LLM_Qwen()
+        model_Qwen.setIsLora(True)
+        model_Qwen.setLoraAndEpoch('Lora04', 2)
+        model_Qwen.setNumBeams(10)
+        model_Qwen.setDiversity(0)
+        model_Qwen.setDataSourceFilePath('Module_Src/test/tempPatchGenerate/Qwen_test_Multiple.jsonl')
+        model_Qwen.setResultOutputFilePath('Module_Src/test/tempPatchGenerate/Qwen_test_Multiple_output.jsonl')
+
+        self.assertEqual(model_Qwen.getBaseModelPath(), 'Qwen/Qwen2.5-Coder-1.5B')
+        self.assertEqual(model_Qwen.getLoraPath(), os.path.join(LLM_MODEL_PATH, 'model_Qwen/model_Lora04/checkpoint-epoch-2.0'))
 
 
 if __name__ == '__main__':
