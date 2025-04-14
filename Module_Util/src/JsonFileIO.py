@@ -40,6 +40,16 @@ class JsonFileIO(FileIO):
             print(f"[ERROR] Failed to write {writeJsonFilePath}: {e}")
             raise
 
+    def writeJsonLineFile(self, data, writeJsonLineFilePath):
+        try:
+            with open(writeJsonLineFilePath, "w", encoding="utf-8") as f:
+                for item in data:
+                    json_line = json.dumps(item)
+                    f.write(json_line + "\n")
+        except Exception as e:
+            print(f"[ERROR] Failed to write {writeJsonLineFilePath}: {e}")
+            raise
+
     def readJsonData(self, jsonFilePath):
         with open(jsonFilePath, 'r', encoding='utf-8') as jsonFile:
             data = json.load(jsonFile)

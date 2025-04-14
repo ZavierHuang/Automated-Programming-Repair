@@ -157,7 +157,7 @@ class Verification:
                 result = re.sub(r'_TEST\.', '', result)
                 self.fileIO.writeFileData(filePath, result)
 
-                print(file)
+                # print(file)
                 data = self.fileIO.readFileData(filePath)
                 if '_TEST_' in data:
                     print(file,'Test File Initialize Terminated')
@@ -211,7 +211,7 @@ class Verification:
 
     def createJsonFramework(self, exceptList):
         data = self.jsonFileIO.readJsonLineData(self.getTestData())
-        print(data, self.getTestData(),self.fileIO.isPathExist(self.getTestData()))
+        print(self.getTestData(),self.fileIO.isPathExist(self.getTestData()))
         dictionary = []
 
         for item in data:

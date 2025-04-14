@@ -2,7 +2,7 @@ from Module_Src.src.LLM_Qwen import LLM_Qwen
 from Module_Src.src.Verification_HumanEval import Verification_HumanEval
 from Module_Util.src.JsonFileIO import JsonFileIO
 
-def setUp(current, diverseBeamSearch):
+def setUp(name, folder):
     verification_HumanEval = Verification_HumanEval()
     verification_HumanEval.setDataSetName('HumanEval')
     verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
@@ -11,15 +11,15 @@ def setUp(current, diverseBeamSearch):
     verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
 
     verification_HumanEval.setTestDataResult(
-        'Result_Output/HumanEval/CodeLlama/OriginalResult/DiverseBeamSearch40/Lora04/Patch/HumanEval_Lora04_E2_DBS_40.jsonl')
+        'Result_Output/HumanEval/Qwen/OriginalResult/{}/Lora04/Patch/HumanEval_{}.jsonl'.format(folder, name))
     verification_HumanEval.setJsonResultPath(
-        'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/Lora04/Json/{}.json'.format(diverseBeamSearch, current))
+        'Result_Output/HumanEval/Qwen/OriginalResult/{}/Lora04/Json/{}.json'.format(folder, name))
     verification_HumanEval.setLogFolderPath(
-        'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/Lora04/{}'.format(diverseBeamSearch, 'Log'))
+        'Result_Output/HumanEval/Qwen/OriginalResult/{}/Lora04/{}'.format(folder, 'Log'))
     verification_HumanEval.setRepairProgramPath(
-        'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/Lora04/{}/'.format(diverseBeamSearch, 'repairProgram'))
+        'Result_Output/HumanEval/Qwen/OriginalResult/{}/Lora04/{}/'.format(folder, 'repairProgram'))
     verification_HumanEval.setPromptRepairProgramPath(
-        'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/Lora04/{}/'.format(diverseBeamSearch,
+        'Result_Output/HumanEval/Qwen/OriginalResult/{}/Lora04/{}/'.format(folder,
                                                                         'promptRepairProgram'))
     verification_HumanEval.setLLMModel(LLM_Qwen())
     return verification_HumanEval
@@ -45,9 +45,17 @@ def test_result_analysis():
             print(item['buggyId'])
 
 if __name__ == '__main__':
-    diverseBeamSearch = 'DiverseBeamSearch40'
-    current = 'Lora04_DBS_40'
-    verification_HumanEval = setUp(current, diverseBeamSearch)
-    test_load_and_run_test_case(verification_HumanEval)
-    test_result_analysis()
+    pendlingList = {
+        'BeamSearch':'Lora04_E2_BS',
+        'DiverseBeamSearch20':'Lora04_E2_DBS_20',
+        'DiverseBeamSearch40':'Lora04_E2_DBS_40',
+        'DiverseBeamSearch60':'Lora04_E2_DBS_60',
+        'DiverseBeamSearch80':'Lora04_E2_DBS_80',
+        'DiverseBeamSearch100':'Lora04_E2_DBS_100',
+    }
+
+    for folder, name in pendlingList.items():
+        verification_HumanEval = setUp(name, folder)
+        test_load_and_run_test_case(verification_HumanEval)
+        test_result_analysis()
     

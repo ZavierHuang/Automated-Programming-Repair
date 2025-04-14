@@ -437,6 +437,44 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.assertTrue(len(dictionary),
                         len(self.fileIO.getFileListUnderFolder(self.verification_QuixBugs.getLogFolderPath())))
 
+    def test_multiple_fill_json_create(self):
+        self.verification_QuixBugs = Verification_QuixBugs()
+
+        # self.verification_QuixBugs.setLLMModel(LLM_Qwen())
+        # jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_test.jsonl')
+        # outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_test_Multiple.jsonl')
+
+        self.verification_QuixBugs.setLLMModel(LLM_CodeLlama())
+        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/CodeLlama_test.jsonl')
+        outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/CodeLlama_test_test_Multiple.jsonl')
+
+        self.assertTrue(os.path.exists(jsonFilePaths))
+        self.verification_QuixBugs.multipleFillJsonCreate(jsonFilePaths, outputJsonFilePaths)
+        self.assertTrue(self.jsonFileIO.isPathExist(outputJsonFilePaths))
+
+        data = self.jsonFileIO.readJsonLineData(outputJsonFilePaths)
+        self.assertEqual(len(data), 15)
+
+        for item in data:
+            buggyCode = item['buggyCode']
+            print(self.verification_QuixBugs.getLLMModel().getLLMName())
+            if self.verification_QuixBugs.getLLMModel().getLLMName() == 'CodeLlama':
+                self.assertEqual(buggyCode.count('buggy code'), 1)
+                self.assertEqual(buggyCode.count('<FILL_ME>'), 1)
+            elif self.verification_QuixBugs.getLLMModel().getLLMName() == 'Qwen':
+                PREFIX = '<|fim_prefix|>'
+                MIDDLE = '<|fim_middle|>'
+                SUFFIX = '<|fim_suffix|>'
+                self.assertEqual(buggyCode.count('buggy code'), 1)
+                self.assertEqual(buggyCode.count(PREFIX), 1)
+                self.assertEqual(buggyCode.count(MIDDLE), 1)
+                self.assertEqual(buggyCode.count(SUFFIX), 1)
+            else:
+                print("ERROR")
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -6,6 +6,7 @@ from Module_Src.src.LLM_Model import LLM_Model
 class LLM_Qwen(LLM_Model):
     def __init__(self):
         super().__init__()
+        self.name = 'Qwen'
 
     @overrides
     def patchReplaceByModel(self, buggyCode, patchCode):
@@ -20,3 +21,22 @@ class LLM_Qwen(LLM_Model):
 
         return fixedCode
 
+    @overrides
+    def remarkErrorPosition(self, buggyCode):
+        errorPart = buggyCode[buggyCode.find('// buggy code') + len('// buggy code'):buggyCode.find('// fill')]
+
+        PREFIX = '<|fim_prefix|>'
+        MIDDLE = '<|fim_middle|>'
+        SUFFIX = '<|fim_suffix|>'
+
+        buggyCode = buggyCode.replace('// buggy code', SUFFIX)
+        buggyCode = buggyCode.replace('// fill', '')
+
+        twiceBuggyCode = f"""
+        {PREFIX}{buggyCode}
+        {MIDDLE}
+        // buggy code
+        {errorPart}
+        """
+
+        return twiceBuggyCode

@@ -328,6 +328,39 @@ class Verification_HumanEval_Test(unittest.TestCase):
         """
         self.assertEqual(self.verification_HumanEval.checkBuggyMethodLine(buggyMethod), 'Single')
 
+    def test_check_test_program_has_recursive(self):
+        sub_Module_Folder_List = self.fileIO.getRunTestCaseModuleFolderList(self.verification_HumanEval.getJunitModuleTestEnvironment())
+        for subModuleFolderPath in sub_Module_Folder_List:
+            test_targetPath = os.path.join(subModuleFolderPath, 'src/test/java')
+            fileList = self.fileIO.getFileListUnderFolder(test_targetPath)
+            for file in fileList:
+                buggyId = file[:file.find('_TEST')]
+                filePath = os.path.join(test_targetPath, file)
+                data = self.fileIO.readFileData(filePath)
+                if buggyId + '(' in data:
+                    print(buggyId)                                      # GET_ROW(
+
+        """
+        【GET_ROW. --> GET_ROW_TEST_1.】+【GET_ROW( --> GET_ROW_TEST_1( 】
+        @org.junit.Test(timeout = 3000)
+        public void test_5() throws java.lang.Exception {
+            ArrayList<【GET_ROW.】Tuple> result = 【GET_ROW.】get_row(
+                new ArrayList<ArrayList<Integer>>(
+                    Arrays.asList(
+                        new ArrayList<Integer>(),
+                        new ArrayList<Integer>(Arrays.asList(1)),
+                        new ArrayList<Integer>(Arrays.asList(1, 2, 3))
+                    )
+                ), 3
+            );
+            org.junit.Assert.assertEquals(
+                result, new ArrayList<GET_ROW.Tuple>(Arrays.asList(
+                    new 【GET_ROW()】.new Tuple(2, 2)
+                ))
+            );
+        }
+        """
+
 if __name__ == '__main__':
     unittest.main()
 

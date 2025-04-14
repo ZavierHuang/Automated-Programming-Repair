@@ -143,7 +143,7 @@ class FileIO_Test(unittest.TestCase):
         s1 = "       return x & y;\n"
         s2 = "return x + y;"
 
-        print(self.fileIO.compareEqual(s1, s2))
+        self.assertFalse(self.fileIO.compareEqual(s1, s2))
 
     def test_deleteJavaFileUnderFolder(self):
         folderPath = os.path.join(ROOT, 'Module_Util/test/deleteOneLayerJavaFile')

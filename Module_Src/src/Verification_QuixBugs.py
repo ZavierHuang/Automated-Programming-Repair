@@ -108,3 +108,26 @@ class Verification_QuixBugs(Verification):
                         break
 
         self.jsonFileIO.writeJsonFile(data, self.getJsonResultPath())
+
+    def multipleFillJsonCreate(self, jsonFilePaths, outputJsonFilePaths):
+        data = self.jsonFileIO.readJsonLineData(jsonFilePaths)
+
+        outputJsonFileList = []
+        for item in data:
+            if item['bug_id'] not in ['BREADTH_FIRST_SEARCH', 'FLATTEN', 'LCS_LENGTH']:
+                continue
+
+            buggyCode = item['buggy_code']
+            output = item['output']
+            for i in range(len(output)):
+                patchCode = output[str(i)]['output_patch']
+                newBuggyCode = self.getLLMModel().patchReplaceByModel(buggyCode, patchCode)
+                newBuggyCode = self.getLLMModel().remarkErrorPosition(newBuggyCode)
+                dictionary = {
+                    'bug_id': item['bug_id'] + '_' + str(i),
+                    'buggyCode': newBuggyCode,
+                    'fixed_chunk': item['gold_patch'],
+                }
+                outputJsonFileList.append(dictionary)
+
+        self.jsonFileIO.writeJsonLineFile(outputJsonFileList, outputJsonFilePaths)
