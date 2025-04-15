@@ -125,7 +125,7 @@ class Verification_QuixBugs(Verification):
                 newBuggyCode = self.getLLMModel().remarkErrorPosition(newBuggyCode)
                 dictionary = {
                     'bug_id': item['bug_id'] + '_' + str(i),
-                    'buggyCode': newBuggyCode,
+                    'buggy_code': newBuggyCode,
                     'fixed_chunk': item['gold_patch'],
                 }
                 outputJsonFileList.append(dictionary)

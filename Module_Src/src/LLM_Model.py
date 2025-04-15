@@ -11,6 +11,8 @@ from transformers import (
 )
 from tqdm import tqdm
 
+import torch
+
 from Config import ROOT
 
 
@@ -46,10 +48,10 @@ class LLM_Model:
         self.diversity = diversity
 
     def setDataSourceFilePath(self, dataSourceFilePath):
-        self.dataSourceFilePath = os.path.join(dataSourceFilePath)
+        self.dataSourceFilePath = os.path.join(ROOT, dataSourceFilePath)
 
     def setResultOutputFilePath(self, resultOutputFilePath):
-        self.resultOutputFilePath = os.path.join(resultOutputFilePath)
+        self.resultOutputFilePath = os.path.join(ROOT, resultOutputFilePath)
 
     def getLLMName(self):
         return self.name
@@ -87,7 +89,6 @@ class LLM_Model:
             model = AutoModelForCausalLM.from_pretrained(
                 self.baseModelPath,
                 torch_dtype=torch.float16,
-                load_in_8bit=True,
                 trust_remote_code=True,
                 quantization_config=BitsAndBytesConfig(
                     load_in_8bit=True,
@@ -106,19 +107,36 @@ class LLM_Model:
             )
         return model
 
+    def checkGUP(self):
+        print("PyTorch Version:", torch.__version__)
+        print("CUDA Available:", torch.cuda.is_available())
+        if torch.cuda.is_available():
+            print("Device Name:", torch.cuda.get_device_name(0))
+            print("CUDA Version:", torch.version.cuda)
+        return torch.cuda.is_available()
+
     def llmPredictPatch(self):
         model = self.getLLMModel()
         tokenizer = AutoTokenizer.from_pretrained(self.baseModelPath, trust_remote_code=True)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         model.config.pad_token = tokenizer.pad_token = tokenizer.unk_token
         model.to(device)
+
+        print('device:',device)
+
         print("We now use beam search to generate the patches.")
-        generation_config = GenerationConfig(
-            num_beams = self.numBeams,
-            num_beam_groups = self.numBeams // 2,
-            diversity_penalty = self.diversity,
-            early_stopping = True,
-        )
+        if self.diversity != 0:
+            generation_config = GenerationConfig(
+                num_beams = self.numBeams,
+                num_beam_groups = self.numBeams // 2,
+                diversity_penalty = self.diversity,
+                early_stopping = True,
+            )
+        else:
+            generation_config = GenerationConfig(
+                num_beams=self.numBeams,
+                early_stopping=True,
+            )
         buggy_code_list = []
         llama2_output = []
         with open(self.dataSourceFilePath, 'r', encoding='utf-8') as tf:

@@ -230,7 +230,7 @@ class Verification:
                 'output': {}
             }
             for i in range(len(output)):
-                patchFileName = '{}_TEST_{}'.format(buggyId, str(i))
+                patchFileName = '{}'.format(buggyId, str(i))
                 patchCode = output[str(i)]['output_patch']
                 target = os.path.join(self.getJunitEnvironment(),
                                       'Module_{}/{}.java'.format(buggyId, patchFileName))

@@ -111,8 +111,13 @@ class JsonFileIO_Test(unittest.TestCase):
             else:
                 print("ERROR")
 
+    def test_read_jsonFIle(self):
+        data = self.jsonFileIO.readJsonLineData(os.path.join(ROOT, 'Data_Storage/HumanEval/CodeLlama/Original_Data/HumanEval_CodeLlama_IR4OR2.jsonl'))
 
-
+        for item in data:
+            print(item['bug_id'])
+            print(item['buggy_code'])
+            print("============================================")
 
 if __name__ == '__main__':
     unittest.main()
