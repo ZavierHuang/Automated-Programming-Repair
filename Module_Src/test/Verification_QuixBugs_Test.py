@@ -4,7 +4,7 @@ import shutil
 import time
 import unittest
 
-from Config import ROOT, GRADLE_PATH
+from Config import ROOT, GRADLE_PATH, LLM_MODEL_PATH
 from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
 from Module_Src.src.LLM_Qwen import LLM_Qwen
 from Module_Src.src.Verification import Verification
@@ -437,14 +437,16 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.assertTrue(len(dictionary),
                         len(self.fileIO.getFileListUnderFolder(self.verification_QuixBugs.getLogFolderPath())))
 
-    def test_create_patch_code_with_QuixBugs(self):
+
+    ############################################## Multiple Error Prediction ##############################################
+    def test_create_twice_source_jsonLine_code_with_QuixBugs(self):
         self.verification_QuixBugs = Verification_QuixBugs()
         self.verification_QuixBugs.setLLMModel(LLM_Qwen())
 
-        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_First_Patch05.jsonl')
+        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_Patch05_first.jsonl')
         self.assertTrue(os.path.exists(jsonFilePaths))
 
-        outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempPatchGenerate/source/Qwen_test_Multiple_Src.jsonl')
+        outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempPatchGenerate/source/Qwen_Patch05_Multiple_Src.jsonl')
         self.verification_QuixBugs.multipleFillJsonCreate(jsonFilePaths, outputJsonFilePaths)
         self.assertTrue(self.jsonFileIO.isPathExist(outputJsonFilePaths))
 
@@ -467,6 +469,23 @@ class Verification_QuixBugs_Test(unittest.TestCase):
             else:
                 print("ERROR")
 
+
+    def test_predict_twice_patch_code(self):
+        self.verification_QuixBugs.setLLMModel(LLM_Qwen())
+        self.assertTrue(self.verification_QuixBugs.getLLMModel().checkGUP())
+        self.verification_QuixBugs.getLLMModel().setIsLora(True)
+        self.verification_QuixBugs.getLLMModel().setLoraAndEpoch('Lora04', 2)
+        self.verification_QuixBugs.getLLMModel().setNumBeams(5)
+        self.verification_QuixBugs.getLLMModel().setDiversity(0)
+        self.verification_QuixBugs.getLLMModel().setDataSourceFilePath('Module_Src/test/tempPatchGenerate/source/Qwen_Patch05_Multiple_Src.jsonl')
+        self.verification_QuixBugs.getLLMModel().setResultOutputFilePath('Module_Src/test/tempPatchGenerate/twicePatchOutput/Qwen_Patch05_Multiple_twice.jsonl')
+
+        self.assertEqual(self.verification_QuixBugs.getLLMModel().getBaseModelPath(), 'Qwen/Qwen2.5-Coder-1.5B')
+        self.assertEqual(self.verification_QuixBugs.getLLMModel().getLoraPath(), os.path.join(LLM_MODEL_PATH, 'model_Qwen/model_Lora04/checkpoint-epoch-2.0'))
+        self.verification_QuixBugs.getLLMModel().llmPredictPatch()
+        self.assertTrue(self.fileIO.isPathExist(self.verification_QuixBugs.getLLMModel().getResultOutputFilePath()))
+
+
     def test_get_first_predict_patch_result(self):
         self.verification_QuixBugs.setFirstPredictPatchPath(
             'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_test_Multiple_first_Patch05.jsonl')     #patch05
@@ -482,9 +501,9 @@ class Verification_QuixBugs_Test(unittest.TestCase):
 
 
 
-    def test_multiple_load_in_junitEnvironment(self):
+    def test_multiple_load_in_junitEnvironment_and_run(self):
         self.verification_QuixBugs.setTestDataResult(
-            'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_test_Multiple_twice_Patch05.jsonl')
+            'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch05_Multiple_twice.jsonl')
         self.verification_QuixBugs.setJsonResultPath(
             'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Json/Qwen_test_Multiple_Patch.json')
         self.verification_QuixBugs.setRepairProgramPath(
@@ -494,11 +513,11 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.verification_QuixBugs.setLogFolderPath(
             'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Log')
 
-        self.verification_QuixBugs.setFirstPredictPatchPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_test_Multiple_first_Patch05.jsonl')
-
+        self.verification_QuixBugs.setFirstPredictPatchPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch05_first.jsonl')
         self.verification_QuixBugs.junitEnvironment_Initialize()
         self.verification_QuixBugs.junitEnvironment_Run_Initialize()
         self.verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
+
         self.verification_QuixBugs.getFirstPredictPatchResult(['BREADTH_FIRST_SEARCH','FLATTEN','LCS_LENGTH'])
         self.verification_QuixBugs.createJsonFrameworkForMultipleError()
         self.verification_QuixBugs.createPromptRepairProgramSet()
