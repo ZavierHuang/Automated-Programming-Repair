@@ -1,8 +1,8 @@
-from Module_Src.src.LLM_Qwen import LLM_Qwen
+from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
 from Module_Src.src.Verification_HumanEval import Verification_HumanEval
 from Module_Util.src.JsonFileIO import JsonFileIO
 
-def setUp(lora, name):
+def setUp(epoch, name):
     verification_HumanEval = Verification_HumanEval()
     verification_HumanEval.setDataSetName('HumanEval')
     verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
@@ -11,17 +11,16 @@ def setUp(lora, name):
     verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
 
     verification_HumanEval.setTestDataResult(
-        'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/{}/Patch/HumanEval_{}.jsonl'.format(lora, name))
+        f'Result_Output/HumanEval/CodeLlama/OtherEpoch/{epoch}/Lora16/Patch/HumanEval_{name}.jsonl')
     verification_HumanEval.setJsonResultPath(
-        'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/{}/Json/{}.json'.format(lora, name))
+        f'Result_Output/HumanEval/CodeLlama/OtherEpoch/{epoch}/Lora16/Json/{name}.json')
     verification_HumanEval.setLogFolderPath(
-        'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/{}/{}'.format(lora, 'Log'))
+        f'Result_Output/HumanEval/CodeLlama/OtherEpoch/{epoch}/Lora16/Log')
     verification_HumanEval.setRepairProgramPath(
-        'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/{}/{}/'.format(lora, 'repairProgram'))
+        f'Result_Output/HumanEval/CodeLlama/OtherEpoch/{epoch}/Lora16/repairProgram')
     verification_HumanEval.setPromptRepairProgramPath(
-        'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/{}/{}/'.format(lora,
-                                                                        'promptRepairProgram'))
-    verification_HumanEval.setLLMModel(LLM_Qwen())
+        f'Result_Output/HumanEval/CodeLlama/OtherEpoch/{epoch}/Lora16/promptRepairProgram')
+    verification_HumanEval.setLLMModel(LLM_CodeLlama())
     return verification_HumanEval
 
 def test_load_and_run_test_case(verification_HumanEval):
@@ -46,12 +45,13 @@ def test_result_analysis():
 
 if __name__ == '__main__':
     pendlingList = {
-        'Lora08':'Lora08_E2_BS',
-        'Lora16':'Lora16_E2_BS',
+        'epoch3':'CodeLlama_Lora16_E3_BS',
+        'epoch4':'CodeLlama_Lora16_E4_BS',
+        'epoch5':'CodeLlama_Lora16_E5_BS',
     }
 
-    for lora, name in pendlingList.items():
-        verification_HumanEval = setUp(lora, name)
+    for epoch, name in pendlingList.items():
+        verification_HumanEval = setUp(epoch, name)
         test_load_and_run_test_case(verification_HumanEval)
         test_result_analysis()
     

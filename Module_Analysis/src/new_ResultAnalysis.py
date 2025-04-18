@@ -42,12 +42,12 @@ class NewResultAnalysis:
                 if output[str(i)]['formatCheck']['formatResult'] == False:  formatError += 1
                 if output[str(i)]['compileCheck']['compileResult'] == False and output[str(i)]['compileCheck'][
                     'compileLog'] != 'FormatError': compileError += 1
-                if output[str(i)]['compileCheck']['compileResult'] == True: runTestCase += 1
-
-                if output[str(i)]['PassTestCase'] == True:
-                    passTestCase += 1
-                else:
-                    failTestCase += 1
+                if output[str(i)]['compileCheck']['compileResult'] == True:
+                    runTestCase += 1
+                    if output[str(i)]['PassTestCase'] == True:
+                        passTestCase += 1
+                    else:
+                        failTestCase += 1
 
         print('repairSuccess:', repairSuccess)
         print('single:', single)
@@ -58,6 +58,6 @@ class NewResultAnalysis:
         print('formatError:', formatError)
         print('compileError:', compileError)
         print('runTestCase:', runTestCase)
-        print('failTestCase:', failTestCase)
-        print('passTestCase:', passTestCase)
-        print('exactly Match:', exactlyMatch)
+        print('--failTestCase:', failTestCase)
+        print('--passTestCase:', passTestCase)
+        print('--exactly Match:', exactlyMatch)
