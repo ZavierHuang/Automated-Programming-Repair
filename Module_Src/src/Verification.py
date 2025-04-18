@@ -208,6 +208,7 @@ class Verification:
         return dictionary
 
     def createJsonFramework(self, exceptList):
+        QuixBugsSolution = self.jsonFileIO.readJsonData(os.path.join(ROOT,'Data_Storage/QuixBugs/Solution/QuixBugsSolution.json'))
         data = self.jsonFileIO.readJsonLineData(self.getTestData())
         print(self.getTestData(),self.fileIO.isPathExist(self.getTestData()))
         dictionary = []
@@ -219,7 +220,12 @@ class Verification:
 
             buggyCode = item['buggy_code']
             output = item['output']
-            solution = item['gold_patch']
+
+            if self.DataSetName == 'QuixBugs':
+                solution = QuixBugsSolution[buggyId]
+            else:
+                solution = item['gold_patch']
+
             subdictionary = {
                 'buggyId': buggyId,
                 'repair': False,
@@ -248,7 +254,7 @@ class Verification:
                             self.fileIO.writeFileData(target, data)
                             break
 
-                print(patchFileName, compileResult, compileLog)
+                print(patchFileName, compileResult, compileLog, solution)
 
                 self.fileIO.copyFile(target, targetModule, compileResult)
                 self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)

@@ -152,6 +152,9 @@ class Verification_QuixBugs(Verification):
         self.jsonFileIO.writeJsonLineFile(outputJsonFileList, outputJsonFilePaths)
 
     def createJsonFrameworkForMultipleError(self):
+        QuixBugsSolution = self.jsonFileIO.readJsonData(
+            os.path.join(ROOT, 'Data_Storage/QuixBugs/Solution/QuixBugsSolution.json'))
+
         data = self.jsonFileIO.readJsonLineData(self.getTestData())
         print(self.getTestData(),self.fileIO.isPathExist(self.getTestData()))
         dictionary = []
@@ -170,7 +173,7 @@ class Verification_QuixBugs(Verification):
                 subdictionary = {
                     'buggyId': currentBuggyId,
                     'repair': False,
-                    'solution': solution,
+                    'solution': QuixBugsSolution[currentBuggyId],
                     'type': self.checkBuggyMethodLine(buggyCode),
                     'output': {}
                 }
