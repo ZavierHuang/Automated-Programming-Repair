@@ -119,5 +119,10 @@ class JsonFileIO_Test(unittest.TestCase):
             print(item['buggy_code'])
             print("============================================")
 
+    def test_read_quixBugs_solution(self):
+        data = self.jsonFileIO.readJsonData(os.path.join(ROOT, 'Data_Storage/QuixBugs/Solution/QuixBugsSolution.json'))
+        for item in data:
+            print(data[item])
+
 if __name__ == '__main__':
     unittest.main()

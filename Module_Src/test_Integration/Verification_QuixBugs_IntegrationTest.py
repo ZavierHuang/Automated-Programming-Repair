@@ -19,7 +19,7 @@ class verification_QuixBugs_IntegrationTest(unittest.TestCase):
         self.verification_QuixBugs.setJunitEnvironment('JUnit_Environment/JUnit_QuixBugs_Environment')
         self.verification_QuixBugs.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_QuixBugs')
         self.verification_QuixBugs.setTestDataResult(
-            'Result_Output/QuixBugs/Qwen/BeamSearch/Lora04/Patch/QuixBugs_Qwen_Lora04_E2_Patch10.jsonl')
+            'Result_Output/QuixBugs/Qwen/BeamSearch/Lora04/Patch/QuixBugs_Qwen_Lora04_BS.jsonl')
         self.verification_QuixBugs.setJsonResultPath(
             'Result_Output/QuixBugs/Qwen/BeamSearch/Lora04/Json/{}.json'.format(current))
         self.verification_QuixBugs.setRepairProgramPath(
