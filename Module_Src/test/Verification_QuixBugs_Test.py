@@ -502,6 +502,7 @@ class Verification_QuixBugs_Test(unittest.TestCase):
 
 
     def test_multiple_load_in_junitEnvironment_and_run(self):
+        self.verification_QuixBugs.setLLMModel(LLM_Qwen())
         self.verification_QuixBugs.setTestDataResult(
             'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch05_Multiple_twice.jsonl')
         self.verification_QuixBugs.setJsonResultPath(
@@ -513,21 +514,23 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.verification_QuixBugs.setLogFolderPath(
             'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Log')
 
-        self.verification_QuixBugs.setFirstPredictPatchPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch05_first.jsonl')
-        self.verification_QuixBugs.junitEnvironment_Initialize()
-        self.verification_QuixBugs.junitEnvironment_Run_Initialize()
-        self.verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
+        # self.verification_QuixBugs.setFirstPredictPatchPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch05_first.jsonl')
+        # self.verification_QuixBugs.junitEnvironment_Initialize()
+        # self.verification_QuixBugs.junitEnvironment_Run_Initialize()
+        # self.verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
+        # #################################################################################
+        # self.verification_QuixBugs.setBeamSize(5)
+        # self.verification_QuixBugs.getFirstPredictPatchResult(['BREADTH_FIRST_SEARCH','FLATTEN','LCS_LENGTH'])
+        # #################################################################################
+        # self.verification_QuixBugs.createJsonFrameworkForMultipleError()
+        # self.verification_QuixBugs.createPromptRepairProgramSet()
 
-        self.verification_QuixBugs.getFirstPredictPatchResult(['BREADTH_FIRST_SEARCH','FLATTEN','LCS_LENGTH'])
-        self.verification_QuixBugs.createJsonFrameworkForMultipleError()
-        self.verification_QuixBugs.createPromptRepairProgramSet()
-
-        # runFileList = self.verification_QuixBugs.getAllRunTestCaseFileList()
-        # dictionary = self.verification_QuixBugs.getFileAndModuleDict(runFileList)
-        # print('runFileList:', runFileList)
-        # print('dictionary:', dictionary)
-        # self.verification_QuixBugs.runScriptBatchFile(dictionary)
-        # self.verification_QuixBugs.updateJsonResult()
+        runFileList = self.verification_QuixBugs.getAllRunTestCaseFileList()
+        dictionary = self.verification_QuixBugs.getFileAndModuleDict(runFileList)
+        print('runFileList:', runFileList)
+        print('dictionary:', dictionary)
+        self.verification_QuixBugs.runScriptBatchFile(dictionary)
+        self.verification_QuixBugs.updateJsonResult()
 
 
 

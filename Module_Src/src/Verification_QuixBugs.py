@@ -12,9 +12,13 @@ from Module_Src.src.Verification import Verification
 class Verification_QuixBugs(Verification):
     def __init__(self):
         super().__init__()
+        self.beamSize = None
         self.firstPredictPatchPath = None
         self.firstPredictPatchResultDict = {}
-
+    
+    def setBeamSize(self, beamSize):
+        self.beamSize = beamSize
+    
     def setFirstPredictPatchPath(self, firstPredictPatchPath):
         self.firstPredictPatchPath = os.path.join(ROOT, firstPredictPatchPath)
 
@@ -23,7 +27,10 @@ class Verification_QuixBugs(Verification):
 
     def getFirstPredictPatchResultDict(self):
         return self.firstPredictPatchResultDict
-
+    
+    def getBeamSize(self):
+        return self.beamSize
+    
     @overrides
     def junitEnvironment_Run_Initialize(self):
         super().junitEnvironment_Run_Initialize()
@@ -169,8 +176,8 @@ class Verification_QuixBugs(Verification):
                 }
 
             for i in range(len(output)):
-                patchFileName = '{}_TEST_{}'.format(currentBuggyId, str(5*patchNumber+i))
-                patchCode = self.firstPredictPatchResultDict[currentBuggyId][i] + ',' + output[str(i)]['output_patch']
+                patchFileName = '{}_TEST_{}'.format(currentBuggyId, str(self.beamSize*patchNumber+i))
+                patchCode = output[str(i)]['output_patch']
                 target = os.path.join(self.getJunitEnvironment(),
                                       'Module_{}/{}.java'.format(currentBuggyId, patchFileName))
                 targetModule = os.path.join(self.getJunitModuleTestEnvironment(),
@@ -194,9 +201,9 @@ class Verification_QuixBugs(Verification):
                 self.fileIO.copyFile(target, targetModule, compileResult)
                 self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)
 
-                subdictionary['output'][10*patchNumber+i] = (
+                subdictionary['output'][self.beamSize*patchNumber+i] = (
                     self.jsonFileIO.getJsonResultSubItem(
-                        patchCode, compileLog, compileResult,
+                        self.firstPredictPatchResultDict[currentBuggyId][i] + ',' + patchCode, compileLog, compileResult,
                         javaFormatLog, javaFormatResult, solution))
 
             if currentBuggyId != previousBuggyId:
