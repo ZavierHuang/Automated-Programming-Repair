@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import time
@@ -11,6 +12,17 @@ from Module_Src.src.Verification import Verification
 class Verification_QuixBugs(Verification):
     def __init__(self):
         super().__init__()
+        self.firstPredictPatchPath = None
+        self.firstPredictPatchResultDict = {}
+
+    def setFirstPredictPatchPath(self, firstPredictPatchPath):
+        self.firstPredictPatchPath = os.path.join(ROOT, firstPredictPatchPath)
+
+    def getFirstPredictPatchPath(self):
+        return self.firstPredictPatchPath
+
+    def getFirstPredictPatchResultDict(self):
+        return self.firstPredictPatchResultDict
 
     @overrides
     def junitEnvironment_Run_Initialize(self):
@@ -96,15 +108,15 @@ class Verification_QuixBugs(Verification):
         data = self.jsonFileIO.readJsonData(self.getJsonResultPath())
 
         for file in fileList:
-            buggyId = file[:file.find('_TEST')]                                     # ADD_TEST_0.txt --> ADD
-            sequence = file[file.find('_TEST_') + len('_TEST_'):-4]                 # ADD_TEST_0.txt --> 0
+            buggyId = file[:file.find('_TEST')]                                         # ADD_TEST_0.txt --> ADD
+            patchNumber = file[file.find('_TEST_') + len('_TEST_'):-4]                  # ADD_TEST_0.txt --> 0
             logContent = self.fileIO.readFileData(os.path.join(self.getLogFolderPath(), file))
-            print(buggyId, sequence, 'BUILD SUCCESSFUL' in logContent)
+            print(buggyId, patchNumber, 'BUILD SUCCESSFUL' in logContent)
             if 'BUILD SUCCESSFUL' in logContent:
                 for item in data:
                     if item['buggyId'] == buggyId:
                         item['repair'] = True
-                        item['output'][str(sequence)]['PassTestCase'] = True
+                        item['output'][str(patchNumber)]['PassTestCase'] = True
                         break
 
         self.jsonFileIO.writeJsonFile(data, self.getJsonResultPath())
@@ -131,3 +143,84 @@ class Verification_QuixBugs(Verification):
                 outputJsonFileList.append(dictionary)
 
         self.jsonFileIO.writeJsonLineFile(outputJsonFileList, outputJsonFilePaths)
+
+    def createJsonFrameworkForMultipleError(self):
+        data = self.jsonFileIO.readJsonLineData(self.getTestData())
+        print(self.getTestData(),self.fileIO.isPathExist(self.getTestData()))
+        dictionary = []
+        previousBuggyId = None
+
+        for item in data:
+            originalId = item['bug_id']                                 # BREAD_FIRST_SEARCH_0
+            currentBuggyId = originalId[:originalId.rfind('_')]         # BREAD_FIRST_SEARCH
+            patchNumber = int(originalId[originalId.rfind('_') + 1:])   # 0
+
+            buggyCode = item['buggy_code']
+            output = item['output']
+            solution = item['gold_patch']
+
+            if currentBuggyId != previousBuggyId:
+                subdictionary = {
+                    'buggyId': currentBuggyId,
+                    'repair': False,
+                    'solution': solution,
+                    'type': self.checkBuggyMethodLine(buggyCode),
+                    'output': {}
+                }
+
+            for i in range(len(output)):
+                patchFileName = '{}_TEST_{}'.format(currentBuggyId, str(5*patchNumber+i))
+                patchCode = self.firstPredictPatchResultDict[currentBuggyId][i] + ',' + output[str(i)]['output_patch']
+                target = os.path.join(self.getJunitEnvironment(),
+                                      'Module_{}/{}.java'.format(currentBuggyId, patchFileName))
+                targetModule = os.path.join(self.getJunitModuleTestEnvironment(),
+                                            'Module_{}/src/main/java/{}.java'.format(currentBuggyId, patchFileName))
+
+                methodCode = self.getLLMModel().patchReplaceByModel(buggyCode, patchCode)
+
+                javaFormatLog, javaFormatResult = self.checkJavaFormat(methodCode, patchFileName, currentBuggyId)
+                compileLog, compileResult = self.checkJavaCompile(target, javaFormatResult)
+
+                if self.DataSetName == 'QuixBugs':
+                    data = self.fileIO.readFileData(target)
+                    for item in ['Node', 'WeightedEdge', 'QuixFixOracleHelper']:
+                        if item in data:
+                            data = 'import dataStructures.*;\n' + data
+                            self.fileIO.writeFileData(target, data)
+                            break
+
+                print(patchFileName, compileResult, compileLog)
+
+                self.fileIO.copyFile(target, targetModule, compileResult)
+                self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)
+
+                subdictionary['output'][10*patchNumber+i] = (
+                    self.jsonFileIO.getJsonResultSubItem(
+                        patchCode, compileLog, compileResult,
+                        javaFormatLog, javaFormatResult, solution))
+
+            if currentBuggyId != previousBuggyId:
+                dictionary.append(subdictionary)
+
+            previousBuggyId = currentBuggyId
+
+        self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())
+
+    def getFirstPredictPatchResult(self, selectedList):
+        data = self.jsonFileIO.readJsonLineData(self.firstPredictPatchPath)
+        """
+        firstPredictPatchDict = {
+            'BREADTH_FIRST_SEARCH':[patchResult1, patchResult2, .......],
+            'FLATTEN':[patchResult1, patchResult2, .......],
+            'LCS_LENGTH':[patchResult1, patchResult2, .......],
+        }
+        """
+
+        for item in data:
+            buggyId = item['bug_id']
+            if buggyId in selectedList:
+                self.firstPredictPatchResultDict[buggyId] = []
+                output = item['output']
+                for i in range(len(output)):
+                    self.firstPredictPatchResultDict[buggyId].append(output[str(i)]['output_patch'])
+

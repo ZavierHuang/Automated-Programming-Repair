@@ -64,8 +64,8 @@ class JsonFileIO_Test(unittest.TestCase):
     def test_multiple_fill_json_create(self):
         self.verification_QuixBugs = Verification_QuixBugs()
         self.verification_QuixBugs.setLLMModel(LLM_Qwen())
-        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_test.jsonl')
-        outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_test_Multiple.jsonl')
+        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_First_Patch05.jsonl')
+        outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_test_Multiple_Src.jsonl')
         data = self.jsonFileIO.readJsonLineData(jsonFilePaths)
 
         outputJsonFileList = []

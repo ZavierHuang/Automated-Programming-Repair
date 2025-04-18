@@ -75,14 +75,12 @@ class LLM_Model_Test(unittest.TestCase):
         model_Qwen.setLoraAndEpoch('Lora04', 2)
         model_Qwen.setNumBeams(10)
         model_Qwen.setDiversity(0)
-        model_Qwen.setDataSourceFilePath('Module_Src/test/tempPatchGenerate/Qwen_test_Multiple.jsonl')
-        model_Qwen.setResultOutputFilePath('Module_Src/test/tempPatchGenerate/Qwen_test_Multiple_output.jsonl')
+        model_Qwen.setDataSourceFilePath('Module_Src/test/tempPatchGenerate/source/Qwen_test_Multiple_Src.jsonl')
+        model_Qwen.setResultOutputFilePath('Module_Src/test/tempPatchGenerate/twicePatchOutput/Qwen_test_Multiple_twice_Patch05.jsonl')
 
         self.assertEqual(model_Qwen.getBaseModelPath(), 'Qwen/Qwen2.5-Coder-1.5B')
         self.assertEqual(model_Qwen.getLoraPath(), os.path.join(LLM_MODEL_PATH, 'model_Qwen/model_Lora04/checkpoint-epoch-2.0'))
-
         model_Qwen.llmPredictPatch()
-
         self.assertTrue(self.fileIO.isPathExist(model_Qwen.getResultOutputFilePath()))
 
 if __name__ == '__main__':

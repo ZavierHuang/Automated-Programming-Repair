@@ -437,18 +437,14 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.assertTrue(len(dictionary),
                         len(self.fileIO.getFileListUnderFolder(self.verification_QuixBugs.getLogFolderPath())))
 
-    def test_multiple_fill_json_create(self):
+    def test_create_patch_code_with_QuixBugs(self):
         self.verification_QuixBugs = Verification_QuixBugs()
+        self.verification_QuixBugs.setLLMModel(LLM_Qwen())
 
-        # self.verification_QuixBugs.setLLMModel(LLM_Qwen())
-        # jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_test.jsonl')
-        # outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_test_Multiple.jsonl')
-
-        self.verification_QuixBugs.setLLMModel(LLM_CodeLlama())
-        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/CodeLlama_test.jsonl')
-        outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/CodeLlama_test_test_Multiple.jsonl')
-
+        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_First_Patch05.jsonl')
         self.assertTrue(os.path.exists(jsonFilePaths))
+
+        outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempPatchGenerate/source/Qwen_test_Multiple_Src.jsonl')
         self.verification_QuixBugs.multipleFillJsonCreate(jsonFilePaths, outputJsonFilePaths)
         self.assertTrue(self.jsonFileIO.isPathExist(outputJsonFilePaths))
 
@@ -456,8 +452,7 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.assertEqual(len(data), 15)
 
         for item in data:
-            buggyCode = item['buggyCode']
-            print(self.verification_QuixBugs.getLLMModel().getLLMName())
+            buggyCode = item['buggy_code']
             if self.verification_QuixBugs.getLLMModel().getLLMName() == 'CodeLlama':
                 self.assertEqual(buggyCode.count('buggy code'), 1)
                 self.assertEqual(buggyCode.count('<FILL_ME>'), 1)
@@ -472,6 +467,48 @@ class Verification_QuixBugs_Test(unittest.TestCase):
             else:
                 print("ERROR")
 
+    def test_get_first_predict_patch_result(self):
+        self.verification_QuixBugs.setFirstPredictPatchPath(
+            'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_test_Multiple_first_Patch05.jsonl')     #patch05
+
+        self.verification_QuixBugs.getFirstPredictPatchResult(['BREADTH_FIRST_SEARCH','FLATTEN','LCS_LENGTH'])
+
+        solutionDict = self.verification_QuixBugs.getFirstPredictPatchResultDict()
+        print(solutionDict)
+        self.assertEqual(len(solutionDict),3)
+        self.assertEqual(len(solutionDict['BREADTH_FIRST_SEARCH']),5)
+        self.assertEqual(len(solutionDict['FLATTEN']),5)
+        self.assertEqual(len(solutionDict['LCS_LENGTH']),5)
+
+
+
+    def test_multiple_load_in_junitEnvironment(self):
+        self.verification_QuixBugs.setTestDataResult(
+            'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_test_Multiple_twice_Patch05.jsonl')
+        self.verification_QuixBugs.setJsonResultPath(
+            'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Json/Qwen_test_Multiple_Patch.json')
+        self.verification_QuixBugs.setRepairProgramPath(
+            'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/repairProgram')
+        self.verification_QuixBugs.setPromptRepairProgramPath(
+            'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/promptRepairProgram')
+        self.verification_QuixBugs.setLogFolderPath(
+            'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Log')
+
+        self.verification_QuixBugs.setFirstPredictPatchPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_test_Multiple_first_Patch05.jsonl')
+
+        self.verification_QuixBugs.junitEnvironment_Initialize()
+        self.verification_QuixBugs.junitEnvironment_Run_Initialize()
+        self.verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
+        self.verification_QuixBugs.getFirstPredictPatchResult(['BREADTH_FIRST_SEARCH','FLATTEN','LCS_LENGTH'])
+        self.verification_QuixBugs.createJsonFrameworkForMultipleError()
+        self.verification_QuixBugs.createPromptRepairProgramSet()
+
+        # runFileList = self.verification_QuixBugs.getAllRunTestCaseFileList()
+        # dictionary = self.verification_QuixBugs.getFileAndModuleDict(runFileList)
+        # print('runFileList:', runFileList)
+        # print('dictionary:', dictionary)
+        # self.verification_QuixBugs.runScriptBatchFile(dictionary)
+        # self.verification_QuixBugs.updateJsonResult()
 
 
 

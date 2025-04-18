@@ -4,8 +4,6 @@ import shutil
 import subprocess
 import sys
 
-from numpy.f2py.auxfuncs import throw_error
-
 from Config import *
 from Module_Util.src.FileIO import FileIO
 from Module_Util.src.JsonFileIO import JsonFileIO
