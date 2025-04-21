@@ -1,8 +1,10 @@
-from Module_Src.src.LLM_Qwen import LLM_Qwen
-from Module_Src.src.Verification_QuixBugs import Verification_QuixBugs
-from Module_Util.src.JsonFileIO import JsonFileIO
+import os
 
-def setUp(current):
+from Config import ROOT
+from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
+from Module_Src.src.Verification_QuixBugs import Verification_QuixBugs
+
+def setUp(lora, name):
     verification_QuixBugs = Verification_QuixBugs()
     verification_QuixBugs.setDataSetName('QuixBugs')
     verification_QuixBugs.setRemainderCodePath(None)
@@ -11,28 +13,39 @@ def setUp(current):
     verification_QuixBugs.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_QuixBugs')
 
     verification_QuixBugs.setFirstPredictPatchPath(
-        'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch05_first.jsonl')
+        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}_Multiple/Patch/QuixBugs_{lora}_BS.jsonl')      # first predict result
     verification_QuixBugs.setTestDataResult(
-        'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch05_Multiple_twice.jsonl')
+        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}_Multiple/Patch/QuixBugs_{lora}_BS_Multiple.jsonl') # second predict result
     
     verification_QuixBugs.setJsonResultPath(
-        'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Json/Qwen_test_Multiple_Patch.json')
+        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}_Multiple/Json/{name}.json')  # final output json
     verification_QuixBugs.setRepairProgramPath(
-        'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/repairProgram')
+        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}_Multiple/repairProgram')
     verification_QuixBugs.setPromptRepairProgramPath(
-        'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/promptRepairProgram')
+        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}_Multiple/promptRepairProgram')
     verification_QuixBugs.setLogFolderPath(
-        'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Log')
+        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}_Multiple/Log')
 
-    verification_QuixBugs.setLLMModel(LLM_Qwen())
+    verification_QuixBugs.setLLMModel(LLM_CodeLlama())
     return verification_QuixBugs
 
-def test_load_and_run_test_case(verification_QuixBugs):
+def create_twice_patch(verification_QuixBugs, outputJsonFilePath):
+    verification_QuixBugs.multipleFillJsonCreate(verification_QuixBugs.getFirstPredictPatchPath(), outputJsonFilePath)
+    verification_QuixBugs.getLLMModel().setIsLora(True)
+    verification_QuixBugs.getLLMModel().setLoraAndEpoch(lora, 2)
+    verification_QuixBugs.getLLMModel().setNumBeams(10)
+    verification_QuixBugs.getLLMModel().setDiversity(0)
+    verification_QuixBugs.getLLMModel().setDataSourceFilePath(outputJsonFilePath)
+    verification_QuixBugs.getLLMModel().setResultOutputFilePath(verification_QuixBugs.getTestData())
+    verification_QuixBugs.getLLMModel().llmPredictPatch()
+
+
+def load_and_run_test_case(verification_QuixBugs):
     verification_QuixBugs.junitEnvironment_Initialize()
     verification_QuixBugs.junitEnvironment_Run_Initialize()
     verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
     #################################################################################
-    verification_QuixBugs.setBeamSize(5)
+    verification_QuixBugs.setBeamSize(verification_QuixBugs.getLLMModel().getBeamSize())
     verification_QuixBugs.getFirstPredictPatchResult(['BREADTH_FIRST_SEARCH', 'FLATTEN', 'LCS_LENGTH'])
     verification_QuixBugs.createJsonFrameworkForMultipleError()
     #################################################################################
@@ -41,17 +54,18 @@ def test_load_and_run_test_case(verification_QuixBugs):
     verification_QuixBugs.runScriptBatchFile(dictionary)
     verification_QuixBugs.updateJsonResult()
 
-def test_result_analysis():
-    jsonFileIO = JsonFileIO()
-    data = jsonFileIO.readJsonData(verification_QuixBugs.getJsonResultPath())
-
-    for item in data:
-        if item['repair'] is False:
-            print(item['buggyId'])
 
 if __name__ == '__main__':
-    current = 'BS_Lora04'
-    verification_QuixBugs = setUp(current)
-    test_load_and_run_test_case(verification_QuixBugs)
-    test_result_analysis()
+    pendlingList = {
+        'Lora04': 'CodeLlama_Lora04_BS_Multiple',
+        'Lora08': 'CodeLlama_Lora08_BS_Multiple',
+        'Lora16': 'CodeLlama_Lora16_BS_Multiple',
+    }
     
+    for lora, name in pendlingList.items():
+        outputJsonFilePath = os.path.join(ROOT,
+            f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}_Multiple/Patch/QuixBugs_{lora}_BS_Multiple_Src.jsonl')
+        verification_QuixBugs = setUp(lora, name)
+        create_twice_patch(verification_QuixBugs, outputJsonFilePath)
+        load_and_run_test_case(verification_QuixBugs)
+

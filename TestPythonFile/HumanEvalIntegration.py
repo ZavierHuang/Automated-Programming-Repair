@@ -1,8 +1,8 @@
-from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
+from Module_Src.src.LLM_Qwen import LLM_Qwen
 from Module_Src.src.Verification_HumanEval import Verification_HumanEval
 from Module_Util.src.JsonFileIO import JsonFileIO
 
-def setUp(epoch, name):
+def setUp(diverseBeamSearch, name):
     verification_HumanEval = Verification_HumanEval()
     verification_HumanEval.setDataSetName('HumanEval')
     verification_HumanEval.setRemainderCodePath('Data_Storage/HumanEval/RemainderCode')
@@ -11,16 +11,16 @@ def setUp(epoch, name):
     verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
 
     verification_HumanEval.setTestDataResult(
-        f'Result_Output/HumanEval/CodeLlama/OtherEpoch/{epoch}/Lora16/Patch/HumanEval_{name}.jsonl')
+        f'Result_Output/HumanEval/Qwen/OriginalResult/{diverseBeamSearch}/Lora16/Patch/HumanEval_{name}.jsonl')
     verification_HumanEval.setJsonResultPath(
-        f'Result_Output/HumanEval/CodeLlama/OtherEpoch/{epoch}/Lora16/Json/{name}.json')
+        f'Result_Output/HumanEval/Qwen/OriginalResult/{diverseBeamSearch}/Lora16/Json/{name}.json')
     verification_HumanEval.setLogFolderPath(
-        f'Result_Output/HumanEval/CodeLlama/OtherEpoch/{epoch}/Lora16/Log')
+        f'Result_Output/HumanEval/Qwen/OriginalResult/{diverseBeamSearch}/Lora16/Log')
     verification_HumanEval.setRepairProgramPath(
-        f'Result_Output/HumanEval/CodeLlama/OtherEpoch/{epoch}/Lora16/repairProgram')
+        f'Result_Output/HumanEval/Qwen/OriginalResult/{diverseBeamSearch}/Lora16/repairProgram')
     verification_HumanEval.setPromptRepairProgramPath(
-        f'Result_Output/HumanEval/CodeLlama/OtherEpoch/{epoch}/Lora16/promptRepairProgram')
-    verification_HumanEval.setLLMModel(LLM_CodeLlama())
+        f'Result_Output/HumanEval/Qwen/OriginalResult/{diverseBeamSearch}/Lora16/promptRepairProgram')
+    verification_HumanEval.setLLMModel(LLM_Qwen())
     return verification_HumanEval
 
 def test_load_and_run_test_case(verification_HumanEval):
@@ -28,7 +28,6 @@ def test_load_and_run_test_case(verification_HumanEval):
     verification_HumanEval.junitEnvironment_Run_Initialize()
     verification_HumanEval.juniEnvironment_TEST_File_Initialize()
     verification_HumanEval.createJsonFramework([])
-    verification_HumanEval.createPromptRepairProgramSet()
     runFileList = verification_HumanEval.getAllRunTestCaseFileList()
     dictionary = verification_HumanEval.getFileAndModuleDict(runFileList)
     verification_HumanEval.runScriptBatchFile(dictionary)
@@ -45,13 +44,11 @@ def test_result_analysis():
 
 if __name__ == '__main__':
     pendlingList = {
-        'epoch3':'CodeLlama_Lora16_E3_BS',
-        'epoch4':'CodeLlama_Lora16_E4_BS',
-        'epoch5':'CodeLlama_Lora16_E5_BS',
+        'DiverseBeamSearch100':'Lora16_E2_DBS_100',
     }
 
-    for epoch, name in pendlingList.items():
-        verification_HumanEval = setUp(epoch, name)
+    for diverseBeamSearch, name in pendlingList.items():
+        verification_HumanEval = setUp(diverseBeamSearch, name)
         test_load_and_run_test_case(verification_HumanEval)
         test_result_analysis()
     
