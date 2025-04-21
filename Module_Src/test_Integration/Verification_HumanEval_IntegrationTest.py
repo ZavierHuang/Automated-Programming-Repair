@@ -70,7 +70,6 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.verification_HumanEval.junitEnvironment_Run_Initialize()
         self.verification_HumanEval.juniEnvironment_TEST_File_Initialize()
         self.verification_HumanEval.createJsonFramework([])
-        self.verification_HumanEval.createPromptRepairProgramSet()
         runFileList = self.verification_HumanEval.getAllRunTestCaseFileList()
         dictionary = self.verification_HumanEval.getFileAndModuleDict(runFileList)
         self.verification_HumanEval.runScriptBatchFile(dictionary)

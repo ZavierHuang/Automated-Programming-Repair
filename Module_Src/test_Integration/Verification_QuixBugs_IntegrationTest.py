@@ -62,7 +62,6 @@ class verification_QuixBugs_IntegrationTest(unittest.TestCase):
         self.verification_QuixBugs.junitEnvironment_Run_Initialize()
         self.verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
         self.verification_QuixBugs.createJsonFramework(['BREADTH_FIRST_SEARCH','FLATTEN','LCS_LENGTH'])
-        self.verification_QuixBugs.createPromptRepairProgramSet()
         runFileList = self.verification_QuixBugs.getAllRunTestCaseFileList()
         dictionary = self.verification_QuixBugs.getFileAndModuleDict(runFileList)
         self.verification_QuixBugs.runScriptBatchFile(dictionary)

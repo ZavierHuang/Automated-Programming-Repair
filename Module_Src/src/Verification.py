@@ -257,7 +257,7 @@ class Verification:
                 print(patchFileName, compileResult, compileLog)
 
                 self.fileIO.copyFile(target, targetModule, compileResult)
-                self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)
+                self.fileIO.moveFile(target, self.getRepairProgramPath(), self.getPromptRepairProgramPath(), compileResult)
 
                 subdictionary['output'][i] = (
                     self.jsonFileIO.getJsonResultSubItem(
@@ -311,9 +311,6 @@ class Verification:
         if commentLineNums == 1:
             return 'Single'
         return 'Multiple'
-
-    def createPromptRepairProgramSet(self):
-        shutil.copytree(self.getJunitEnvironment(), self.getPromptRepairProgramPath(), dirs_exist_ok=True)
 
     def updateJsonResult(self):
         pass

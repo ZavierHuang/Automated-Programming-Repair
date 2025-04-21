@@ -202,7 +202,7 @@ class Verification_QuixBugs(Verification):
                 print(patchFileName, compileResult, compileLog)
 
                 self.fileIO.copyFile(target, targetModule, compileResult)
-                self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)
+                self.fileIO.moveFile(target, self.getRepairProgramPath(), self.getPromptRepairProgramPath(), compileResult)
 
                 subdictionary['output'][self.beamSize*patchNumber+i] = (
                     self.jsonFileIO.getJsonResultSubItem(

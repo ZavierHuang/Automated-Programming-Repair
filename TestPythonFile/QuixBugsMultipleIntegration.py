@@ -36,7 +36,6 @@ def test_load_and_run_test_case(verification_QuixBugs):
     verification_QuixBugs.getFirstPredictPatchResult(['BREADTH_FIRST_SEARCH', 'FLATTEN', 'LCS_LENGTH'])
     verification_QuixBugs.createJsonFrameworkForMultipleError()
     #################################################################################
-    verification_QuixBugs.createPromptRepairProgramSet()
     runFileList = verification_QuixBugs.getAllRunTestCaseFileList()
     dictionary = verification_QuixBugs.getFileAndModuleDict(runFileList)
     verification_QuixBugs.runScriptBatchFile(dictionary)

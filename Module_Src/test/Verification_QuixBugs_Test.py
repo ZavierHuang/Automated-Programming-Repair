@@ -236,7 +236,7 @@ class Verification_QuixBugs_Test(unittest.TestCase):
                 compileLog, compileResult = self.verification_QuixBugs.checkJavaCompile(target, javaFormatResult)
                 print(compileResult, compileLog)
                 self.fileIO.copyFile(target, targetModule, compileResult)
-                self.fileIO.moveFile(target, self.verification_QuixBugs.getRepairProgramPath(), compileResult)
+                self.fileIO.moveFile(target, self.verification_QuixBugs.getRepairProgramPath(), self.verification_QuixBugs.getPromptRepairProgramPath(), compileResult)
 
                 subdictionary['output'][i] = self.jsonFileIO.getJsonResultSubItem(patchCode, compileLog, compileResult, javaFormatLog, javaFormatResult, solution)
 
@@ -429,7 +429,6 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.verification_QuixBugs.junitEnvironment_Run_Initialize()
         self.verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
         self.verification_QuixBugs.createJsonFramework(['BREADTH_FIRST_SEARCH','FLATTEN','LONGEST_COMMON_SUBSEQUENCE'])
-        self.verification_QuixBugs.createPromptRepairProgramSet()
         runFileList = self.verification_QuixBugs.getAllRunTestCaseFileList()
         dictionary = self.verification_QuixBugs.getFileAndModuleDict(runFileList)
         self.verification_QuixBugs.runScriptBatchFile(dictionary)
@@ -523,8 +522,6 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.verification_QuixBugs.getFirstPredictPatchResult(['BREADTH_FIRST_SEARCH','FLATTEN','LCS_LENGTH'])
         self.verification_QuixBugs.createJsonFrameworkForMultipleError()
         #################################################################################
-        self.verification_QuixBugs.createPromptRepairProgramSet()
-
         runFileList = self.verification_QuixBugs.getAllRunTestCaseFileList()
         dictionary = self.verification_QuixBugs.getFileAndModuleDict(runFileList)
         print('runFileList:', runFileList)

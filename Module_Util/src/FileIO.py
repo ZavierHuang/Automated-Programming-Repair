@@ -60,9 +60,11 @@ class FileIO:
         subFolderList = self.getSubFolderList(junitModuleTestEnvironment)
         return [subFolder for subFolder in subFolderList if 'Module_' in subFolder]
 
-    def moveFile(self,source, destination, compileResult):
+    def moveFile(self,source, passPath, failurePath, compileResult):
         if compileResult:
-            shutil.move(source, destination)
+            shutil.move(source, passPath)
+        else:
+            shutil.move(source, failurePath)
 
     def normalize(self, text):
         # Replace all symbols other than numbers and letters with empty

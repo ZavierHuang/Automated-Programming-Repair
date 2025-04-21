@@ -178,7 +178,7 @@ class Verification_HumanEval_Test(unittest.TestCase):
                 compileLog, compileResult = self.verification_HumanEval.checkJavaCompile(target, javaFormatResult)
                 print(compileResult, compileLog)
                 self.fileIO.copyFile(target, targetModule, compileResult)
-                self.fileIO.moveFile(target, self.verification_HumanEval.getRepairProgramPath(), compileResult)
+                self.fileIO.moveFile(target, self.verification_HumanEval.getRepairProgramPath(), self.verification_HumanEval.getPromptRepairProgramPath(), compileResult)
 
                 subdictionary['output'][i] = self.jsonFileIO.getJsonResultSubItem(patchCode, compileLog, compileResult, javaFormatLog, javaFormatResult, solution)
 
