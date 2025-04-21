@@ -1,8 +1,6 @@
 import shutil
 import unittest
 
-from sympy.testing.runtests import oldname
-
 from Module_Util.src.FileIO import FileIO
 from Module_Util.src.JsonFileIO import JsonFileIO
 from Config import *
@@ -124,7 +122,7 @@ class FileIO_Test(unittest.TestCase):
         self.fileIO.writeFileData(target, data)
 
         data = self.fileIO.readFileData(target)
-        self.assertTrue(oldname not in data)
+        self.assertTrue('ADD.' not in data)
 
     def test_copy_folder(self):
         sourceFolderName = 'Folder1'
