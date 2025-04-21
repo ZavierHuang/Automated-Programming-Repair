@@ -12,7 +12,10 @@ class oldResultAnalysis_Test(unittest.TestCase):
 
 
     def test_result_analysis(self):
-        jsonFile = 'Result_Output/QuixBugs/Qwen/BeamSearch/Lora04/Json/Lora04_E2_BS.json'
+        Lora = '16'
+        Model = 'CodeLlama'
+        Diversity = '20'
+        jsonFile = f'Result_Output/HumanEval/{Model}/OriginalResult/DiverseBeamSearch{Diversity}/Lora{Lora}/Json/Lora{Lora}_E2_DBS_{Diversity}.json'
         self.newResultAnalysis.resultAnalysis(jsonFile)
 
 if __name__ == '__main__':

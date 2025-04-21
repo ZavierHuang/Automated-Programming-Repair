@@ -254,7 +254,7 @@ class Verification:
                             self.fileIO.writeFileData(target, data)
                             break
 
-                print(patchFileName, compileResult, compileLog, solution)
+                print(patchFileName, compileResult, compileLog)
 
                 self.fileIO.copyFile(target, targetModule, compileResult)
                 self.fileIO.moveFile(target, self.getRepairProgramPath(), compileResult)

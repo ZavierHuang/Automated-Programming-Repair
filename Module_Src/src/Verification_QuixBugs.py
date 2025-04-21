@@ -102,7 +102,7 @@ class Verification_QuixBugs(Verification):
             return 'FormatError', False
 
         javaFiles = self.getNeedCompileJavaFiles(javaFile)
-        print('javaFiles:', javaFiles)
+        # print('javaFiles:', javaFiles)
         result = self.subprocess_run_JavaCompile(javaFiles)
 
         if result.returncode != 0:
