@@ -167,7 +167,7 @@ class Verification_QuixBugs(Verification):
 
             buggyCode = item['buggy_code']
             output = item['output']
-            solution = item['gold_patch']
+            solution = QuixBugsSolution[currentBuggyId]
 
             if currentBuggyId != previousBuggyId:
                 subdictionary = {
