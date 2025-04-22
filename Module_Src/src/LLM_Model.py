@@ -2,7 +2,6 @@ import os
 from Config import ROOT
 import json
 
-"""
 from peft import PeftModel
 from transformers import (
     AutoTokenizer,
@@ -13,7 +12,6 @@ from transformers import (
 from tqdm import tqdm
 
 import torch
-"""
 
 
 class LLM_Model:
