@@ -442,7 +442,7 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.verification_QuixBugs = Verification_QuixBugs()
         self.verification_QuixBugs.setLLMModel(LLM_Qwen())
 
-        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_Patch05_first.jsonl')
+        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_Patch10_first.jsonl')
         self.assertTrue(os.path.exists(jsonFilePaths))
 
         outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempPatchGenerate/source/Qwen_Patch05_Multiple_Src.jsonl')
@@ -468,6 +468,18 @@ class Verification_QuixBugs_Test(unittest.TestCase):
             else:
                 print("ERROR")
 
+    def test_integration_createJsonFrameworkForMultipleError(self):
+        self.verification_QuixBugs.setFirstPredictPatchPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch10_first.jsonl')
+        self.verification_QuixBugs.getFirstPredictPatchResult(['BREADTH_FIRST_SEARCH', 'FLATTEN', 'LCS_LENGTH'])
+
+        self.verification_QuixBugs.setBeamSize(10)
+        self.verification_QuixBugs.setJsonResultPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Json/test.json')
+        self.verification_QuixBugs.setLogFolderPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Log')
+        self.verification_QuixBugs.setRepairProgramPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/repairProgram')
+        self.verification_QuixBugs.setPromptRepairProgramPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/promptRepairProgram')
+        self.verification_QuixBugs.setTestDataResult('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch10_Multiple_twice.jsonl')
+        self.verification_QuixBugs.createJsonFrameworkForMultipleError()
+
 
     def test_predict_twice_patch_code(self):
         self.verification_QuixBugs.setLLMModel(LLM_Qwen())
@@ -477,7 +489,7 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.verification_QuixBugs.getLLMModel().setNumBeams(5)
         self.verification_QuixBugs.getLLMModel().setDiversity(0)
         self.verification_QuixBugs.getLLMModel().setDataSourceFilePath('Module_Src/test/tempPatchGenerate/source/Qwen_Patch05_Multiple_Src.jsonl')
-        self.verification_QuixBugs.getLLMModel().setResultOutputFilePath('Module_Src/test/tempPatchGenerate/twicePatchOutput/Qwen_Patch05_Multiple_twice.jsonl')
+        self.verification_QuixBugs.getLLMModel().setResultOutputFilePath('Module_Src/test/tempPatchGenerate/twicePatchOutput/Qwen_Patch10_Multiple_twice.jsonl')
 
         self.assertEqual(self.verification_QuixBugs.getLLMModel().getBaseModelPath(), 'Qwen/Qwen2.5-Coder-1.5B')
         self.assertEqual(self.verification_QuixBugs.getLLMModel().getLoraPath(), os.path.join(LLM_MODEL_PATH, 'model_Qwen/model_Lora04/checkpoint-epoch-2.0'))
@@ -498,12 +510,10 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.assertEqual(len(solutionDict['FLATTEN']),5)
         self.assertEqual(len(solutionDict['LCS_LENGTH']),5)
 
-
-
     def test_multiple_load_in_junitEnvironment_and_run(self):
         self.verification_QuixBugs.setLLMModel(LLM_Qwen())
         self.verification_QuixBugs.setTestDataResult(
-            'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch05_Multiple_twice.jsonl')
+            'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch10_Multiple_twice.jsonl')
         self.verification_QuixBugs.setJsonResultPath(
             'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Json/Qwen_test_Multiple_Patch.json')
         self.verification_QuixBugs.setRepairProgramPath(
@@ -513,7 +523,7 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.verification_QuixBugs.setLogFolderPath(
             'Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Log')
 
-        self.verification_QuixBugs.setFirstPredictPatchPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch05_first.jsonl')
+        self.verification_QuixBugs.setFirstPredictPatchPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch10_first.jsonl')
         self.verification_QuixBugs.junitEnvironment_Initialize()
         self.verification_QuixBugs.junitEnvironment_Run_Initialize()
         self.verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
@@ -529,7 +539,7 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.verification_QuixBugs.runScriptBatchFile(dictionary)
         self.verification_QuixBugs.updateJsonResult()
 
-
+    
 
 
 if __name__ == '__main__':

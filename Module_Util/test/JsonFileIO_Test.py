@@ -1,7 +1,7 @@
 import shutil
 import unittest
 
-from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
+from Module_Analysis.src.new_ResultAnalysis import NewResultAnalysis
 from Module_Src.src.LLM_Qwen import LLM_Qwen
 from Module_Src.src.Verification_QuixBugs import Verification_QuixBugs
 from Module_Util.src.FileIO import FileIO
@@ -64,7 +64,7 @@ class JsonFileIO_Test(unittest.TestCase):
     def test_multiple_fill_json_create(self):
         self.verification_QuixBugs = Verification_QuixBugs()
         self.verification_QuixBugs.setLLMModel(LLM_Qwen())
-        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_Patch05_first.jsonl')
+        jsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_Patch10_first.jsonl')
         outputJsonFilePaths = os.path.join(ROOT, 'Module_Src/test/tempJsonData/Qwen_test_Multiple_Src.jsonl')
         data = self.jsonFileIO.readJsonLineData(jsonFilePaths)
 
@@ -123,6 +123,28 @@ class JsonFileIO_Test(unittest.TestCase):
         data = self.jsonFileIO.readJsonData(os.path.join(ROOT, 'Data_Storage/QuixBugs/Solution/QuixBugsSolution.json'))
         for item in data:
             print(data[item])
+
+    def test_compare(self):
+        Lora = '16'
+        Model = 'CodeLlama'
+
+        jsonFile = (f'Result_Output/QuixBugs/{Model}/BeamSearch/'
+                    f'Lora{Lora}_Multiple/Json/{Model}_Lora{Lora}_BS_Multiple.json')
+        jsonFilePath = os.path.join(ROOT, jsonFile)
+        data = self.jsonFileIO.readJsonData(jsonFilePath)
+
+        for item in data:
+            exactlyMatch = item['solution']
+            output = item['output']
+            for i in range(len(output)):
+                result = self.jsonFileIO.compareEqual(output[str(i)]['patchCode'], exactlyMatch)
+                output[str(i)]['exactlyMatch'] = result
+
+        self.jsonFileIO.writeJsonFile(data, jsonFilePath)
+
+        self.newResultAnalysis = NewResultAnalysis()
+        self.newResultAnalysis.resultAnalysis(jsonFile)
+
 
 if __name__ == '__main__':
     unittest.main()
