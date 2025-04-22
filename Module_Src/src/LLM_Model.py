@@ -2,6 +2,7 @@ import os
 from Config import ROOT
 import json
 
+"""
 from peft import PeftModel
 from transformers import (
     AutoTokenizer,
@@ -12,7 +13,7 @@ from transformers import (
 from tqdm import tqdm
 
 import torch
-
+"""
 
 
 class LLM_Model:
@@ -124,11 +125,11 @@ class LLM_Model:
         print('device:',device)
 
         print("We now use beam search to generate the patches.")
-        if self.diversity != 0:
+        if self.diversity != '0':
             generation_config = GenerationConfig(
                 num_beams = self.numBeams,
                 num_beam_groups = self.numBeams // 2,
-                diversity_penalty = self.diversity,
+                diversity_penalty = self.diversity / 100,
                 early_stopping = True,
             )
         else:
