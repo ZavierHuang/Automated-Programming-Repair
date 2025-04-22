@@ -479,6 +479,7 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.verification_QuixBugs.setPromptRepairProgramPath('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/promptRepairProgram')
         self.verification_QuixBugs.setTestDataResult('Result_Output/QuixBugs/Qwen/BeamSearch/Demo_Multiple/Patch/Qwen_Patch10_Multiple_twice.jsonl')
         self.verification_QuixBugs.createJsonFrameworkForMultipleError()
+        print('Qwen Lora 16')
 
 
     def test_predict_twice_patch_code(self):

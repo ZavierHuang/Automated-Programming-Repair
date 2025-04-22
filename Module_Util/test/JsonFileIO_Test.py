@@ -124,27 +124,6 @@ class JsonFileIO_Test(unittest.TestCase):
         for item in data:
             print(data[item])
 
-    def test_compare(self):
-        Lora = '16'
-        Model = 'CodeLlama'
-
-        jsonFile = (f'Result_Output/QuixBugs/{Model}/BeamSearch/'
-                    f'Lora{Lora}_Multiple/Json/{Model}_Lora{Lora}_BS_Multiple.json')
-        jsonFilePath = os.path.join(ROOT, jsonFile)
-        data = self.jsonFileIO.readJsonData(jsonFilePath)
-
-        for item in data:
-            exactlyMatch = item['solution']
-            output = item['output']
-            for i in range(len(output)):
-                result = self.jsonFileIO.compareEqual(output[str(i)]['patchCode'], exactlyMatch)
-                output[str(i)]['exactlyMatch'] = result
-
-        self.jsonFileIO.writeJsonFile(data, jsonFilePath)
-
-        self.newResultAnalysis = NewResultAnalysis()
-        self.newResultAnalysis.resultAnalysis(jsonFile)
-
 
 if __name__ == '__main__':
     unittest.main()
