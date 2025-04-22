@@ -206,7 +206,7 @@ class Verification_QuixBugs(Verification):
 
                 subdictionary['output'][self.beamSize*patchNumber+i] = (
                     self.jsonFileIO.getJsonResultSubItem(
-                        self.firstPredictPatchResultDict[currentBuggyId][i] + ',' + patchCode, compileLog, compileResult,
+                        self.firstPredictPatchResultDict[currentBuggyId][patchNumber] + ',' + patchCode, compileLog, compileResult,
                         javaFormatLog, javaFormatResult, solution))
 
             if currentBuggyId != previousBuggyId:
