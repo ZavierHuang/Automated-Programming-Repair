@@ -308,9 +308,12 @@ class Verification:
     def checkBuggyMethodLine(self, buggyMethod):
         buggyMethod = buggyMethod[buggyMethod.find('buggy code'):]
         commentLineNums = buggyMethod.count('//')
-        if commentLineNums == 1:
-            return 'Single'
-        return 'Multiple'
+
+        if commentLineNums > 1:
+            return 'Multiple'
+
+        return 'Single'
+
 
     def updateJsonResult(self):
         pass
