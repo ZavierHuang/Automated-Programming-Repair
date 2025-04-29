@@ -76,8 +76,6 @@ class LLM_PER:
 
 
     def LLM_Prediction(self):
-        # llm = Ollama(model='qwen2.5-coder:1.5b')
-        print("buggyCode:",self.buggyJavaCode)
         llm = Ollama(model = self.langChainName)
 
         prompt = ChatPromptTemplate.from_messages([
@@ -89,9 +87,10 @@ class LLM_PER:
         ])
 
         chain = prompt | llm
-        result = chain.invoke({"input": self.buggyJavaCode + '\n' + self.errorMessage})
+        promptRepairInput = self.buggyJavaCode + '\n' + self.errorMessage
+        result = chain.invoke({"input": promptRepairInput})
 
-        correctedCode = result[result.find('corrected code:'):]
+        correctedCode = result[result.find('corrected'):]
         return correctedCode[correctedCode.find('```')+len('```'):correctedCode.rfind('```')]
 
 
