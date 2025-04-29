@@ -27,15 +27,12 @@ class LLM_PER:
     def setJavaFilePath(self, javaFilePath):
         self.javaFilePath = os.path.join(ROOT, javaFilePath)
         self.compileJavaFiles.append(self.javaFilePath)
-        self.buggyJavaCode = self.fileIO.readFileData(self.javaFilePath)
+        self.buggyJavaCode = self.fileIO.readFileData(self.javaFilePath).replace('import dataStructures.*;', '').strip()
+        self.fileIO.writeFileData(self.javaFilePath, self.buggyJavaCode)
 
     # Test
     def setBuggyCode(self, buggyJavaCode):
         self.buggyJavaCode = buggyJavaCode
-
-    # Test
-    def seterrorMessage(self, errorMessage):
-        self.errorMessage = errorMessage
 
     def setPER_RepairTimes(self, times):
         self.PER_RepairTimes = times
@@ -57,9 +54,11 @@ class LLM_PER:
 
 
     def needCompileJavaFiles(self):
-       for item in ['Node','QuixFixOracleHelper', 'WeightedEdge']:
-           if item in self.buggyJavaCode:
-               self.compileJavaFiles.append(item)
+        for item in ['Node', 'QuixFixOracleHelper', 'WeightedEdge']:
+            if item in self.buggyJavaCode:
+                self.compileJavaFiles.append(
+                    # Node.java , Weighted, QuixFixOracleHelper doesn't have "package datastructures;"
+                    os.path.join(ROOT, f'Data_Storage/QuixBugs/dataStructures/{item}.java'))
 
     def subprocess_run_JavaCompile(self, javaFiles):
         result = subprocess.run(
@@ -78,7 +77,7 @@ class LLM_PER:
 
     def LLM_Prediction(self):
         # llm = Ollama(model='qwen2.5-coder:1.5b')
-        print("langchainName:",self.langChainName)
+        print("buggyCode:",self.buggyJavaCode)
         llm = Ollama(model = self.langChainName)
 
         prompt = ChatPromptTemplate.from_messages([
