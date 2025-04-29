@@ -21,7 +21,7 @@ class LLM_PER:
         self.compileResult = None           # returnCode = 0 (Pass)
         self.javaFilePath = None
         self.compileJavaFiles = []
-        self.outputDictionary = {}
+        self.outputJsonList = []
         self.fileIO = FileIO()
 
 
@@ -74,6 +74,9 @@ class LLM_PER:
     def getErrorMessage(self):
         return self.errorMessage
 
+    def getOutputJsonList(self):
+        return self.outputJsonList
+
     def needCompileJavaFiles(self):
         for item in ['Node', 'QuixFixOracleHelper', 'WeightedEdge']:
             if item in self.buggyJavaCode:
@@ -115,20 +118,39 @@ class LLM_PER:
         correctedCode = result[result.find('corrected'):]
         return correctedCode[correctedCode.find('```')+len('```'):correctedCode.rfind('```')]
 
+    def createItemJsonFramework(self, repairFile):
+        buggyId = repairFile[repairFile.find(self.promptRepairFileListPath) + len(self.promptRepairFileListPath) + 1:repairFile.rfind('.java')]
 
+        subItemDictionary = {
+            'buggyId': buggyId,
+            'repair': False,
+            'repairTimes': 0,
+            'output': {str(i): {'errorMessage': 'None'} for i in range(1, self.PER_RepairTimes + 1)}
+        }
+
+        return subItemDictionary
 
     def promptRepair(self):
-        for filePath in self.promptRepairFileList:
-            self.setJavaFilePath(filePath)
+        for repairFile in self.promptRepairFileList:
+            self.setJavaFilePath(repairFile)
             self.compileJavaFiles.clear()
             self.errorMessage = 'Error'
+
+            subItemDictionary = self.createItemJsonFramework(repairFile)
+
             for i in range(self.PER_RepairTimes):
                 self.needCompileJavaFiles()
                 self.promtRepair_Compile()
                 self.LLM_Prediction()
 
-                if len(self.errorMessage) == 0:
+                if self.compileResult == 0:
+                    subItemDictionary['repair'] = True
+                    subItemDictionary['repairTimes'] = i
+                    subItemDictionary['output'][str(i)]['errorMessage'] = 'Compile Success'
                     break
+
+            self.outputJsonList.append(subItemDictionary)
+
 
 
 

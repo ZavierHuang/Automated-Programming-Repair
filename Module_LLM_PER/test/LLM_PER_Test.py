@@ -1,5 +1,7 @@
+import os
 import unittest
 
+from Config import ROOT
 from Module_LLM_PER.src.LLM_LangChain_CodeLlama import LLM_LangChain_CodeLlama
 from Module_LLM_PER.src.LLM_PER import LLM_PER
 from Module_Util.src.FileIO import FileIO
@@ -73,6 +75,26 @@ class LLM_Model_Test(unittest.TestCase):
         self.promptEngineer.setPromptRepairFileListPath('Module_LLM_PER/test/testFile')
         promptRepairFileList = self.promptEngineer.getPromptRepairFileList()
         self.assertEqual(len(promptRepairFileList), 5)
+
+    def test_create_output_Item_framework(self):
+        self.promptEngineer.setPER_RepairTimes(3)
+        self.promptEngineer.setPromptRepairFileListPath('Module_LLM_PER/test/testFile')
+        subItemDictionary = self.promptEngineer.createItemJsonFramework(os.path.join(ROOT, 'Module_LLM_PER/test/testFile/BREADTH_FIRST_SEARCH_TEST_99.java'))
+
+        print(subItemDictionary)
+
+        expected = {
+            'buggyId': 'BREADTH_FIRST_SEARCH_TEST_99',
+            'repair': False,
+            'repairTimes': 0,
+            'output': {
+                '1': {'errorMessage': 'None'},
+                '2': {'errorMessage': 'None'},
+                '3': {'errorMessage': 'None'},
+            }
+        }
+        self.assertEqual(expected, subItemDictionary)
+
 
 if __name__ == '__main__':
     unittest.main()
