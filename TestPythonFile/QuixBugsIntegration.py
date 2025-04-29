@@ -1,9 +1,9 @@
-from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
+from Module_Src.src.LLM_Qwen import LLM_Qwen
 from Module_Src.src.Verification_QuixBugs import Verification_QuixBugs
 from Module_Util.src.JsonFileIO import JsonFileIO
 
 
-def setUp(lora,name):
+def setUp(diversity,name):
     verification_QuixBugs = Verification_QuixBugs()
     verification_QuixBugs.setDataSetName('QuixBugs')
     verification_QuixBugs.setRemainderCodePath(None)
@@ -12,16 +12,16 @@ def setUp(lora,name):
     verification_QuixBugs.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_QuixBugs')
 
     verification_QuixBugs.setTestDataResult(
-        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}/Patch/QuixBugs_{name}.jsonl')
+        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/Lora16/Patch/QuixBugs_{name}.jsonl')
     verification_QuixBugs.setJsonResultPath(
-        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}/Json/{name}.json')
+        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/Lora16/Json/{name}.json')
     verification_QuixBugs.setLogFolderPath(
-        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}/Log')
+        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/Lora16/Log')
     verification_QuixBugs.setRepairProgramPath(
-        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}/repairProgram')
+        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/Lora16/repairProgram')
     verification_QuixBugs.setPromptRepairProgramPath(
-        f'Result_Output/QuixBugs/CodeLlama/BeamSearch/{lora}/promptRepairProgram')
-    verification_QuixBugs.setLLMModel(LLM_CodeLlama())
+        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/Lora16/promptRepairProgram')
+    verification_QuixBugs.setLLMModel(LLM_Qwen())
 
     return verification_QuixBugs
 
@@ -48,13 +48,15 @@ def test_result_analysis():
 
 if __name__ == '__main__':
     pendlingList = {
-        'Lora04': 'CodeLlama_Lora04_BS',
-        'Lora08': 'CodeLlama_Lora08_BS',
-        'Lora16': 'CodeLlama_Lora16_BS',
+       '20':'Qwen_Lora16_DBS_20',
+       '40':'Qwen_Lora16_DBS_40',
+       '60':'Qwen_Lora16_DBS_60',
+       '80':'Qwen_Lora16_DBS_80',
+       '100':'Qwen_Lora16_DBS_100',
     }
 
-    for lora, name in pendlingList.items():
-        verification_QuixBugs = setUp(lora, name)
+    for diversity, name in pendlingList.items():
+        verification_QuixBugs = setUp(diversity, name)
         test_load_and_run_test_case(verification_QuixBugs)
         test_result_analysis()
 

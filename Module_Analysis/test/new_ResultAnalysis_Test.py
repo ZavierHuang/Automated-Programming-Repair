@@ -12,9 +12,10 @@ class oldResultAnalysis_Test(unittest.TestCase):
 
 
     def test_result_analysis(self):
-        Lora = '16'
-        Model = 'CodeLlama'
-        jsonFile = f'Result_Output/QuixBugs/{Model}/BeamSearch/Lora{Lora}_Multiple/Json/{Model}_Lora{Lora}_BS_Multiple.json'
+        Lora = '08'
+        Model = 'Qwen'
+        epoch = '5'
+        jsonFile = f'Result_Output/HumanEval/{Model}/OtherEpoch/Epoch{epoch}/Lora{Lora}/Json/{Model}_Lora{Lora}_E{epoch}_BS.json'
         self.newResultAnalysis.resultAnalysis(jsonFile)
 
 if __name__ == '__main__':

@@ -5,12 +5,14 @@ import unittest
 from Module_Src.src.Verification import Verification
 from Module_Util.src.FileIO import FileIO
 from Config import ROOT
+from Module_Util.src.JsonFileIO import JsonFileIO
 
 
 class Verification_Test(unittest.TestCase):
     def setUp(self):
         self.verification = Verification()
         self.fileIO = FileIO()
+        self.jsonFileIO = JsonFileIO()
 
     def test_subprocess_run_JavaFormat_Pass(self):
         test_File = os.path.join(ROOT, 'Module_Util/test/javaFormatTestFile/javaFormatTestFile_Pass.java')
