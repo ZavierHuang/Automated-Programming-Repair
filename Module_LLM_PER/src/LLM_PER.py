@@ -1,5 +1,6 @@
 # Prompt Engineering Repair
 import os.path
+import shutil
 import subprocess
 
 from langchain_community.llms.ollama import Ollama
@@ -7,12 +8,15 @@ from langchain_core.prompts import ChatPromptTemplate
 
 from Config import ROOT, CACHE_PATH
 from Module_Util.src.FileIO import FileIO
+from Module_Util.src.JsonFileIO import JsonFileIO
 
 
 class LLM_PER:
     def __init__(self):
         self.langChainName = None
         self.PER_RepairTimes = None
+        self.promptRepairFileRoot = None
+        self.pendingRepairFileListPath = None
         self.promptRepairFileListPath = None
         self.promptRepairFileList = []
 
@@ -22,14 +26,25 @@ class LLM_PER:
         self.javaFilePath = None
         self.compileJavaFiles = []
         self.outputJsonList = []
+        self.outputJsonFilePath = None
+
         self.fileIO = FileIO()
+        self.jsonFileIO = JsonFileIO()
 
 
     def getLangChanName(self):
         return self.langChainName
 
-    def setPromptRepairFileListPath(self, promptRepairFileListPath):
-        self.promptRepairFileListPath = os.path.join(ROOT, promptRepairFileListPath)
+    def setPromptRepairFileRoot(self, promptRepairFileRoot):
+        self.promptRepairFileRoot = os.path.join(ROOT, promptRepairFileRoot)
+
+    def setOutputJsonFilePath(self, outputJsonFilePath):
+        self.outputJsonFilePath = os.path.join(ROOT, outputJsonFilePath)
+
+    def setPendingRepairFileListPath(self, pendingRepairFileListPath):
+        self.pendingRepairFileListPath = os.path.join(ROOT, pendingRepairFileListPath)
+        self.promptRepairFileListPath = os.path.join(self.promptRepairFileRoot, 'PromptRepairFile')
+        shutil.copytree(self.pendingRepairFileListPath, self.promptRepairFileListPath)
 
     def setJavaFilePath(self, javaFilePath):
         self.javaFilePath = os.path.join(ROOT, javaFilePath)
@@ -44,18 +59,23 @@ class LLM_PER:
     def setPER_RepairTimes(self, times):
         self.PER_RepairTimes = times
 
+    def getOutputJsonFilePath(self):
+        return self.outputJsonFilePath
+
     def getCompileResult(self):
         return self.compileResult
+
+    def getPromptRepairFileRoot(self):
+        return self.promptRepairFileRoot
+
+    def getPendingRepairFileListPath(self):
+        return self.pendingRepairFileListPath
 
     def getPromptRepairFileListPath(self):
         return self.promptRepairFileListPath
 
     def getPromptRepairFileList(self):
-        fileList = self.fileIO.getFileListUnderFolder(self.promptRepairFileListPath)
-
-        for file in fileList:
-            filePath = os.path.join(self.promptRepairFileListPath, file)
-            self.promptRepairFileList.append(os.path.join(ROOT, filePath))
+        self.promptRepairFileList = self.fileIO.getFileListUnderFolder(self.promptRepairFileListPath)
 
         return self.promptRepairFileList
 
@@ -77,7 +97,8 @@ class LLM_PER:
     def getOutputJsonList(self):
         return self.outputJsonList
 
-    def needCompileJavaFiles(self):
+    def needCompileJavaFiles(self, repairFile):
+        self.compileJavaFiles.append(os.path.join(self.promptRepairFileListPath, repairFile))
         for item in ['Node', 'QuixFixOracleHelper', 'WeightedEdge']:
             if item in self.buggyJavaCode:
                 self.compileJavaFiles.append(
@@ -93,21 +114,24 @@ class LLM_PER:
         return result
 
 
-    def promtRepair_Compile(self):
+    def promptRepair_Compile(self):
         result = self.subprocess_run_JavaCompile(self.compileJavaFiles)
         self.errorMessage = str(result.stderr)
-        self.compileResult = result.returncode
+        self.compileResult = int(result.returncode)
 
 
 
     def LLM_Prediction(self):
-        llm = Ollama(model = self.langChainName)
+        llm = Ollama(
+            model = self.langChainName,
+            temperature = 0.5
+        )
 
         prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are an AI programmer proficient in Java, specializing in fixing errors in Java programs. 
-                 I will provide a piece of Java code with errors along with the error messages, and I need you to correct them.
-                 Please infer the behavior from the class name and fix the method errors.
-                 Please only output corrected code and not include any other information."""),
+            ("system", """You are an AI assistant specializing in Java programming.
+            I will provide Java code containing errors, along with the corresponding error messages.
+            Your task is to fix the errors based on the method name provided.
+            Please output only the corrected Java code without any additional explanations or comments"""),
             ("user", "{input}")
         ])
 
@@ -115,42 +139,73 @@ class LLM_PER:
         promptRepairInput = self.buggyJavaCode + '\n' + self.errorMessage
         result = chain.invoke({"input": promptRepairInput})
 
-        correctedCode = result[result.find('corrected'):]
-        return correctedCode[correctedCode.find('```')+len('```'):correctedCode.rfind('```')]
+        print("==================== promptRepairInput ===============")
+        print(promptRepairInput)
+        print("======================================================")
+
+        print("========================= result =====================")
+        print(result)
+        print("======================================================")
+
+
+        return result[result.find('```')+len('```'):result.rfind('```')]
 
     def createItemJsonFramework(self, repairFile):
-        buggyId = repairFile[repairFile.find(self.promptRepairFileListPath) + len(self.promptRepairFileListPath) + 1:repairFile.rfind('.java')]
-
         subItemDictionary = {
-            'buggyId': buggyId,
+            'buggyId': repairFile[:repairFile.rfind('.java')],
             'repair': False,
             'repairTimes': 0,
-            'output': {str(i): {'errorMessage': 'None'} for i in range(1, self.PER_RepairTimes + 1)}
+            'output': {str(i): {'errorMessage': 'None'} for i in range(self.PER_RepairTimes+1)}
         }
 
         return subItemDictionary
 
     def promptRepair(self):
+        self.getPromptRepairFileList()
         for repairFile in self.promptRepairFileList:
-            self.setJavaFilePath(repairFile)
+            self.setJavaFilePath(os.path.join(self.promptRepairFileListPath,repairFile))
             self.compileJavaFiles.clear()
             self.errorMessage = 'Error'
 
             subItemDictionary = self.createItemJsonFramework(repairFile)
 
-            for i in range(self.PER_RepairTimes):
-                self.needCompileJavaFiles()
-                self.promtRepair_Compile()
-                self.LLM_Prediction()
+            self.needCompileJavaFiles(repairFile)
+
+
+            for i in range(self.PER_RepairTimes+1):
+                self.promptRepair_Compile()
+
+                repairJavaCode = self.LLM_Prediction()
+
+                print("============================================================")
+                print("i:", i)
+                print('writeFile:', os.path.join(self.getPromptRepairFileListPath(), repairFile))
+                print('repairJavaCode:', repairJavaCode)
+                print("============================================================")
+
+                self.fileIO.writeFileData(os.path.join(self.getPromptRepairFileListPath(), repairFile), repairJavaCode)
 
                 if self.compileResult == 0:
                     subItemDictionary['repair'] = True
-                    subItemDictionary['repairTimes'] = i
                     subItemDictionary['output'][str(i)]['errorMessage'] = 'Compile Success'
                     break
 
+                subItemDictionary['repairTimes'] = i + 1
+                subItemDictionary['output'][str(i)]['errorMessage'] = self.errorMessage
+                self.buggyJavaCode = self.fileIO.readFileData(os.path.join(self.getPromptRepairFileListPath(), repairFile))
+
+
+
+            if(subItemDictionary['repair'] is False):
+                self.fileIO.deleteFileData(os.path.join(self.getPromptRepairFileListPath(), repairFile))
+
+            print("==================== SubItemDictionary =====================")
+            print(subItemDictionary)
+            print("============================================================")
+
             self.outputJsonList.append(subItemDictionary)
 
+        self.jsonFileIO.writeJsonFile(self.outputJsonList, self.outputJsonFilePath)
 
 
 

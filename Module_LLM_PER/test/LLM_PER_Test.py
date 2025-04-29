@@ -1,4 +1,5 @@
 import os
+import shutil
 import unittest
 
 from Config import ROOT
@@ -17,10 +18,10 @@ class LLM_Model_Test(unittest.TestCase):
         pass
 
     def test_prompt_engineering_repair(self):
-        self.promptEngineer.setJavaFilePath('Module_LLM_PER/test/testFile/ADD_ELEMENTS_TEST_9.java')
+        self.promptEngineer.setJavaFilePath('Module_LLM_PER/test/BatchFileTest/testFile/ADD_ELEMENTS_TEST_9.java')
         self.promptEngineer.setPER_RepairTimes(1)
         self.promptEngineer.needCompileJavaFiles()
-        self.promptEngineer.promtRepair_Compile()
+        self.promptEngineer.promptRepair_Compile()
 
         print(self.promptEngineer.getErrorMessage())
         print(self.promptEngineer.getCompileResult())
@@ -28,11 +29,19 @@ class LLM_Model_Test(unittest.TestCase):
         self.assertNotEqual(len(self.promptEngineer.getErrorMessage()), 0)
         self.assertNotEqual(self.promptEngineer.getCompileResult(), 0)
 
+    def test_prompt_Copy_Tree_LLM_Prediction(self):
+        self.promptEngineer.setPromptRepairFileRoot('Module_LLM_PER/test/SingleFileTest')
+        self.promptEngineer.setPendingRepairFileListPath('Module_LLM_PER/test/SingleFileTest/testFile')
+        self.assertTrue(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(), 'PromptRepairFile')))
+        shutil.rmtree(self.promptEngineer.getPromptRepairFileListPath())
+        self.assertFalse(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(), 'PromptRepairFile')))
+
+
     def test_prompt_engineering_repair_with_Node(self):
-        self.promptEngineer.setJavaFilePath('Module_LLM_PER/test/testFile/BREADTH_FIRST_SEARCH_TEST_99.java')
+        self.promptEngineer.setJavaFilePath('Module_LLM_PER/test/BatchFileTest/testFile/BREADTH_FIRST_SEARCH_TEST_99.java')
         self.promptEngineer.setPER_RepairTimes(1)
         self.promptEngineer.needCompileJavaFiles()
-        self.promptEngineer.promtRepair_Compile()
+        self.promptEngineer.promptRepair_Compile()
 
         print(self.promptEngineer.getNeedCompileJavas())
         print(self.promptEngineer.getErrorMessage())
@@ -59,41 +68,59 @@ class LLM_Model_Test(unittest.TestCase):
         print(self.promptEngineer.LLM_Prediction())
 
     def test_compile_Success_ErrorMessage_is_Empty(self):
-        self.promptEngineer.setJavaFilePath('Module_LLM_PER/test/testFile/BREADTH_FIRST_SEARCH_Compile_Pass.java')
+        self.promptEngineer.setJavaFilePath('Module_LLM_PER/test/BatchFileTest/testFile/BREADTH_FIRST_SEARCH_Compile_Pass.java')
         self.promptEngineer.setPER_RepairTimes(1)
         self.promptEngineer.needCompileJavaFiles()
-        self.promptEngineer.promtRepair_Compile()
+        self.promptEngineer.promptRepair_Compile()
 
         print(self.promptEngineer.getNeedCompileJavas())
         print(self.promptEngineer.getErrorMessage())
         print(self.promptEngineer.getCompileResult())
         self.assertEqual(len(self.promptEngineer.getNeedCompileJavas()), 2)
         self.assertEqual(len(self.promptEngineer.getErrorMessage()), 0)
-        self.assertEqual(len(self.promptEngineer.getCompileResult()), 0)
+        self.assertEqual(self.promptEngineer.getCompileResult(), 0)
 
     def test_prompt_repair_file_list(self):
-        self.promptEngineer.setPromptRepairFileListPath('Module_LLM_PER/test/testFile')
+        self.promptEngineer.setPromptRepairFileRoot('Module_LLM_PER/test/BatchFileTest')
+        self.promptEngineer.setPendingRepairFileListPath('Module_LLM_PER/test/BatchFileTest/testFile')
         promptRepairFileList = self.promptEngineer.getPromptRepairFileList()
         self.assertEqual(len(promptRepairFileList), 5)
 
     def test_create_output_Item_framework(self):
-        self.promptEngineer.setPER_RepairTimes(3)
-        self.promptEngineer.setPromptRepairFileListPath('Module_LLM_PER/test/testFile')
-        subItemDictionary = self.promptEngineer.createItemJsonFramework(os.path.join(ROOT, 'Module_LLM_PER/test/testFile/BREADTH_FIRST_SEARCH_TEST_99.java'))
+        self.promptEngineer.setPromptRepairFileRoot('Module_LLM_PER/test/BatchFileTest')
 
-        print(subItemDictionary)
+        if self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFile')):
+            shutil.rmtree(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFile'))
+            self.assertFalse(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFile')))
+
+        self.promptEngineer.setPendingRepairFileListPath('Module_LLM_PER/test/BatchFileTest/testFile')
+        self.promptEngineer.setPER_RepairTimes(3)
+
+
+        subItemDictionary = self.promptEngineer.createItemJsonFramework('BREADTH_FIRST_SEARCH_TEST_99.java')
 
         expected = {
             'buggyId': 'BREADTH_FIRST_SEARCH_TEST_99',
             'repair': False,
             'repairTimes': 0,
             'output': {
+                '0': {'errorMessage': 'None'},
                 '1': {'errorMessage': 'None'},
                 '2': {'errorMessage': 'None'},
                 '3': {'errorMessage': 'None'},
             }
         }
         self.assertEqual(expected, subItemDictionary)
+
+    def test_prompt_Compile_ADD_LLM_Prediction(self):
+        self.promptEngineer.setJavaFilePath('Module_LLM_PER/test/BatchFileTest/testFile/BREADTH_FIRST_SEARCH_TEST_99.java')
+        self.promptEngineer.setPER_RepairTimes(1)
+        self.promptEngineer.needCompileJavaFiles()
+        self.promptEngineer.promptRepair_Compile()
+        print(self.promptEngineer.LLM_Prediction())
+        self.assertEqual(len(self.promptEngineer.getNeedCompileJavas()), 2)
+        self.assertNotEqual(len(self.promptEngineer.getErrorMessage()), 0)
+
 
 
 if __name__ == '__main__':

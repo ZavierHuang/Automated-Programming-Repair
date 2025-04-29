@@ -1,0 +1,52 @@
+[
+    {
+        "buggyId": "ADD_ELEMENTS_TEST_9",
+        "repair": true,
+        "repairTimes": 2,
+        "output": {
+            "0": {
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\ADD_ELEMENTS_TEST_9.java:12: error: illegal start of type\n        return result;\n        ^\nF:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\ADD_ELEMENTS_TEST_9.java:12: error: <identifier> expected\n        return result;\n                     ^\nF:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\ADD_ELEMENTS_TEST_9.java:16: error: class, interface, enum, or record expected\n        }\n        ^\n3 errors\n"
+            },
+            "1": {
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\ADD_ELEMENTS_TEST_9.java:7: error: cannot find symbol\n            if (arr.get(i).length() >= 2) {\n                          ^\n  symbol:   method length()\n  location: class Integer\n1 error\n"
+            },
+            "2": {
+                "errorMessage": "Compile Success"
+            },
+            "3": {
+                "errorMessage": "None"
+            },
+            "4": {
+                "errorMessage": "None"
+            },
+            "5": {
+                "errorMessage": "None"
+            }
+        }
+    },
+    {
+        "buggyId": "BELOW_THRESHOLD_TEST_7",
+        "repair": false,
+        "repairTimes": 6,
+        "output": {
+            "0": {
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\BELOW_THRESHOLD_TEST_7.java:18: error: class, interface, enum, or record expected\n        }\n        ^\n1 error\n"
+            },
+            "1": {
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\BELOW_THRESHOLD_TEST_7.java:9: error: reached end of file while parsing\n    }\n     ^\n1 error\n"
+            },
+            "2": {
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\BELOW_THRESHOLD_TEST_7.java:1: error: class, interface, enum, or record expected\nublic class BELOW_THRESHOLD_TEST_7 {\n^\nF:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\BELOW_THRESHOLD_TEST_7.java:9: error: reached end of file while parsing\n    }\n     ^\n2 errors\n"
+            },
+            "3": {
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\BELOW_THRESHOLD_TEST_7.java:9: error: reached end of file while parsing\n    }\n     ^\n1 error\n"
+            },
+            "4": {
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\BELOW_THRESHOLD_TEST_7.java:9: error: reached end of file while parsing\n      }\n       ^\n1 error\n"
+            },
+            "5": {
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\BELOW_THRESHOLD_TEST_7.java:9: error: reached end of file while parsing\n    }\n     ^\n1 error\n"
+            }
+        }
+    }
+]
