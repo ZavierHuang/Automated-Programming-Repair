@@ -2,12 +2,13 @@ import unittest
 
 from Module_LLM_PER.src.LLM_LangChain_CodeLlama import LLM_LangChain_CodeLlama
 from Module_LLM_PER.src.LLM_PER import LLM_PER
-
+from Module_Util.src.FileIO import FileIO
 
 
 class LLM_Model_Test(unittest.TestCase):
     def __init__(self, methodName: str = "runTest"):
         super().__init__(methodName)
+        self.fileIO = FileIO()
         self.promptEngineer = LLM_LangChain_CodeLlama()
 
     def setUp(self):
@@ -20,9 +21,10 @@ class LLM_Model_Test(unittest.TestCase):
         self.promptEngineer.promtRepair_Compile()
 
         print(self.promptEngineer.getErrorMessage())
+        print(self.promptEngineer.getCompileResult())
         self.assertEqual(len(self.promptEngineer.getNeedCompileJavas()), 1)
         self.assertNotEqual(len(self.promptEngineer.getErrorMessage()), 0)
-
+        self.assertNotEqual(self.promptEngineer.getCompileResult(), 0)
 
     def test_prompt_engineering_repair_with_Node(self):
         self.promptEngineer.setJavaFilePath('Module_LLM_PER/test/testFile/BREADTH_FIRST_SEARCH_TEST_99.java')
@@ -54,6 +56,23 @@ class LLM_Model_Test(unittest.TestCase):
         """)
         print(self.promptEngineer.LLM_Prediction())
 
+    def test_compile_Success_ErrorMessage_is_Empty(self):
+        self.promptEngineer.setJavaFilePath('Module_LLM_PER/test/testFile/BREADTH_FIRST_SEARCH_Compile_Pass.java')
+        self.promptEngineer.setPER_RepairTimes(1)
+        self.promptEngineer.needCompileJavaFiles()
+        self.promptEngineer.promtRepair_Compile()
+
+        print(self.promptEngineer.getNeedCompileJavas())
+        print(self.promptEngineer.getErrorMessage())
+        print(self.promptEngineer.getCompileResult())
+        self.assertEqual(len(self.promptEngineer.getNeedCompileJavas()), 2)
+        self.assertEqual(len(self.promptEngineer.getErrorMessage()), 0)
+        self.assertEqual(len(self.promptEngineer.getCompileResult()), 0)
+
+    def test_prompt_repair_file_list(self):
+        self.promptEngineer.setPromptRepairFileListPath('Module_LLM_PER/test/testFile')
+        promptRepairFileList = self.promptEngineer.getPromptRepairFileList()
+        self.assertEqual(len(promptRepairFileList), 5)
 
 if __name__ == '__main__':
     unittest.main()

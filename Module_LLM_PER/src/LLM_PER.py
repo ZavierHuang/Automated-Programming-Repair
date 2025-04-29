@@ -12,17 +12,24 @@ from Module_Util.src.FileIO import FileIO
 class LLM_PER:
     def __init__(self):
         self.langChainName = None
-        self.javaFilePath = None
         self.PER_RepairTimes = None
-        self.buggyJavaCode = None
-        self.errorMessage = ''
+        self.promptRepairFileListPath = None
+        self.promptRepairFileList = []
 
+        self.buggyJavaCode = None
+        self.errorMessage = 'Error'
+        self.compileResult = None           # returnCode = 0 (Pass)
+        self.javaFilePath = None
         self.compileJavaFiles = []
+        self.outputDictionary = {}
         self.fileIO = FileIO()
 
 
     def getLangChanName(self):
         return self.langChainName
+
+    def setPromptRepairFileListPath(self, promptRepairFileListPath):
+        self.promptRepairFileListPath = os.path.join(ROOT, promptRepairFileListPath)
 
     def setJavaFilePath(self, javaFilePath):
         self.javaFilePath = os.path.join(ROOT, javaFilePath)
@@ -36,6 +43,21 @@ class LLM_PER:
 
     def setPER_RepairTimes(self, times):
         self.PER_RepairTimes = times
+
+    def getCompileResult(self):
+        return self.compileResult
+
+    def getPromptRepairFileListPath(self):
+        return self.promptRepairFileListPath
+
+    def getPromptRepairFileList(self):
+        fileList = self.fileIO.getFileListUnderFolder(self.promptRepairFileListPath)
+
+        for file in fileList:
+            filePath = os.path.join(self.promptRepairFileListPath, file)
+            self.promptRepairFileList.append(os.path.join(ROOT, filePath))
+
+        return self.promptRepairFileList
 
     def getJavaFilePath(self):
         return self.javaFilePath
@@ -51,7 +73,6 @@ class LLM_PER:
 
     def getErrorMessage(self):
         return self.errorMessage
-
 
     def needCompileJavaFiles(self):
         for item in ['Node', 'QuixFixOracleHelper', 'WeightedEdge']:
@@ -72,6 +93,7 @@ class LLM_PER:
     def promtRepair_Compile(self):
         result = self.subprocess_run_JavaCompile(self.compileJavaFiles)
         self.errorMessage = str(result.stderr)
+        self.compileResult = result.returncode
 
 
 
@@ -95,6 +117,18 @@ class LLM_PER:
 
 
 
+    def promptRepair(self):
+        for filePath in self.promptRepairFileList:
+            self.setJavaFilePath(filePath)
+            self.compileJavaFiles.clear()
+            self.errorMessage = 'Error'
+            for i in range(self.PER_RepairTimes):
+                self.needCompileJavaFiles()
+                self.promtRepair_Compile()
+                self.LLM_Prediction()
+
+                if len(self.errorMessage) == 0:
+                    break
 
 
 

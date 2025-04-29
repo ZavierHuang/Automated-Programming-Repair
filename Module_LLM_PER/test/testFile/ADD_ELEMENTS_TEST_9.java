@@ -1,5 +1,4 @@
-
-        import java.util.*;
+import java.util.*;
         public class ADD_ELEMENTS_TEST_9 {
                 public static int add_elements(ArrayList<Integer> arr, int k) {
         int result = 0;
@@ -15,4 +14,3 @@
 
             
         }
-        
