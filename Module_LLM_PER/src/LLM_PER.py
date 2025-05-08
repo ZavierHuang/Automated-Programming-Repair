@@ -44,6 +44,8 @@ class LLM_PER:
     def setPendingRepairFileListPath(self, pendingRepairFileListPath):
         self.pendingRepairFileListPath = os.path.join(ROOT, pendingRepairFileListPath)
         self.promptRepairFileListPath = os.path.join(self.promptRepairFileRoot, 'PromptRepairFile')
+
+    def copyAndCreatePromptRepairFiles(self):
         shutil.copytree(self.pendingRepairFileListPath, self.promptRepairFileListPath)
 
     def setJavaFilePath(self, javaFilePath):

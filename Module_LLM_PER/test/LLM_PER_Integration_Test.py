@@ -24,6 +24,7 @@ class LLM_Model_Integration_Test(unittest.TestCase):
             self.assertFalse(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFile')))
 
         self.promptEngineer.setPendingRepairFileListPath('Module_LLM_PER/test/SingleFileTest/testFile')
+        self.promptEngineer.copyAndCreatePromptRepairFiles()
         self.promptEngineer.setOutputJsonFilePath('Module_LLM_PER/test/SingleFileTest/test.json')
         self.promptEngineer.setPER_RepairTimes(5)
         self.promptEngineer.promptRepair()
