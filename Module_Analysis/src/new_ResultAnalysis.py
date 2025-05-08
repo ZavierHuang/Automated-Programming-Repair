@@ -122,4 +122,21 @@ class NewResultAnalysis:
 
                 print("===========================================================\n")
 
+    def promptRepairAddSuccessCase(self, promptJsonFile, APRJsonFile):
+        dataAPR = self.jsonFileIO.readJsonData(os.path.join(ROOT, APRJsonFile))
+        promptAPR = self.jsonFileIO.readJsonData(os.path.join(ROOT, promptJsonFile))
 
+        APR_FailureCase = []
+        for item in dataAPR:
+            if item['repair'] == False:
+                APR_FailureCase.append(item['buggyId'])
+
+        promptAPR_SuccessCase = []
+
+        for item in promptAPR:
+            if item['repair'] == True:
+                if item['buggyId'] in APR_FailureCase:
+                    promptAPR_SuccessCase.append(item['buggyId'])
+
+        print("\nCase:", len(promptAPR_SuccessCase))
+        print("ID:", promptAPR_SuccessCase)

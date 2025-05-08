@@ -30,5 +30,12 @@ class oldResultAnalysis_Test(unittest.TestCase):
         jsonFile = f'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/Lora08/Json/Lora08_E2_BS.json'
         self.newResultAnalysis.passButNotExactlyMatch(jsonFile)
 
+    def test_prompt_reapir_add_success_case(self):
+        promptJsonFile = 'Result_Output/QuixBugs/CodeLlama/diversityBeamSearch100/Lora04/PromptRepairFolder/Json/DBS_Lora04_100_CodeLlama_PRE_RES.json'
+        originalJsonFile = 'Result_Output/QuixBugs/CodeLlama/diversityBeamSearch100/Lora04/Json/CodeLlama_Lora04_DBS_100.json'
+
+        self.newResultAnalysis.promptRepairAddSuccessCase(promptJsonFile, originalJsonFile)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -34,16 +34,15 @@ def prompt_repair(CurrentRoot, PromptRoot, verification_QuixBugs, name):
     promptEngineer.setPendingRepairFileListPath(f'{CurrentRoot}/promptRepairProgram')
     promptEngineer.copyAndCreatePromptRepairFiles()
     promptEngineer.setOutputJsonFilePath(f'{PromptRoot}/Json/{name}_PRE_FEM.json')
-    promptEngineer.setPER_RepairTimes(3)
+    promptEngineer.setPER_RepairTimes(5)
     promptEngineer.promptRepair()
     promptEngineer.copyFileToTest(verification_QuixBugs.getJunitModuleTestEnvironment(), verification_QuixBugs.getDataSetName())
     return promptEngineer.getPromptRepairFilesPath()
 
 
 if __name__ == '__main__':
-    CurrentRoot = 'Result_Output/QuixBugs/Demo'
-    # name = 'DBS_Lora04_100_CodeLlama'
-    name = 'test'
+    CurrentRoot = 'Result_Output/QuixBugs/CodeLlama/diversityBeamSearch100/Lora04'
+    name = 'DBS_Lora04_100_CodeLlama'
 
     PromptRoot = os.path.join(CurrentRoot,'PromptRepairFolder')
 
