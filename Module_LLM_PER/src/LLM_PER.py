@@ -145,10 +145,15 @@ class LLM_PER:
 
         print("========================= result =====================")
         print(result)
-        print("======================================================")
 
 
-        return result[result.find('```')+len('```'):result.rfind('```')]
+        if result.count('```') >= 2:
+            fir_last_one = result.rfind('```')
+            sec_last_one = result.rfind('```', 0, fir_last_one)
+            return result[sec_last_one + len('```'):fir_last_one]
+        else:
+            return result
+
 
     def createItemJsonFramework(self, repairFile):
         subItemDictionary = {
@@ -180,7 +185,7 @@ class LLM_PER:
                 print("============================================================")
                 print("i:", i)
                 print('writeFile:', os.path.join(self.getPromptRepairFileListPath(), repairFile))
-                print('repairJavaCode:', repairJavaCode)
+                print('repairJavaCode:\n', repairJavaCode)
                 print("============================================================")
 
                 self.fileIO.writeFileData(os.path.join(self.getPromptRepairFileListPath(), repairFile), repairJavaCode)

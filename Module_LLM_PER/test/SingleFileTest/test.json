@@ -1,0 +1,52 @@
+[
+    {
+        "buggyId": "ADD_ELEMENTS_TEST_9",
+        "repair": true,
+        "repairTimes": 1,
+        "output": {
+            "0": {
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\ADD_ELEMENTS_TEST_9.java:12: error: illegal start of type\n        return result;\n        ^\nF:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\ADD_ELEMENTS_TEST_9.java:12: error: <identifier> expected\n        return result;\n                     ^\nF:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\ADD_ELEMENTS_TEST_9.java:16: error: class, interface, enum, or record expected\n        }\n        ^\n3 errors\n"
+            },
+            "1": {
+                "errorMessage": "Compile Success"
+            },
+            "2": {
+                "errorMessage": "None"
+            },
+            "3": {
+                "errorMessage": "None"
+            },
+            "4": {
+                "errorMessage": "None"
+            },
+            "5": {
+                "errorMessage": "None"
+            }
+        }
+    },
+    {
+        "buggyId": "BELOW_THRESHOLD_TEST_7",
+        "repair": true,
+        "repairTimes": 1,
+        "output": {
+            "0": {
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\BELOW_THRESHOLD_TEST_7.java:18: error: class, interface, enum, or record expected\n        }\n        ^\n1 error\n"
+            },
+            "1": {
+                "errorMessage": "Compile Success"
+            },
+            "2": {
+                "errorMessage": "None"
+            },
+            "3": {
+                "errorMessage": "None"
+            },
+            "4": {
+                "errorMessage": "None"
+            },
+            "5": {
+                "errorMessage": "None"
+            }
+        }
+    }
+]
