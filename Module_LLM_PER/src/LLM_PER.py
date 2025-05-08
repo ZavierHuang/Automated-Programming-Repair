@@ -38,6 +38,8 @@ class LLM_PER:
 
     def setPromptRepairFileRoot(self, promptRepairFileRoot):
         self.promptRepairFileRoot = os.path.join(ROOT, promptRepairFileRoot)
+        if(not self.fileIO.isPathExist(self.promptRepairFileRoot)):
+            os.mkdir(self.promptRepairFileRoot)
 
     def setOutputJsonFilePath(self, outputJsonFilePath):
         self.outputJsonFilePath = os.path.join(ROOT, outputJsonFilePath)

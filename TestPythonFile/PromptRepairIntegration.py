@@ -1,30 +1,41 @@
 from Module_LLM_PER.src.LLM_LangChain_CodeLlama import LLM_LangChain_CodeLlama
-
+from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
+from Module_Src.src.Verification_QuixBugs import Verification_QuixBugs
 
 def setUp():
+    verification_QuixBugs = Verification_QuixBugs()
+    verification_QuixBugs.setDataSetName('QuixBugs')
+    verification_QuixBugs.setRemainderCodePath(None)
+    verification_QuixBugs.setScriptPath('Tool/execute_python.sh')
+    verification_QuixBugs.setJunitEnvironment('JUnit_Environment/JUnit_QuixBugs_Environment')
+    verification_QuixBugs.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_QuixBugs')
+    return verification_QuixBugs
+
+def test_load_and_run_test_case(verification_QuixBugs):
+    verification_QuixBugs.junitEnvironment_Initialize()
+    verification_QuixBugs.junitEnvironment_Run_Initialize()
+    verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
+    verification_QuixBugs.createJsonFramework([])
+    runFileList = verification_QuixBugs.getAllRunTestCaseFileList()
+    dictionary = verification_QuixBugs.getFileAndModuleDict(runFileList)
+    verification_QuixBugs.runScriptBatchFile(dictionary)
+    verification_QuixBugs.updateJsonResult()
+
+def test_prompt_repair(verification_QuixBugs):
     promptEngineer = LLM_LangChain_CodeLlama()
-    return promptEngineer
 
-
-def test_prompt_repair(promptEngineer):
-    promptEngineer.setPromptRepairFileRoot('Module_LLM_PER/test/SingleFileTest')
-
-    if fileIO.isPathExist(os.path.join(promptEngineer.getPromptRepairFileRoot(), 'PromptRepairFile')):
-        shutil.rmtree(os.path.join(promptEngineer.getPromptRepairFileRoot(), 'PromptRepairFile'))
-        assertFalse(
-            fileIO.isPathExist(os.path.join(promptEngineer.getPromptRepairFileRoot(), 'PromptRepairFile')))
-
-    promptEngineer.setPendingRepairFileListPath('Module_LLM_PER/test/SingleFileTest/testFile')
-    promptEngineer.setOutputJsonFilePath('Module_LLM_PER/test/SingleFileTest/test.json')
+    promptEngineer.setPromptRepairFileRoot('Result_Output/QuixBugs/Demo/PromptRepairFolder')
+    promptEngineer.setPendingRepairFileListPath('Result_Output/QuixBugs/Demo/promptRepairProgram')
+    promptEngineer.copyAndCreatePromptRepairFiles()
+    promptEngineer.setOutputJsonFilePath('Result_Output/QuixBugs/Demo/PromptRepairFolder/BS_Lora04_PRE.json')
     promptEngineer.setPER_RepairTimes(5)
     promptEngineer.promptRepair()
-    assertTrue(fileIO.isPathExist(promptEngineer.getOutputJsonFilePath()))
-
 
 
 
 
 if __name__ == '__main__':
-    promptEngineer = setUp()
+    verification_QuixBugs = setUp()
+    test_prompt_repair(verification_QuixBugs)
 
 
