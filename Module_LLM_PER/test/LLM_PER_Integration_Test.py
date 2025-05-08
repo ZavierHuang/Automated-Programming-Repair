@@ -19,9 +19,9 @@ class LLM_Model_Integration_Test(unittest.TestCase):
     def test_prompt_Two_File_LLM_Prediction(self):
         self.promptEngineer.setPromptRepairFileRoot('Module_LLM_PER/test/SingleFileTest')
 
-        if self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFile')):
-            shutil.rmtree(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFile'))
-            self.assertFalse(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFile')))
+        if self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFiles')):
+            shutil.rmtree(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFiles'))
+            self.assertFalse(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFiles')))
 
         self.promptEngineer.setPendingRepairFileListPath('Module_LLM_PER/test/SingleFileTest/testFile')
         self.promptEngineer.copyAndCreatePromptRepairFiles()

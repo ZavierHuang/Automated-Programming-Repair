@@ -18,7 +18,7 @@ class LLM_PER:
         self.PER_RepairTimes = None
         self.promptRepairFileRoot = None
         self.pendingRepairFileListPath = None
-        self.promptRepairFileListPath = None
+        self.promptRepairFiles = None
         self.promptRepairFileList = []
 
         self.buggyJavaCode = None
@@ -46,10 +46,10 @@ class LLM_PER:
 
     def setPendingRepairFileListPath(self, pendingRepairFileListPath):
         self.pendingRepairFileListPath = os.path.join(ROOT, pendingRepairFileListPath)
-        self.promptRepairFileListPath = os.path.join(self.promptRepairFileRoot, 'PromptRepairFile')
+        self.promptRepairFiles = os.path.join(self.promptRepairFileRoot, 'PromptRepairFiles')
 
     def copyAndCreatePromptRepairFiles(self):
-        shutil.copytree(self.pendingRepairFileListPath, self.promptRepairFileListPath)
+        shutil.copytree(self.pendingRepairFileListPath, self.promptRepairFiles)
 
     def setJavaFilePath(self, javaFilePath):
         self.javaFilePath = os.path.join(ROOT, javaFilePath)
@@ -76,11 +76,11 @@ class LLM_PER:
     def getPendingRepairFileListPath(self):
         return self.pendingRepairFileListPath
 
-    def getPromptRepairFileListPath(self):
-        return self.promptRepairFileListPath
+    def getPromptRepairFilesPath(self):
+        return self.promptRepairFiles
 
     def getPromptRepairFileList(self):
-        self.promptRepairFileList = self.fileIO.getFileListUnderFolder(self.promptRepairFileListPath)
+        self.promptRepairFileList = self.fileIO.getFileListUnderFolder(self.promptRepairFiles)
 
         return self.promptRepairFileList
 
@@ -103,7 +103,7 @@ class LLM_PER:
         return self.outputJsonList
 
     def needCompileJavaFiles(self, repairFile):
-        self.compileJavaFiles.append(os.path.join(self.promptRepairFileListPath, repairFile))
+        self.compileJavaFiles.append(os.path.join(self.promptRepairFiles, repairFile))
         for item in ['Node', 'QuixFixOracleHelper', 'WeightedEdge']:
             if item in self.buggyJavaCode:
                 self.compileJavaFiles.append(
@@ -155,7 +155,7 @@ class LLM_PER:
         if result.count('```') >= 2:
             fir_last_one = result.rfind('```')
             sec_last_one = result.rfind('```', 0, fir_last_one)
-            return result[sec_last_one + len('```'):fir_last_one]
+            return result[sec_last_one + len('```'):fir_last_one].replace('java','').replace('import .util.*;', 'import java.util.*;')
         else:
             return result
 
@@ -173,7 +173,7 @@ class LLM_PER:
     def promptRepair(self):
         self.getPromptRepairFileList()
         for repairFile in self.promptRepairFileList:
-            self.setJavaFilePath(os.path.join(self.promptRepairFileListPath,repairFile))
+            self.setJavaFilePath(os.path.join(self.promptRepairFiles,repairFile))
             self.compileJavaFiles.clear()
             self.errorMessage = 'Error'
 
@@ -189,15 +189,15 @@ class LLM_PER:
 
                 print("============================================================")
                 print("i:", i)
-                print('writeFile:', os.path.join(self.getPromptRepairFileListPath(), repairFile))
+                print('writeFile:', os.path.join(self.getPromptRepairFilesPath(), repairFile))
                 print('repairJavaCode:\n', repairJavaCode)
                 print("============================================================")
 
-                self.fileIO.writeFileData(os.path.join(self.getPromptRepairFileListPath(), repairFile), repairJavaCode)
+                self.fileIO.writeFileData(os.path.join(self.getPromptRepairFilesPath(), repairFile), repairJavaCode)
 
 
                 if self.compileResult == 0:
-                    self.verification.subprocess_run_JavaFormat(os.path.join(self.getPromptRepairFileListPath(), repairFile))
+                    self.verification.subprocess_run_JavaFormat(os.path.join(self.getPromptRepairFilesPath(), repairFile))
 
                     subItemDictionary['repair'] = True
                     subItemDictionary['output'][str(i)]['errorMessage'] = 'Compile Success'
@@ -205,12 +205,12 @@ class LLM_PER:
 
                 subItemDictionary['repairTimes'] = i + 1
                 subItemDictionary['output'][str(i)]['errorMessage'] = self.errorMessage
-                self.buggyJavaCode = self.fileIO.readFileData(os.path.join(self.getPromptRepairFileListPath(), repairFile))
-
+                self.buggyJavaCode = self.fileIO.readFileData(os.path.join(self.getPromptRepairFilesPath(), repairFile))
 
 
             if(subItemDictionary['repair'] is False):
-                self.fileIO.deleteFileData(os.path.join(self.getPromptRepairFileListPath(), repairFile))
+                print("===================== DELETE ==================" , os.path.join(self.getPromptRepairFilesPath(), repairFile))
+                self.fileIO.deleteFileData(os.path.join(self.getPromptRepairFilesPath(), repairFile))
 
             print("==================== SubItemDictionary =====================")
             print(subItemDictionary)
@@ -221,5 +221,26 @@ class LLM_PER:
         self.jsonFileIO.writeJsonFile(self.outputJsonList, self.outputJsonFilePath)
 
 
+    def copyFileToTest(self, junitModuleTestEnv, DataSet):
+        fileList = self.fileIO.getFileListUnderFolder(self.promptRepairFiles)
+
+        for file in fileList:
+            module = file[:file.rfind('_TEST')]
+            filePath = os.path.join(self.getPromptRepairFilesPath(), file)
+
+            data = self.fileIO.readFileData(filePath)
+
+            if 'import java.util.*;' not in data:
+                data = 'import java.util.*;\n' + data
+
+            if DataSet == 'QuixBugs':
+                for item in ['Node', 'WeightedEdge', 'QuixFixOracleHelper']:
+                    if item in data:
+                        data = 'import dataStructures.*;\n' + data
+                        self.fileIO.writeFileData(filePath, data)
+                        break
+
+            targetModuleFolderPath = os.path.join(f'{junitModuleTestEnv}/Module_{module}/src/main/java')
+            shutil.copy(filePath, targetModuleFolderPath)
 
 

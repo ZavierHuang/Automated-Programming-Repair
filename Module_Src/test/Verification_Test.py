@@ -3,6 +3,7 @@ import shutil
 import unittest
 
 from Module_Src.src.Verification import Verification
+from Module_Src.src.Verification_QuixBugs import Verification_QuixBugs
 from Module_Util.src.FileIO import FileIO
 from Config import ROOT
 from Module_Util.src.JsonFileIO import JsonFileIO
@@ -120,9 +121,10 @@ class Verification_Test(unittest.TestCase):
 
 
     def test_prompt_repair_promptRepairCreateFramework(self):
+        self.verification = Verification()
         self.verification.setDataSetName('QuixBugs')
         self.verification.setJsonResultPath('Result_Output/QuixBugs/Demo/PromptRepairFolder/Demo_PRE_FRM.json')
-        self.verification.promptRepairCreateFramework('Result_Output/QuixBugs/Demo/PromptRepairFolder/PromptRepairFile')
+        self.verification.promptRepairCreateFramework('Result_Output/QuixBugs/Demo/PromptRepairFolder/PromptRepairFiles')
 
         self.assertTrue(self.fileIO.isPathExist(self.verification.getJsonResultPath()))
 

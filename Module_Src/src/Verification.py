@@ -327,8 +327,8 @@ class Verification:
         return dict
 
 
-    def promptRepairCreateFramework(self, promptRepairFileListFolder):
-        fileList = self.fileIO.getFileListUnderFolder(os.path.join(ROOT, promptRepairFileListFolder))
+    def promptRepairCreateFramework(self, promptRepairFilesFolder):
+        fileList = self.fileIO.getFileListUnderFolder(os.path.join(ROOT, promptRepairFilesFolder))
 
         QuixBugsSolution = self.jsonFileIO.readJsonData(os.path.join(ROOT,'Data_Storage/QuixBugs/Solution/QuixBugsSolution.json'))
         HumanEvalSolution = self.getHumanEvalSolution('Data_Storage/HumanEval/CodeLlama/Original_Data/HumanEval_CodeLlama_IR4OR2.jsonl')
@@ -337,7 +337,8 @@ class Verification:
 
         for fileName in fileList:
             buggyId = fileName[:fileName.rfind('_TEST')]
-            filePath = os.path.join(promptRepairFileListFolder, fileName)
+            filePath = os.path.join(promptRepairFilesFolder, fileName)
+            absFilePath = os.path.join(ROOT, filePath)
 
             if self.DataSetName == 'QuixBugs':
                 solution = QuixBugsSolution[buggyId]
@@ -349,11 +350,27 @@ class Verification:
                 'fileName': fileName,
                 'repair': False,
                 'solution': solution,
-                'patchCode': self.fileIO.readFileData(os.path.join(ROOT, filePath))
+                'patchCode': self.fileIO.readFileData(absFilePath),
             }
 
+            print(subdictionary)
             dictionary.append(subdictionary)
 
         self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())
 
+    def PromptRepairUpdateJsonResult(self):
+        fileList = self.fileIO.getFileListUnderFolder(self.getLogFolderPath())
+        data = self.jsonFileIO.readJsonData(self.getJsonResultPath())
 
+        for file in fileList:
+            buggyId = file[:file.find('_TEST')]                                         # ADD_TEST_0.txt --> ADD
+            fileName = file[:-4] + '.java'                                              # ADD_TEST_0.txt --> ADD_TEST_0.java
+            logContent = self.fileIO.readFileData(os.path.join(self.getLogFolderPath(), file))
+            print(buggyId, fileName, 'BUILD SUCCESSFUL' in logContent)
+            if 'BUILD SUCCESSFUL' in logContent:
+                for item in data:
+                    if item['buggyId'] == buggyId and item['fileName'] == fileName:
+                        item['repair'] = True
+                        break
+
+        self.jsonFileIO.writeJsonFile(data, self.getJsonResultPath())

@@ -32,9 +32,9 @@ class LLM_Model_Test(unittest.TestCase):
     def test_prompt_Copy_Tree_LLM_Prediction(self):
         self.promptEngineer.setPromptRepairFileRoot('Module_LLM_PER/test/SingleFileTest')
         self.promptEngineer.setPendingRepairFileListPath('Module_LLM_PER/test/SingleFileTest/testFile')
-        self.assertTrue(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(), 'PromptRepairFile')))
+        self.assertTrue(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(), 'PromptRepairFiles')))
         shutil.rmtree(self.promptEngineer.getPromptRepairFileListPath())
-        self.assertFalse(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(), 'PromptRepairFile')))
+        self.assertFalse(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(), 'PromptRepairFiles')))
 
 
     def test_prompt_engineering_repair_with_Node(self):
@@ -89,9 +89,9 @@ class LLM_Model_Test(unittest.TestCase):
     def test_create_output_Item_framework(self):
         self.promptEngineer.setPromptRepairFileRoot('Module_LLM_PER/test/BatchFileTest')
 
-        if self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFile')):
-            shutil.rmtree(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFile'))
-            self.assertFalse(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFile')))
+        if self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFiles')):
+            shutil.rmtree(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFiles'))
+            self.assertFalse(self.fileIO.isPathExist(os.path.join(self.promptEngineer.getPromptRepairFileRoot(),'PromptRepairFiles')))
 
         self.promptEngineer.setPendingRepairFileListPath('Module_LLM_PER/test/BatchFileTest/testFile')
         self.promptEngineer.setPER_RepairTimes(3)
