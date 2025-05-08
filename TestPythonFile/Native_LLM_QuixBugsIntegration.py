@@ -1,9 +1,10 @@
-from Module_Src.src.LLM_Qwen import LLM_Qwen
+# ALL Native LLM Use <FILL_ME> Type Generate Program
+from Module_Src.src.LLM_CodeLlama import LLM_CodeLlama
 from Module_Src.src.Verification_QuixBugs import Verification_QuixBugs
 from Module_Util.src.JsonFileIO import JsonFileIO
 
 
-def setUp(diversity,name,Lora):
+def setUp(name, model):
     verification_QuixBugs = Verification_QuixBugs()
     verification_QuixBugs.setDataSetName('QuixBugs')
     verification_QuixBugs.setRemainderCodePath(None)
@@ -12,16 +13,17 @@ def setUp(diversity,name,Lora):
     verification_QuixBugs.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_QuixBugs')
 
     verification_QuixBugs.setTestDataResult(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/Lora{Lora}/Patch/QuixBugs_{name}.jsonl')
+        f'Result_Output/QuixBugs/Native/{model}/Patch/QuixBugs_{model}_Base10.jsonl')
     verification_QuixBugs.setJsonResultPath(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/Lora{Lora}/Json/{name}.json')
+        f'Result_Output/QuixBugs/Native/{model}/Json/{name}.json')
     verification_QuixBugs.setLogFolderPath(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/Lora{Lora}/Log')
+        f'Result_Output/QuixBugs/Native/{model}/Log')
     verification_QuixBugs.setRepairProgramPath(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/Lora{Lora}/repairProgram')
+        f'Result_Output/QuixBugs/Native/{model}/repairProgram')
     verification_QuixBugs.setPromptRepairProgramPath(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/Lora{Lora}/promptRepairProgram')
-    verification_QuixBugs.setLLMModel(LLM_Qwen())
+        f'Result_Output/QuixBugs/Native/{model}/promptRepairProgram')
+
+    verification_QuixBugs.setLLMModel(LLM_CodeLlama())
 
     return verification_QuixBugs
 
@@ -47,19 +49,12 @@ def test_result_analysis():
 
 
 if __name__ == '__main__':
-    LoraList = ['04','08','16']
+    LLM = ['Qwen']
 
-    for Lora in LoraList:
-        pendlingList = {
-            '20': f'Qwen_Lora{Lora}_DBS_20',
-            '40': f'Qwen_Lora{Lora}_DBS_40',
-            '60': f'Qwen_Lora{Lora}_DBS_60',
-            '80': f'Qwen_Lora{Lora}_DBS_80',
-            '100':f'Qwen_Lora{Lora}_DBS_100',
-        }
-        for diversity, name in pendlingList.items():
-            verification_QuixBugs = setUp(diversity, name, Lora)
-            test_load_and_run_test_case(verification_QuixBugs)
-            test_result_analysis()
+    for model in LLM:
+        name = f'{model}_QuixBugs_Base10'
+        verification_QuixBugs = setUp(name, model)
+        test_load_and_run_test_case(verification_QuixBugs)
+        test_result_analysis()
 
 

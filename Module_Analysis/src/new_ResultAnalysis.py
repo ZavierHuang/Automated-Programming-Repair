@@ -61,3 +61,65 @@ class NewResultAnalysis:
         print('--failTestCase:', failTestCase)
         print('--passTestCase:', passTestCase)
         print('--exactly Match:', exactlyMatch)
+
+    def passCaseGrowthTendency(self, jsonFilePath):
+        dictionary = {i : 0 for i in range(10)}
+        growthTendency = {i : 0 for i in range(10)}
+        data = self.jsonFileIO.readJsonData(os.path.join(ROOT, jsonFilePath))
+
+        for item in data:
+            if item['repair']:
+                output = item['output']
+                for i in range(len(output)):
+                    if output[str(i)]['PassTestCase']:
+                        dictionary[i] += 1
+                        break
+
+        for i in range(len(dictionary)):
+            if i == 0:
+                growthTendency[i] = dictionary[i]
+            else:
+                growthTendency[i] = growthTendency[i-1] + dictionary[i]
+
+        print(growthTendency)
+
+
+    def passButNotExactlyMatch(self, jsonFilePath):
+        data = self.jsonFileIO.readJsonData(os.path.join(ROOT, jsonFilePath))
+        resultDict = {}
+
+        for item in data:
+            counter = 0
+            subList = []
+            output = item['output']
+            if item['repair']:
+                for i in range(len(output)):
+                    if output[str(i)]['PassTestCase'] == True:
+                        if output[str(i)]['exactlyMatch'] == True:
+                            counter += 1
+                        else:
+                            subList.append(i)
+
+                if counter == 0:
+                    resultDict[item['buggyId']] = subList
+
+
+        for key, value in resultDict.items():
+            print(key, value)
+
+        print(len(resultDict))
+
+        self.getDetailPatchCode(resultDict, data)
+
+    def getDetailPatchCode(self, resultDict, data):
+        for item in data:
+            if item['buggyId'] in resultDict:
+                print(item['buggyId'], item['solution'])
+                print("========================================")
+                for i in range(len(item['output'])):
+                    if i in resultDict[item['buggyId']]:
+                        print(i,':',item['output'][str(i)]['patchCode'])
+
+                print("===========================================================\n")
+
+
