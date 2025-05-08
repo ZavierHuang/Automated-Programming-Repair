@@ -314,6 +314,46 @@ class Verification:
 
         return 'Single'
 
-
     def updateJsonResult(self):
         pass
+
+    def getHumanEvalSolution(self, jsonFilePath):
+        dict = {}
+        data = self.jsonFileIO.readJsonLineData(os.path.join(ROOT, jsonFilePath))
+
+        for item in data:
+            dict[item['bug_id']] = item['fixed_chunk']
+
+        return dict
+
+
+    def promptRepairCreateFramework(self, promptRepairFileListFolder):
+        fileList = self.fileIO.getFileListUnderFolder(os.path.join(ROOT, promptRepairFileListFolder))
+
+        QuixBugsSolution = self.jsonFileIO.readJsonData(os.path.join(ROOT,'Data_Storage/QuixBugs/Solution/QuixBugsSolution.json'))
+        HumanEvalSolution = self.getHumanEvalSolution('Data_Storage/HumanEval/CodeLlama/Original_Data/HumanEval_CodeLlama_IR4OR2.jsonl')
+
+        dictionary = []
+
+        for fileName in fileList:
+            buggyId = fileName[:fileName.rfind('_TEST')]
+            filePath = os.path.join(promptRepairFileListFolder, fileName)
+
+            if self.DataSetName == 'QuixBugs':
+                solution = QuixBugsSolution[buggyId]
+            else:
+                solution = HumanEvalSolution[buggyId]
+
+            subdictionary = {
+                'buggyId': buggyId,
+                'fileName': fileName,
+                'repair': False,
+                'solution': solution,
+                'patchCode': self.fileIO.readFileData(os.path.join(ROOT, filePath))
+            }
+
+            dictionary.append(subdictionary)
+
+        self.jsonFileIO.writeJsonFile(dictionary, self.getJsonResultPath())
+
+

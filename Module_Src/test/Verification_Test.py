@@ -113,6 +113,18 @@ class Verification_Test(unittest.TestCase):
 
         shutil.rmtree(junitModuleTestEnvironment)
 
+    def test_getHumanEvalSolution(self):
+        humanEvalSolution = self.verification.getHumanEvalSolution('Data_Storage/HumanEval/CodeLlama/Original_Data/HumanEval_CodeLlama_IR4OR2.jsonl')
+        print(humanEvalSolution)
+        self.assertEqual(len(humanEvalSolution), 163)
+
+
+    def test_prompt_repair_promptRepairCreateFramework(self):
+        self.verification.setDataSetName('QuixBugs')
+        self.verification.setJsonResultPath('Result_Output/QuixBugs/Demo/PromptRepairFolder/Demo_PRE_FRM.json')
+        self.verification.promptRepairCreateFramework('Result_Output/QuixBugs/Demo/PromptRepairFolder/PromptRepairFile')
+
+        self.assertTrue(self.fileIO.isPathExist(self.verification.getJsonResultPath()))
 
 if __name__ == '__main__':
     unittest.main()
