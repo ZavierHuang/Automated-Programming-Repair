@@ -27,16 +27,16 @@
     {
         "buggyId": "BELOW_THRESHOLD_TEST_7",
         "repair": true,
-        "repairTimes": 1,
+        "repairTimes": 2,
         "output": {
             "0": {
                 "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\BELOW_THRESHOLD_TEST_7.java:18: error: class, interface, enum, or record expected\n        }\n        ^\n1 error\n"
             },
             "1": {
-                "errorMessage": "Compile Success"
+                "errorMessage": "F:\\GITHUB\\Automated-Programming-Repair\\Module_LLM_PER\\test\\SingleFileTest\\PromptRepairFile\\BELOW_THRESHOLD_TEST_7.java:1: error: class, interface, enum, or record expected\n  Fixed code:\n  ^\n1 error\n"
             },
             "2": {
-                "errorMessage": "None"
+                "errorMessage": "Compile Success"
             },
             "3": {
                 "errorMessage": "None"

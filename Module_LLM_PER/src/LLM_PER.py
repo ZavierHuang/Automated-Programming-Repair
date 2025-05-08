@@ -7,6 +7,7 @@ from langchain_community.llms.ollama import Ollama
 from langchain_core.prompts import ChatPromptTemplate
 
 from Config import ROOT, CACHE_PATH
+from Module_Src.src.Verification import Verification
 from Module_Util.src.FileIO import FileIO
 from Module_Util.src.JsonFileIO import JsonFileIO
 
@@ -30,7 +31,7 @@ class LLM_PER:
 
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()
-
+        self.verification = Verification()
 
     def getLangChanName(self):
         return self.langChainName
@@ -192,7 +193,10 @@ class LLM_PER:
 
                 self.fileIO.writeFileData(os.path.join(self.getPromptRepairFileListPath(), repairFile), repairJavaCode)
 
+
                 if self.compileResult == 0:
+                    self.verification.subprocess_run_JavaFormat(os.path.join(self.getPromptRepairFileListPath(), repairFile))
+
                     subItemDictionary['repair'] = True
                     subItemDictionary['output'][str(i)]['errorMessage'] = 'Compile Success'
                     break
