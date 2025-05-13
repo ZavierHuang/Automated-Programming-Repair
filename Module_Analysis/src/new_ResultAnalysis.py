@@ -1,4 +1,6 @@
 import os
+import re
+
 from Config import ROOT
 from Module_Util.src.JsonFileIO import JsonFileIO
 
@@ -140,3 +142,82 @@ class NewResultAnalysis:
 
         print("\nCase:", len(promptAPR_SuccessCase))
         print("ID:", promptAPR_SuccessCase)
+
+    def promptRepairErrorCase(self, promptJsonFile, APRJsonFile):
+        dataAPR = self.jsonFileIO.readJsonData(os.path.join(ROOT, APRJsonFile))
+        promptAPR = self.jsonFileIO.readJsonData(os.path.join(ROOT, promptJsonFile))
+
+        formatErrorCase = []
+        compileErrorCase = []
+
+        failureFormatErrorCase = []
+        failureCompileErrorCase = []
+
+        for item in dataAPR:
+            buggyId = item['buggyId']
+            output = item['output']
+            for i in range(len(output)):
+                patchFileName = f'{buggyId}_TEST_{i}'
+                if output[str(i)]['formatCheck']['formatResult'] == False:
+                    formatErrorCase.append(patchFileName)
+                else:
+                    if output[str(i)]['compileCheck']['compileResult'] == False:
+                        compileErrorCase.append(patchFileName)
+
+        for item in promptAPR:
+            buggyId = item['buggyId']
+            output = item['output']
+            repairSuccess = False
+            for i in range(len(output)):
+                if output[str(i)]['errorMessage'] == 'Compile Success':
+                    repairSuccess = True
+                    break
+
+            if repairSuccess is False:
+                if buggyId in formatErrorCase:
+                    failureFormatErrorCase.append(buggyId)
+                else:
+                    failureCompileErrorCase.append(buggyId)
+
+
+        print(len(formatErrorCase))
+        print(len(compileErrorCase))
+
+        print(len(failureFormatErrorCase))
+        print(len(failureCompileErrorCase))
+
+    def promptRepairFormatErrorCase(self, APRJsonFile):
+        formatErrorCase = {}
+
+        dataAPR = self.jsonFileIO.readJsonData(os.path.join(ROOT, APRJsonFile))
+        for item in dataAPR:
+            output = item['output']
+            for i in range(len(output)):
+                if output[str(i)]['formatCheck']['formatResult'] == False:
+                    errors = re.findall(r"error: (.+)", output[str(i)]['formatCheck']['javaFormatLog'])
+
+                    for e in errors:
+                        if e not in formatErrorCase:
+                            formatErrorCase[e] = 1
+                        else:
+                            formatErrorCase[e] += 1
+
+        print(len(formatErrorCase))
+        for key, value in formatErrorCase.items():
+            print(key, value)
+
+    def promptRepairFormatErrorCase_Repair_Tendency(self, promptJsonFile):
+        promptAPR = self.jsonFileIO.readJsonData(os.path.join(ROOT, promptJsonFile))
+
+        dict = {}
+
+        for item in promptAPR:
+            repairTimes = item['repairTimes']
+            if repairTimes not in dict:
+                dict[repairTimes] = 1
+            else:
+                dict[repairTimes] += 1
+
+        for key, value in dict.items():
+            print(key, value)
+

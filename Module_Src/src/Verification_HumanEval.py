@@ -2,7 +2,6 @@ import os
 
 from overrides import overrides
 
-from Config import GRADLE_PATH
 from Module_Src.src.Verification import Verification
 
 
@@ -137,3 +136,5 @@ class Verification_HumanEval(Verification):
                         break
 
         self.jsonFileIO.writeJsonFile(data, self.getJsonResultPath())
+
+

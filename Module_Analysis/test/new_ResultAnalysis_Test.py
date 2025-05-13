@@ -1,3 +1,4 @@
+import re
 import unittest
 from Module_Analysis.src.new_ResultAnalysis import NewResultAnalysis
 
@@ -31,11 +32,36 @@ class oldResultAnalysis_Test(unittest.TestCase):
         self.newResultAnalysis.passButNotExactlyMatch(jsonFile)
 
     def test_prompt_reapir_add_success_case(self):
-        promptJsonFile = 'Result_Output/QuixBugs/CodeLlama/diversityBeamSearch100/Lora04/PromptRepairFolder/Json/DBS_Lora04_100_CodeLlama_PRE_RES.json'
-        originalJsonFile = 'Result_Output/QuixBugs/CodeLlama/diversityBeamSearch100/Lora04/Json/CodeLlama_Lora04_DBS_100.json'
+        LLM = 'Qwen'
+        DataSet = 'HumanEval'
+        for Lora in ['04', '08', '16']:
+            print("LORA:", Lora)
+            promptJsonFile = f'Result_Output/{DataSet}/{LLM}/OriginalResult/BeamSearch/Lora{Lora}/PromptRepairFolder/Json/BS_Lora{Lora}_{LLM}_PRE_RES.json'
+            originalJsonFile = f'Result_Output/{DataSet}/{LLM}/OriginalResult/BeamSearch/Lora{Lora}/Json/Lora{Lora}_E2_BS.json'
 
-        self.newResultAnalysis.promptRepairAddSuccessCase(promptJsonFile, originalJsonFile)
+            self.newResultAnalysis.promptRepairAddSuccessCase(promptJsonFile, originalJsonFile)
 
+    def test_prompt_compileAndFormatError_repair_case(self):
+        LLM = 'Qwen'
+        DataSet = 'HumanEval'
+        Lora = '08'
+        promptJsonFile = f'Result_Output/{DataSet}/{LLM}/OriginalResult/BeamSearch/Lora{Lora}/PromptRepairFolder/Json/BS_Lora{Lora}_{LLM}_PRE_FEM.json'
+        originalJsonFile = f'Result_Output/{DataSet}/{LLM}/OriginalResult/BeamSearch/Lora{Lora}/Json/Lora{Lora}_E2_BS.json'
+        self.newResultAnalysis.promptRepairErrorCase(promptJsonFile, originalJsonFile)
+
+    def test_get_format_error_case(self):
+        LLM = 'Qwen'
+        DataSet = 'HumanEval'
+        Lora = '08'
+        originalJsonFile = f'Result_Output/{DataSet}/{LLM}/OriginalResult/BeamSearch/Lora{Lora}/Json/Lora{Lora}_E2_BS.json'
+        self.newResultAnalysis.promptRepairFormatErrorCase(originalJsonFile)
+
+    def test_get_format_error_case_repair_tendency(self):
+        LLM = 'Qwen'
+        DataSet = 'HumanEval'
+        Lora = '08'
+        promptJsonFile = f'Result_Output/{DataSet}/{LLM}/OriginalResult/BeamSearch/Lora{Lora}/PromptRepairFolder/Json/BS_Lora{Lora}_{LLM}_PRE_FEM.json'
+        self.newResultAnalysis.promptRepairFormatErrorCase_Repair_Tendency(promptJsonFile)
 
 if __name__ == '__main__':
     unittest.main()
