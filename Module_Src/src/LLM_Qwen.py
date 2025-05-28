@@ -13,10 +13,6 @@ class LLM_Qwen(LLM_Model):
         self.baseModelPath = 'Qwen/Qwen2.5-Coder-1.5B'
 
     @overrides
-    def setLoraAndEpoch(self, lora, epoch):
-        self.loraPath = os.path.join(LLM_MODEL_PATH, 'model_Qwen/model_{}/checkpoint-epoch-{}.0'.format(lora,epoch))
-
-    @overrides
     def patchReplaceByModel(self, buggyCode, patchCode):
         PREFIX = '<|fim_prefix|>'
         MIDDLE = '<|fim_middle|>'

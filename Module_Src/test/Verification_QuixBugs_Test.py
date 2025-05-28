@@ -486,7 +486,7 @@ class Verification_QuixBugs_Test(unittest.TestCase):
         self.verification_QuixBugs.setLLMModel(LLM_Qwen())
         self.assertTrue(self.verification_QuixBugs.getLLMModel().checkGUP())
         self.verification_QuixBugs.getLLMModel().setIsLora(True)
-        self.verification_QuixBugs.getLLMModel().setLoraAndEpoch('Lora04', 2)
+        self.verification_QuixBugs.getLLMModel().setLoraAndEpoch('model_Lora04', 2)
         self.verification_QuixBugs.getLLMModel().setNumBeams(5)
         self.verification_QuixBugs.getLLMModel().setDiversity(0)
         self.verification_QuixBugs.getLLMModel().setDataSourceFilePath('Module_Src/test/tempPatchGenerate/source/Qwen_Patch05_Multiple_Src.jsonl')

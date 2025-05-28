@@ -1,5 +1,5 @@
 import os
-from Config import ROOT
+from Config import ROOT, LLM_MODEL_PATH
 import json
 
 from peft import PeftModel
@@ -33,11 +33,11 @@ class LLM_Model:
     def setIsLora(self, isLora):
         self.isLora = isLora
 
-    def setLoraAndEpoch(self, lora, epoch):
-        pass
+    def setLoraAndEpoch(self, LLM, lora, epoch):
+        self.loraPath = os.path.join(LLM_MODEL_PATH, 'model_{}/model_Lora{}/checkpoint-epoch-{}.0'.format(LLM, lora,epoch))
 
     def setBaseModelPath(self, baseModelPath):
-        self.setBaseModelPath(baseModelPath)
+        self.baseModelPath = baseModelPath
 
     def setNumBeams(self, numBeams):
         self.numBeams = numBeams
@@ -93,6 +93,7 @@ class LLM_Model:
                     llm_int8_threshold=6.0
                 ),
             )
+            print("self.loraPath:", self.loraPath)
             model = PeftModel.from_pretrained(
                 model,
                 self.loraPath,
@@ -123,7 +124,7 @@ class LLM_Model:
         print('device:',device)
 
         print("We now use beam search to generate the patches.")
-        if self.diversity != '0':
+        if self.diversity != 0:
             generation_config = GenerationConfig(
                 num_beams = self.numBeams,
                 num_beam_groups = self.numBeams // 2,
