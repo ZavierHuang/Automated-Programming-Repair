@@ -25,7 +25,7 @@ def setUp(LLM, Name):
     verification_HumanEval.setLLMModel(LLM_CodeLlama())
     return verification_HumanEval
 
-def test_load_and_run_test_case(verification_HumanEval):
+def load_and_run_test_case(verification_HumanEval):
     verification_HumanEval.junitEnvironment_Initialize()
     verification_HumanEval.junitEnvironment_Run_Initialize()
     verification_HumanEval.juniEnvironment_TEST_File_Initialize()
@@ -36,7 +36,7 @@ def test_load_and_run_test_case(verification_HumanEval):
     verification_HumanEval.updateJsonResult()
 
 
-def test_result_analysis():
+def result_analysis():
     jsonFileIO = JsonFileIO()
     data = jsonFileIO.readJsonData(verification_HumanEval.getJsonResultPath())
 
@@ -45,12 +45,6 @@ def test_result_analysis():
             print(item['buggyId'])
 
 if __name__ == '__main__':
-    pendlingList = {
-        'CodeLlama' : 'CodeLlama_HumanEval_Base10',
-        'Qwen' : 'Qwen_HumanEval_Base10'
-    }
-
-    for LLM, Name in pendlingList.items():
-        verification_HumanEval = setUp(LLM, Name)
-        test_load_and_run_test_case(verification_HumanEval)
-        test_result_analysis()
+    verification_HumanEval = setUp('Qwen_3', 'Qwen3_HumanEval_Base10')
+    load_and_run_test_case(verification_HumanEval)
+    result_analysis()

@@ -19,15 +19,15 @@ class verification_QuixBugs_IntegrationTest(unittest.TestCase):
         self.verification_QuixBugs.setJunitEnvironment('JUnit_Environment/JUnit_QuixBugs_Environment')
         self.verification_QuixBugs.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_QuixBugs')
         self.verification_QuixBugs.setTestDataResult(
-            'Result_Output/QuixBugs/Qwen/BeamSearch/Lora04/Patch/QuixBugs_Qwen_Lora04_BS.jsonl')
+            'Result_Output/QuixBugs/Qwen/BeamSearch/model_Lora04/Patch/QuixBugs_Qwen_Lora04_BS.jsonl')
         self.verification_QuixBugs.setJsonResultPath(
-            'Result_Output/QuixBugs/Qwen/BeamSearch/Lora04/Json/{}.json'.format(current))
+            'Result_Output/QuixBugs/Qwen/BeamSearch/model_Lora04/Json/{}.json'.format(current))
         self.verification_QuixBugs.setRepairProgramPath(
-            'Result_Output/QuixBugs/Qwen/BeamSearch/Lora04/repairProgram')
+            'Result_Output/QuixBugs/Qwen/BeamSearch/model_Lora04/repairProgram')
         self.verification_QuixBugs.setPromptRepairProgramPath(
-            'Result_Output/QuixBugs/Qwen/BeamSearch/Lora04/promptRepairProgram')
+            'Result_Output/QuixBugs/Qwen/BeamSearch/model_Lora04/promptRepairProgram')
         self.verification_QuixBugs.setLogFolderPath(
-            'Result_Output/QuixBugs/Qwen/BeamSearch/Lora04/Log')
+            'Result_Output/QuixBugs/Qwen/BeamSearch/model_Lora04/Log')
 
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()

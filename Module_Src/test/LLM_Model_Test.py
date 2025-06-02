@@ -72,7 +72,7 @@ class LLM_Model_Test(unittest.TestCase):
         model_Qwen = LLM_Qwen()
         self.assertTrue(model_Qwen.checkGUP())
         model_Qwen.setIsLora(True)
-        model_Qwen.setLoraAndEpoch('Lora04', 2)
+        model_Qwen.setLoraAndEpoch('Qwen','04', 2)
         model_Qwen.setNumBeams(10)
         model_Qwen.setDiversity(0)
         model_Qwen.setDataSourceFilePath('Module_Src/test/tempPatchGenerate/source/Qwen_test_Multiple_Src.jsonl')

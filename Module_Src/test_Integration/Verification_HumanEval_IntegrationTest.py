@@ -26,15 +26,15 @@ class Verification_HumanEval_IntegrationTest(unittest.TestCase):
         self.verification_HumanEval.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_HumanEval')
 
         self.verification_HumanEval.setTestDataResult(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/DiverseBeamSearch40/Lora04/Patch/HumanEval_Lora04_E2_DBS_40.jsonl')
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/DiverseBeamSearch40/model_Lora04/Patch/HumanEval_Lora04_E2_DBS_40.jsonl')
         self.verification_HumanEval.setJsonResultPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/Lora04/Json/{}.json'.format(diverseBeamSearch, current))
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/model_Lora04/Json/{}.json'.format(diverseBeamSearch, current))
         self.verification_HumanEval.setLogFolderPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/Lora04/{}'.format(diverseBeamSearch,'Log'))
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/model_Lora04/{}'.format(diverseBeamSearch,'Log'))
         self.verification_HumanEval.setRepairProgramPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/Lora04/{}/'.format(diverseBeamSearch,'repairProgram'))
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/model_Lora04/{}/'.format(diverseBeamSearch,'repairProgram'))
         self.verification_HumanEval.setPromptRepairProgramPath(
-            'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/Lora04/{}/'.format(diverseBeamSearch,'promptRepairProgram'))
+            'Result_Output/HumanEval/CodeLlama/OriginalResult/{}/model_Lora04/{}/'.format(diverseBeamSearch,'promptRepairProgram'))
 
         self.fileIO = FileIO()
         self.jsonFileIO = JsonFileIO()

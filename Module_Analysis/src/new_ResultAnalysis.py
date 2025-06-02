@@ -1,5 +1,6 @@
 import os
 import re
+from unittest.mock import patch
 
 from Config import ROOT
 from Module_Util.src.JsonFileIO import JsonFileIO
@@ -140,8 +141,8 @@ class NewResultAnalysis:
                 if item['buggyId'] in APR_FailureCase:
                     promptAPR_SuccessCase.append(item['buggyId'])
 
-        print("\nCase:", len(promptAPR_SuccessCase))
-        print("ID:", promptAPR_SuccessCase)
+        print("\nCase:", len(set(promptAPR_SuccessCase)))
+        print("ID:", set(promptAPR_SuccessCase))
 
     def promptRepairErrorCase(self, promptJsonFile, APRJsonFile):
         dataAPR = self.jsonFileIO.readJsonData(os.path.join(ROOT, APRJsonFile))
@@ -221,3 +222,68 @@ class NewResultAnalysis:
         for key, value in dict.items():
             print(key, value)
 
+    def getEmptyPatchCode(self, jsonFile):
+        data = self.jsonFileIO.readJsonData(os.path.join(ROOT, jsonFile))
+
+        dictionary = {i:0 for i in range(10)}
+
+        for item in data:
+            output = item['output']
+            for i in range(len(output)):
+                if len(output[str(i)]['patchCode'].strip()) == 0:
+                    dictionary[i] += 1
+
+        total = sum(dictionary.values())
+        for value in dictionary.values():
+            print(value,end=' ')
+        print('\n',total)
+
+    def getErrorCase(self, jsonFile):
+        data = self.jsonFileIO.readJsonData(os.path.join(ROOT, jsonFile))
+
+        errorCase = {'formatError':0, 'compileError':0, 'NotPassTestCase':0}
+
+        for item in data:
+            buggyId = item['buggyId']
+            solution = item['solution']
+            output = item['output']
+
+            print("buggyId:", buggyId)
+            print("solution:", solution)
+            print("===========================================================")
+            for i in range(len(output)):
+                if output[str(i)]['PassTestCase'] == False:
+                    print("i:", i)
+                    print(output[str(i)]['patchCode'])
+                    if output[str(i)]['formatCheck']['formatResult'] == False:
+                        print(output[str(i)]['formatCheck']['javaFormatLog'])
+                        errorCase['formatError'] += 1
+
+                    elif output[str(i)]['compileCheck']['compileResult'] == False:
+                        if output[str(i)]['compileCheck']['compileLog'] != 'FormatError':
+                            print(output[str(i)]['compileCheck']['compileLog'])
+                            errorCase['compileError'] += 1
+                    else:
+                        print("Compile Pass")
+                        errorCase['NotPassTestCase'] += 1
+                    print("===========================================================")
+
+
+        print("errorCase:", errorCase)
+
+    def test(self, jsonFile):
+        data = self.jsonFileIO.readJsonData(os.path.join(ROOT, jsonFile))
+
+        compileSuccessButFailure = []
+
+        for item in data:
+            if item['repair'] is False:
+                output = item['output']
+                for i in range(len(output)):
+                    if output[str(i)]['formatCheck']['formatResult'] == True and output[str(i)]['compileCheck']['compileResult'] == True:
+                        print(item['buggyId'], i, output[str(i)]['patchCode'])
+                        print("===========================================================")
+                        compileSuccessButFailure.append(item['buggyId'])
+
+
+        print("Compile Success But Failure:", len(set(compileSuccessButFailure)))

@@ -4,7 +4,7 @@ from Config import ROOT
 from Module_Src.src.LLM_Qwen import LLM_Qwen
 from Module_Src.src.Verification_QuixBugs import Verification_QuixBugs
 
-def setUp(lora, name, diversity):
+def setUp(lora, name):
     verification_QuixBugs = Verification_QuixBugs()
     verification_QuixBugs.setDataSetName('QuixBugs')
     verification_QuixBugs.setRemainderCodePath(None)
@@ -13,30 +13,31 @@ def setUp(lora, name, diversity):
     verification_QuixBugs.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_QuixBugs')
 
     verification_QuixBugs.setFirstPredictPatchPath(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/{lora}_Multiple/Patch/QuixBugs_Qwen_{lora}_DBS_{diversity}.jsonl')      # first predict result
+        f'Result_Output/QuixBugs/Qwen_3/OriginalResult/BeamSearch/Lora{lora}_Multiple/Patch/QuixBugs_Qwen_3_Lora{lora}_BS_E2.jsonl')      # first predict result
     verification_QuixBugs.setTestDataResult(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/{lora}_Multiple/Patch/QuixBugs_Qwen_{lora}_DBS_{diversity}_Multiple.jsonl') # second predict result
+        f'Result_Output/QuixBugs/Qwen_3/OriginalResult/BeamSearch/Lora{lora}_Multiple/Patch/QuixBugs_Qwen_3_Lora{lora}_BS_E2_Multiple.jsonl') # second predict result
     
     verification_QuixBugs.setJsonResultPath(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/{lora}_Multiple/Json/{name}.json')  # final output json
+        f'Result_Output/QuixBugs/Qwen_3/OriginalResult/BeamSearch/Lora{lora}_Multiple/Json/{name}.json')  # final output json
     verification_QuixBugs.setRepairProgramPath(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/{lora}_Multiple/repairProgram')
+        f'Result_Output/QuixBugs/Qwen_3/OriginalResult/BeamSearch/Lora{lora}_Multiple/repairProgram')
     verification_QuixBugs.setPromptRepairProgramPath(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/{lora}_Multiple/promptRepairProgram')
+        f'Result_Output/QuixBugs/Qwen_3/OriginalResult/BeamSearch/Lora{lora}_Multiple/promptRepairProgram')
     verification_QuixBugs.setLogFolderPath(
-        f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/{lora}_Multiple/Log')
+        f'Result_Output/QuixBugs/Qwen_3/OriginalResult/BeamSearch/Lora{lora}_Multiple/Log')
 
     verification_QuixBugs.setLLMModel(LLM_Qwen())
     return verification_QuixBugs
 
-def create_twice_patch(lora, verification_QuixBugs, outputJsonFilePath, diversity):
+def create_twice_patch(LLM, lora, verification_QuixBugs, outputJsonFilePath, diversity):
     verification_QuixBugs.multipleFillJsonCreate(verification_QuixBugs.getFirstPredictPatchPath(), outputJsonFilePath)
     verification_QuixBugs.getLLMModel().setIsLora(True)
-    verification_QuixBugs.getLLMModel().setLoraAndEpoch(lora, 2)
+    verification_QuixBugs.getLLMModel().setLoraAndEpoch(LLM, lora, 2)
     verification_QuixBugs.getLLMModel().setNumBeams(10)
     verification_QuixBugs.getLLMModel().setDiversity(diversity)
     verification_QuixBugs.getLLMModel().setDataSourceFilePath(outputJsonFilePath)
     verification_QuixBugs.getLLMModel().setResultOutputFilePath(verification_QuixBugs.getTestData())
+    verification_QuixBugs.getLLMModel().setBaseModelPath('Qwen/Qwen2.5-Coder-3B')
     verification_QuixBugs.getLLMModel().llmPredictPatch()
 
 
@@ -56,19 +57,16 @@ def load_and_run_test_case(verification_QuixBugs):
 
 
 if __name__ == '__main__':
-    diversityList = [20, 40, 60, 80, 100]
+    pendlingList = {
+        '04': f'Qwen3_Lora04_BS_Multiple',
+        '08': f'Qwen3_Lora08_BS_Multiple',
+        '16': f'Qwen3_Lora16_BS_Multiple',
+    }
 
-    for diversity in diversityList:
-        pendlingList = {
-            'Lora04': f'Qwen_Lora04_DBS_{diversity}_Multiple',
-            'Lora08': f'Qwen_Lora08_DBS_{diversity}_Multiple',
-            'Lora16': f'Qwen_Lora16_DBS_{diversity}_Multiple',
-        }
-
-        for lora, name in pendlingList.items():
-            outputJsonFilePath = os.path.join(ROOT,
-                f'Result_Output/QuixBugs/Qwen/diversityBeamSearch{diversity}/{lora}_Multiple/Patch/QuixBugs_Qwen_{lora}_DBS_{diversity}_Multiple_Src.jsonl')
-            verification_QuixBugs = setUp(lora, name, diversity)
-            create_twice_patch(lora, verification_QuixBugs, outputJsonFilePath, diversity)
-            load_and_run_test_case(verification_QuixBugs)
+    for lora, name in pendlingList.items():
+        outputJsonFilePath = os.path.join(ROOT,
+            f'Result_Output/QuixBugs/Qwen_3/OriginalResult/BeamSearch/Lora{lora}_Multiple/Patch/QuixBugs_Qwen_3_Lora{lora}_BS_Multiple_Src.jsonl')
+        verification_QuixBugs = setUp(lora, name)
+        create_twice_patch('Qwen_3B', lora, verification_QuixBugs, outputJsonFilePath, 0)
+        load_and_run_test_case(verification_QuixBugs)
 

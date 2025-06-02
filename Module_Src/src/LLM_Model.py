@@ -50,6 +50,7 @@ class LLM_Model:
 
     def setResultOutputFilePath(self, resultOutputFilePath):
         self.resultOutputFilePath = os.path.join(ROOT, resultOutputFilePath)
+        os.makedirs(os.path.dirname(self.resultOutputFilePath), exist_ok=True)
 
     def getLLMName(self):
         return self.name
