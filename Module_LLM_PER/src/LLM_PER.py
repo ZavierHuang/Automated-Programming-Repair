@@ -136,7 +136,8 @@ class LLM_PER:
             ("system", """You are an AI assistant specializing in Java programming.
             I will provide Java code containing errors, along with the corresponding error messages.
             Your task is to fix the errors based on the method name provided.
-            Please output only the corrected Java code without any additional explanations or comments"""),
+            Please output only the corrected Java code without any additional explanations or comments.
+            Please Pay special attention to index boundaries to prevent ArrayIndexOutOfBoundsException or StringIndexOutOfBoundsException."""),
             ("user", "{input}")
         ])
 
@@ -242,5 +243,7 @@ class LLM_PER:
 
             targetModuleFolderPath = os.path.join(f'{junitModuleTestEnv}/Module_{module}/src/main/java')
             shutil.copy(filePath, targetModuleFolderPath)
+
+            print("filePath:", filePath, "targetModuleFolderPath:", targetModuleFolderPath)
 
 

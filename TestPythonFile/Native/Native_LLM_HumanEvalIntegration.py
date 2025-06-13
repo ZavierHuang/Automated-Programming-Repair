@@ -45,6 +45,6 @@ def result_analysis():
             print(item['buggyId'])
 
 if __name__ == '__main__':
-    verification_HumanEval = setUp('Qwen_3', 'Qwen3_HumanEval_Base10')
+    verification_HumanEval = setUp('GPT4O', 'GPT4O_HumanEval_Base10')
     load_and_run_test_case(verification_HumanEval)
     result_analysis()

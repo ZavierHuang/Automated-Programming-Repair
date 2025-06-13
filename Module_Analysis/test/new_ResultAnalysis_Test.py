@@ -36,8 +36,8 @@ class oldResultAnalysis_Test(unittest.TestCase):
         self.newResultAnalysis.passButNotExactlyMatch(jsonFile)
 
     def test_prompt_repair_add_success_case(self):
-        promptJsonFile = f'Result_Output/QuixBugs/CodeLlama/BeamSearch/Lora16/PromptRepairFolder/Json/Prompt_BS_Lora16_CodeLlama_PRE_RES.json'
-        originalJsonFile = f'Result_Output/QuixBugs/CodeLlama/BeamSearch/Lora16/Json/CodeLlama_Lora16_BS.json'
+        promptJsonFile = f'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/Lora08/PromptRepairFolder/Json/BS_Lora08_Qwen_PRE_RES.json'
+        originalJsonFile = f'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/Lora08/Json/Lora08_E2_BS.json'
 
         self.newResultAnalysis.promptRepairAddSuccessCase(promptJsonFile, originalJsonFile)
 
@@ -102,11 +102,16 @@ class oldResultAnalysis_Test(unittest.TestCase):
         self.newResultAnalysis.getErrorCase(jsonFile)
 
 
-    def test(self):
+    def test_DBS_BS_RepairPart(self):
+        DBSJsonFile = os.path.join(ROOT, 'Result_Output/HumanEval/Qwen/OriginalResult/DiverseBeamSearch60/Lora08/Json/Lora08_E2_DBS_60.json')
+        BSJsonFile = os.path.join(ROOT, 'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/Lora08/Json/Lora08_E2_BS.json')
+        self.jsonFileIO = JsonFileIO()
+        self.newResultAnalysis.DBS_BS_RepairPart(BSJsonFile, DBSJsonFile)
+
+    def test_repair_failure_because_of_compile_problem(self):
         jsonFile = os.path.join(ROOT, 'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/Lora08/Json/Lora08_E2_BS.json')
         self.jsonFileIO = JsonFileIO()
-        self.newResultAnalysis.test(jsonFile)
-
+        self.newResultAnalysis.failure_reason(jsonFile)
 
 if __name__ == '__main__':
     unittest.main()

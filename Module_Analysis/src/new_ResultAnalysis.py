@@ -271,19 +271,101 @@ class NewResultAnalysis:
 
         print("errorCase:", errorCase)
 
-    def test(self, jsonFile):
+    def DBS_BS_RepairPart(self, BSJsonFile, DBSJsonFile):
+        dataBS = self.jsonFileIO.readJsonData(os.path.join(ROOT, BSJsonFile))
+        dataDBS = self.jsonFileIO.readJsonData(os.path.join(ROOT, DBSJsonFile))
+
+        BSRepairList = []
+        DBSRepairList = []
+
+        for item in dataBS:
+            if item['repair'] is True:
+                BSRepairList.append(item['buggyId'])
+
+        for item in dataDBS:
+            if item['repair'] is True:
+                DBSRepairList.append(item['buggyId'])
+
+
+        BSRepairSet = set(BSRepairList)
+        DBSRepairSet = set(DBSRepairList)
+
+        print()
+        print(len(DBSRepairSet - BSRepairSet), DBSRepairSet - BSRepairSet)
+        print("===========================================================")
+        print(len(BSRepairSet - DBSRepairSet), BSRepairSet - DBSRepairSet)
+        print("===========================================================")
+        print("Intersection:", len(BSRepairSet & DBSRepairSet))
+
+    def getReport(self, jsonResultPath, beamSize):
+        data = self.jsonFileIO.readJsonData(os.path.join(ROOT, jsonResultPath))
+
+        item = data[0]
+
+        print("===========================================================")
+        if item['repair']:
+            print(item['buggyId'],"Repair Success")
+        else:
+            print(item['buggyId'], "Repair Failure")
+
+        resultDict = {'exactlyMatch': 0, 'formatError': 0, 'compileError': 0, 'passTestCase': 0}
+
+        output = item['output']
+        for i in range(beamSize):
+            if output[str(i)]['exactlyMatch']:
+                resultDict['exactlyMatch'] += 1
+
+            if output[str(i)]['formatCheck']['formatResult'] is False:
+                resultDict['formatError'] += 1
+
+            if output[str(i)]['compileCheck']['compileResult'] is False:
+                resultDict['compileError'] += 1
+
+            if output[str(i)]['PassTestCase']:
+                resultDict['passTestCase'] += 1
+
+
+        print('Exactly Match:', resultDict['exactlyMatch'])
+        print('Format Error:', resultDict['formatError'])
+        print('Compile Error:', resultDict['compileError'])
+        print('Pass Test Case:', resultDict['passTestCase'])
+
+    def failure_reason(self, jsonFile):
         data = self.jsonFileIO.readJsonData(os.path.join(ROOT, jsonFile))
 
-        compileSuccessButFailure = []
+        compilePassButFailure = 0
+        compileError = 0
+        formatError = 0
 
+        print()
         for item in data:
             if item['repair'] is False:
+
                 output = item['output']
                 for i in range(len(output)):
-                    if output[str(i)]['formatCheck']['formatResult'] == True and output[str(i)]['compileCheck']['compileResult'] == True:
-                        print(item['buggyId'], i, output[str(i)]['patchCode'])
-                        print("===========================================================")
-                        compileSuccessButFailure.append(item['buggyId'])
+                    if not output[str(i)]['PassTestCase']:
+                        if output[str(i)]['compileCheck']['compileResult']:
+                            compilePassButFailure += 1
+                            continue
+                        else:
+                            print("id:", item['buggyId'])
+                            print("solution:\n", item['solution'])
+                            print("============================================================")
+                            print("============================================================")
+                            if output[str(i)]['formatCheck']['formatResult'] is False:
+                                print("Format Error")
+                                formatError += 1
+                            elif output[str(i)]['compileCheck']['compileResult'] is False:
+                                print("Compile Error")
+                                compileError += 1
 
 
-        print("Compile Success But Failure:", len(set(compileSuccessButFailure)))
+
+                        print(output[str(i)]['patchCode'])
+                        print("============================================================")
+
+
+
+        print("Compile Pass But Failure", compilePassButFailure)
+        print("formatError:", formatError)
+        print("compileError:", compileError)

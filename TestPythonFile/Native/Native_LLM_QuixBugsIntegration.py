@@ -28,7 +28,7 @@ def setUp(name, model):
     return verification_QuixBugs
 
 
-def test_load_and_run_test_case(verification_QuixBugs):
+def load_and_run_test_case(verification_QuixBugs):
     verification_QuixBugs.junitEnvironment_Initialize()
     verification_QuixBugs.junitEnvironment_Run_Initialize()
     verification_QuixBugs.juniEnvironment_TEST_File_Initialize()
@@ -39,7 +39,7 @@ def test_load_and_run_test_case(verification_QuixBugs):
     verification_QuixBugs.updateJsonResult()
 
 
-def test_result_analysis():
+def result_analysis():
     jsonFileIO = JsonFileIO()
     data = jsonFileIO.readJsonData(verification_QuixBugs.getJsonResultPath())
 
@@ -49,12 +49,12 @@ def test_result_analysis():
 
 
 if __name__ == '__main__':
-    LLM = ['Qwen']
+    LLM = ['GPT4O']
 
     for model in LLM:
         name = f'{model}_QuixBugs_Base10'
         verification_QuixBugs = setUp(name, model)
-        test_load_and_run_test_case(verification_QuixBugs)
-        test_result_analysis()
+        load_and_run_test_case(verification_QuixBugs)
+        result_analysis()
 
 

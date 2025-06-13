@@ -53,8 +53,7 @@ def load_and_run_test_case(verification_QuixBugs):
 
 if __name__ == '__main__':
         pendlingList = {
-            'CodeLlama': f'CodeLlama_Base10_Multiple',
-            'Qwen': f'Qwen_Base10_Multiple',
+            'GPT4O': f'GPT4O_Base10_Multiple',
         }
 
         for model, name in pendlingList.items():
