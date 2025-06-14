@@ -81,8 +81,8 @@ def Prompt_load_and_run_test_case(verification_QuixBugs, promptRepairFilesFolder
     verification_QuixBugs.PromptRepairUpdateJsonResult()
 
 if __name__ == '__main__':
-    CurrentRoot = 'Result_Output/Demo'
-    dataSet = 'Data_Storage/DEMO.jsonl'
+    CurrentRoot = 'Result_Output/Demo2'
+    dataSet = 'Data_Storage/DEMO2.jsonl'
 
     Lora = '04'
     LLM = 'Qwen'
