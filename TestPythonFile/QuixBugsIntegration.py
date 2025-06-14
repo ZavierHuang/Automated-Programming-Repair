@@ -52,7 +52,7 @@ def generatePatchResult(LLM, BaseModel, Lora, diversity, CurrentRoot, dataSet, b
 
 ###########################################################################################################
 
-def prompt_repair(CurrentRoot, PromptRoot, verification_QuixBugs, Lora):
+def prompt_repair(CurrentRoot, PromptRoot, verification_QuixBugs, Lora, repairTimes):
     verification_QuixBugs.setJunitEnvironment('JUnit_Environment/JUnit_QuixBugs_Environment')
     verification_QuixBugs.setJunitModuleTestEnvironment('JUnit_ModuleTest/RunTestCase_QuixBugs')
     verification_QuixBugs.junitEnvironment_Initialize()
@@ -67,7 +67,7 @@ def prompt_repair(CurrentRoot, PromptRoot, verification_QuixBugs, Lora):
     promptEngineer.setPendingRepairFileListPath(f'{CurrentRoot}/promptRepairProgram')
     promptEngineer.copyAndCreatePromptRepairFiles()
     promptEngineer.setOutputJsonFilePath(f'{PromptRoot}/Json/QuixBugs_Lora{Lora}_PRE_FOM.json')
-    promptEngineer.setPER_RepairTimes(5)
+    promptEngineer.setPER_RepairTimes(repairTimes)
     promptEngineer.promptRepair()
     promptEngineer.copyFileToTest(verification_QuixBugs.getJunitModuleTestEnvironment(), verification_QuixBugs.getDataSetName())
     return promptEngineer.getPromptRepairFilesPath()
@@ -81,21 +81,20 @@ def Prompt_load_and_run_test_case(verification_QuixBugs, promptRepairFilesFolder
     verification_QuixBugs.PromptRepairUpdateJsonResult()
 
 if __name__ == '__main__':
+    CurrentRoot = 'Result_Output/Demo'
+    dataSet = 'Data_Storage/DEMO.jsonl'
+
     Lora = '04'
     LLM = 'Qwen'
     BaseModel = 'Qwen/Qwen2.5-Coder-1.5B'
-    CurrentRoot = 'Result_Output/Demo'
-    dataSet = 'Data_Storage/QuixBugs/Qwen/Original_Data/QuixBugs_Qwen_IR4OR2_TEST.jsonl'
     beamSize = 10
+    repairTimes = 5
 
     verification_QuixBugs = setUp(Lora, CurrentRoot)
     generatePatchResult(LLM, BaseModel, Lora, 0, CurrentRoot, dataSet, beamSize)
     load_and_run_test_case(verification_QuixBugs)
 
-    newResultAnalysis  = NewResultAnalysis()
-    newResultAnalysis.getReport(verification_QuixBugs.getJsonResultPath(), verification_QuixBugs.getLLMModel().getNumBeams())
-
     PromptRoot = os.path.join(CurrentRoot, 'PromptRepairFolder')
-    promptRepairFilesFolder = prompt_repair(CurrentRoot, PromptRoot, verification_QuixBugs, Lora)
+    promptRepairFilesFolder = prompt_repair(CurrentRoot, PromptRoot, verification_QuixBugs, Lora, repairTimes)
     Prompt_load_and_run_test_case(verification_QuixBugs, promptRepairFilesFolder)
 

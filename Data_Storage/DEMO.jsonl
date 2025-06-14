@@ -1,0 +1,1 @@
+{"bug_id": "CONCATENATE", "buggy_code": "<|fim_prefix|>    public static String concatenate(String[] strings) {\n<|fim_suffix|>\n        for (String string : strings)\n            result += string;\n        return result;\n    }\n\n<|fim_middle|>\n// buggy code\n//         String result = null;\n        ", "fixed_chunk": "        String result = \"\";\n"}
