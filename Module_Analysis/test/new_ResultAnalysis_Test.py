@@ -103,7 +103,7 @@ class oldResultAnalysis_Test(unittest.TestCase):
 
 
     def test_DBS_BS_RepairPart(self):
-        DBSJsonFile = os.path.join(ROOT, 'Result_Output/HumanEval/Qwen/OriginalResult/DiverseBeamSearch60/Lora08/Json/Lora08_E2_DBS_60.json')
+        DBSJsonFile = os.path.join(ROOT, 'Result_Output/HumanEval/Qwen/OriginalResult/DiverseBeamSearch20/Lora08/Json/Lora08_E2_DBS_20.json')
         BSJsonFile = os.path.join(ROOT, 'Result_Output/HumanEval/Qwen/OriginalResult/BeamSearch/Lora08/Json/Lora08_E2_BS.json')
         self.jsonFileIO = JsonFileIO()
         self.newResultAnalysis.DBS_BS_RepairPart(BSJsonFile, DBSJsonFile)
