@@ -2,7 +2,6 @@ import os
 from Config import ROOT, LLM_MODEL_PATH
 import json
 
-"""
 from peft import PeftModel
 from transformers import (
     AutoTokenizer,
@@ -13,7 +12,6 @@ from transformers import (
 from tqdm import tqdm
 
 import torch
-"""
 
 
 class LLM_Model:
@@ -85,7 +83,6 @@ class LLM_Model:
     def remarkErrorPosition(self, buggyCode):
         pass
 
-    """
     def getLLMModel(self):
         if self.isLora is True:
             model = AutoModelForCausalLM.from_pretrained(
@@ -195,4 +192,3 @@ class LLM_Model:
             for each in llama2_output:
                 pd_file.write(json.dumps(each))
                 pd_file.write('\n')
-    """
